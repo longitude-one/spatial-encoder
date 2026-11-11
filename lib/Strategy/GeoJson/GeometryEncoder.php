@@ -83,7 +83,7 @@ final class GeometryEncoder
      *
      * @param SpatialInterface $spatial the line string to encode
      *
-     * @return array{type: string, coordinates: (float|int)[][]}
+     * @return array{type: string, coordinates: (float|int|null)[][]}
      */
     private function encodeLineString(SpatialInterface $spatial): array
     {
@@ -104,7 +104,7 @@ final class GeometryEncoder
      *
      * @param SpatialInterface $spatial the multi-line string to encode
      *
-     * @return array{type: string, coordinates: (float|int)[][][]}
+     * @return array{type: string, coordinates: (float|int|null)[][][]}
      */
     private function encodeMultiLineString(SpatialInterface $spatial): array
     {
@@ -127,7 +127,7 @@ final class GeometryEncoder
      *
      * @param SpatialInterface $spatial the multi-point to encode
      *
-     * @return array{type: string, coordinates: (float|int)[][]}
+     * @return array{type: string, coordinates: (float|int|null)[][]}
      */
     private function encodeMultiPoint(SpatialInterface $spatial): array
     {
@@ -148,7 +148,7 @@ final class GeometryEncoder
      *
      * @param SpatialInterface $spatial the multi-polygon to encode
      *
-     * @return array{type: string, coordinates: (float|int)[][][][]}
+     * @return array{type: string, coordinates: (float|int|null)[][][][]}
      */
     private function encodeMultiPolygon(SpatialInterface $spatial): array
     {
@@ -174,7 +174,7 @@ final class GeometryEncoder
      *
      * @param SpatialInterface $spatial the point to encode
      *
-     * @return array{type: string, coordinates: (float|int)[]}
+     * @return array{type: string, coordinates: (float|int|null)[]}
      */
     private function encodePoint(SpatialInterface $spatial): array
     {
@@ -190,7 +190,7 @@ final class GeometryEncoder
      *
      * @param SpatialInterface $spatial the polygon to encode
      *
-     * @return array{type: string, coordinates: (float|int)[][][]}
+     * @return array{type: string, coordinates: (float|int|null)[][][]}
      */
     private function encodePolygon(SpatialInterface $spatial): array
     {
@@ -212,10 +212,10 @@ final class GeometryEncoder
     /**
      * Compute twice the signed XY area, translated to the first vertex for precision.
      *
-     * The model already enforces ring length and closure. This is not a
+     * Ring length and closure are the caller's responsibility. This is not a
      * simplicity or topology check. Non-finite ordinates retain the JSON failure path.
      *
-     * @param (float|int)[][] $ring the positions of a closed ring
+     * @param (float|int|null)[][] $ring the positions of a closed ring
      */
     private function signedRingArea(array $ring): float
     {

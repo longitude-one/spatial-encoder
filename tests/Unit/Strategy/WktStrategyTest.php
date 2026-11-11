@@ -21,9 +21,9 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\WktTextStrategy;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollectionImmutable as GeometryCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PolygonImmutable as Polygon;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -61,9 +61,9 @@ class WktStrategyTest extends TestCase
             foreach (['Geometry', 'Geography'] as $family) {
                 $namespace = 'LongitudeOne\SpatialTypes\Types\\'.$dimension.'\\'.$family.'\\';
                 foreach (self::typeProvider($coordinates, $positions) as $type => [$arguments, $body]) {
-                    $className = $namespace.$type;
+                    $className = $namespace.$type.'Immutable';
                     if ('GeometryCollection' === $type && 'Geography' === $family) {
-                        $className = $namespace.'GeographyCollection';
+                        $className = $namespace.'GeographyCollectionImmutable';
                     }
                     if ('PolyhedralSurface' === $type && !\in_array($dimension, ['Dimension3z', 'Dimension4zm'], true)) {
                         continue;
@@ -71,7 +71,7 @@ class WktStrategyTest extends TestCase
 
                     if ('GeometryCollection' === $type) {
                         /** @var class-string<SpatialInterface> $pointClass */
-                        $pointClass = $namespace.'Point';
+                        $pointClass = $namespace.'PointImmutable';
                         $arguments = [4326, [new $pointClass(...[...$coordinates[1], 4326])]];
                         $body = '(POINT'.$marker.' ('.$positions[1].'))';
                     }
@@ -170,10 +170,10 @@ class WktStrategyTest extends TestCase
         $namespace = 'LongitudeOne\SpatialTypes\Types\\'.$dimension.'\Geometry\\';
 
         /** @var class-string<SpatialInterface> $pointClass */
-        $pointClass = $namespace.'Point';
+        $pointClass = $namespace.'PointImmutable';
 
         /** @var class-string<SpatialInterface> $collectionClass */
-        $collectionClass = $namespace.'GeometryCollection';
+        $collectionClass = $namespace.'GeometryCollectionImmutable';
         $point = new $pointClass(...$coordinates[1]);
         $collection = new $collectionClass(0, [new $pointClass(), new $collectionClass(0, [$point]), new $collectionClass()]);
 
@@ -238,7 +238,7 @@ class WktStrategyTest extends TestCase
     {
         $spatial = static::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::POINT);
-        $spatial->method('isEmpty')->willReturn(false);
+        $spatial->method('toArray')->willReturn([1, 2]);
         $this->expectException(UnsupportedSpatialInterfaceException::class);
         (new WktTextStrategy())->encode($spatial);
     }
@@ -248,7 +248,7 @@ class WktStrategyTest extends TestCase
     {
         $spatial = static::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::CIRCULARSTRING);
-        $spatial->method('isEmpty')->willReturn(true);
+        $spatial->method('toArray')->willReturn([]);
         $this->expectException(UnsupportedSpatialTypeException::class);
         $this->expectExceptionMessage('WKT adapter does not support spatial type CircularString');
         (new WktTextStrategy())->encode($spatial);

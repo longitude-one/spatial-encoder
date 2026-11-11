@@ -22,8 +22,8 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedGeometryStructureException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy;
 use LongitudeOne\SpatialTypes\Reference\SpatialReference;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\LineStringImmutable as LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiLineStringImmutable as MultiLineString;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -51,7 +51,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Preserve line membership, coordinates and order without reference metadata. */
     public function testDeclaredReference(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineString([[[1, 2, 3], [4, 5, 6]]], new SpatialReference(4326, 'EPSG'));
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineStringImmutable([[[1, 2, 3], [4, 5, 6]]], new SpatialReference(4326, 'EPSG'));
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
         static::assertIsString($encoded);
@@ -73,7 +73,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Preserve line membership, coordinates and order without reference metadata. */
     public function testEmptyXyz(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineString([]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineStringImmutable([]);
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
         static::assertIsString($encoded);
@@ -115,7 +115,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Reject an incompatible line member instead of returning partial output. */
     public function testRejectAllEmptyXyz(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineString([[], []]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineStringImmutable([[], []]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
@@ -142,7 +142,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Reject measured dimensions even when no line members are present. */
     public function testRejectEmptyXym(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\MultiLineString([]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\MultiLineStringImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
@@ -151,7 +151,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Reject measured dimensions even when no line members are present. */
     public function testRejectEmptyXyzm(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\MultiLineString([]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\MultiLineStringImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
@@ -160,7 +160,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Reject an incompatible line member instead of returning partial output. */
     public function testRejectEmptyXyzMember(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineString([[[1, 2, 3], [4, 5, 6]], []]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineStringImmutable([[[1, 2, 3], [4, 5, 6]], []]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
@@ -178,7 +178,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Reject an incompatible line member instead of returning partial output. */
     public function testRejectSingletonXyzMember(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineString([[[1, 2, 3]]]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineStringImmutable([[[1, 2, 3]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
@@ -187,7 +187,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Reject measured dimensions even when no line members are present. */
     public function testRejectXym(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\MultiLineString([[[1, 2, 3], [4, 5, 6]]]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\MultiLineStringImmutable([[[1, 2, 3], [4, 5, 6]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
@@ -196,7 +196,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Reject measured dimensions even when no line members are present. */
     public function testRejectXyzm(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\MultiLineString([[[1, 2, 3, 4], [5, 6, 7, 8]]]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\MultiLineStringImmutable([[[1, 2, 3, 4], [5, 6, 7, 8]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
@@ -238,7 +238,7 @@ class GeographyMultiLineStringTest extends TestCase
     /** Preserve line membership, coordinates and order without reference metadata. */
     public function testXyz(): void
     {
-        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineString([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]]);
+        $multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineStringImmutable([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]]);
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
         static::assertIsString($encoded);

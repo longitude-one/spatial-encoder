@@ -21,7 +21,7 @@ use LongitudeOne\SpatialEncoder\Strategy\EwkbBinaryStrategy;
 use LongitudeOne\SpatialEncoder\Strategy\MySQLBinaryStrategy;
 use LongitudeOne\SpatialEncoder\Strategy\WkbBinaryStrategy;
 use LongitudeOne\SpatialEncoder\Strategy\WktTextStrategy;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable as Point;
 use PHPUnit\Framework\TestCase;
 
 /**

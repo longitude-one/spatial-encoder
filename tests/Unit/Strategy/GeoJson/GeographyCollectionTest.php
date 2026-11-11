@@ -23,14 +23,14 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy;
 use LongitudeOne\SpatialTypes\Reference\SpatialReference;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\GeographyCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiLineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\Polygon;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\GeographyCollectionImmutable as GeographyCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\LineStringImmutable as LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiLineStringImmutable as MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiPointImmutable as MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\MultiPolygonImmutable as MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\PolygonImmutable as Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\TriangleImmutable as Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -80,7 +80,7 @@ class GeographyCollectionTest extends TestCase
     /** Preserve the complete collection structure and values. */
     public function testEmptyXyz(): void
     {
-        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\GeographyCollection(0, []);
+        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\GeographyCollectionImmutable(0, []);
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($collection);
         static::assertIsString($encoded);
@@ -122,7 +122,7 @@ class GeographyCollectionTest extends TestCase
     /** Propagate failure without returning a partial collection. */
     public function testRejectDimension3m(): void
     {
-        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\GeographyCollection(0, [new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\Point(1, 2, 3)]);
+        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\GeographyCollectionImmutable(0, [new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\PointImmutable(1, 2, 3)]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($collection);
@@ -131,7 +131,7 @@ class GeographyCollectionTest extends TestCase
     /** Propagate failure without returning a partial collection. */
     public function testRejectDimension4zm(): void
     {
-        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\GeographyCollection(0, [new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\Point(1, 2, 3, 4)]);
+        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\GeographyCollectionImmutable(0, [new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\PointImmutable(1, 2, 3, 4)]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($collection);
@@ -140,7 +140,7 @@ class GeographyCollectionTest extends TestCase
     /** Propagate failure without returning a partial collection. */
     public function testRejectEmptyDimension3m(): void
     {
-        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\GeographyCollection(0, []);
+        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\GeographyCollectionImmutable(0, []);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($collection);
@@ -149,7 +149,7 @@ class GeographyCollectionTest extends TestCase
     /** Propagate failure without returning a partial collection. */
     public function testRejectEmptyDimension4zm(): void
     {
-        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\GeographyCollection(0, []);
+        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\GeographyCollectionImmutable(0, []);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($collection);
@@ -196,7 +196,7 @@ class GeographyCollectionTest extends TestCase
     /** Preserve the complete collection structure and values. */
     public function testXyzSingleton(): void
     {
-        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\GeographyCollection(new SpatialReference(999999, 'CUSTOM'), [new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\Point(1, 2, 3, new SpatialReference(999999, 'CUSTOM'))]);
+        $collection = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\GeographyCollectionImmutable(new SpatialReference(999999, 'CUSTOM'), [new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\PointImmutable(1, 2, 3, new SpatialReference(999999, 'CUSTOM'))]);
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($collection);
         static::assertIsString($encoded);

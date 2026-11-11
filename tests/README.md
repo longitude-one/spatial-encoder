@@ -28,7 +28,7 @@ it does not return the internal representation with its SRID prefix.
 
 `Strategy/MySQL/GeometryCoordinateOrderTest.php` and
 `Strategy/MySQL/GeographyCoordinateOrderTest.php`, under
-`LongitudeOne/SpatialEncoder/Tests/Unit/`, contain literal regression examples
+`Unit/`, contain literal regression examples
 for all seven supported types, empty and nested collections, polygon holes,
 and the Paris point from issue #5. Each family also has separate tests for
 nested MultiPoint, MultiLineString and MultiPolygon values with SRID 4326
@@ -77,12 +77,12 @@ provides reference output; whitespace around punctuation may differ.
 
 ### Explicit WKT examples
 
-`LongitudeOne/SpatialEncoder/Tests/Unit/Strategy/Wkt/Examples/` contains eight
+`Unit/Strategy/Wkt/Examples/` contains eight
 standalone test classes: `GeometryXyTest`, `GeometryXyzTest`, `GeometryXymTest`,
 `GeometryXyzmTest`, and their `Geography` equivalents.
 
-Each class spells out one populated and one empty example for every concrete
-type available in that family and dimension. Each test contains a direct
+Each class spells out one populated and one empty example for every supported
+type in that family and dimension. Each test contains a direct
 constructor call with literal coordinates and a complete literal WKT assertion.
 There are no data providers, loops, shared fixtures, or calculated expected
 strings in these files. Populated and empty tests are adjacent.
@@ -94,7 +94,7 @@ collections, and adjacent surface patches.
 Run this additional suite independently:
 
 ```bash
-vendor/bin/phpunit --no-coverage tests/LongitudeOne/SpatialEncoder/Tests/Unit/Strategy/Wkt/Examples
+vendor/bin/phpunit --no-coverage tests/Unit/Strategy/Wkt/Examples
 ```
 
 
@@ -108,8 +108,8 @@ prefix; repeated conversions; and integration with `Encoder`.
 
 ## Explicit ISO WKB examples
 
-`LongitudeOne/SpatialEncoder/Tests/Unit/Strategy/Wkb/Examples/` contains 136
-literal examples covering all 68 concrete classes in both Geometry and
+`Unit/Strategy/Wkb/Examples/` contains 136
+literal examples covering 68 concrete classes of the supported types in both Geometry and
 Geography families and all available XY, XYZ, XYM and XYZM dimensions.
 Each type has a populated and an empty example, with direct constructors,
 a complete hexadecimal expectation, and a WKT comment for readability.
@@ -123,14 +123,14 @@ with empty members and explicit failures for unsupported types/interfaces.
 Every example with SRID 4326 verifies that WKB omits the SRID.
 
 ```bash
-vendor/bin/phpunit --no-coverage tests/LongitudeOne/SpatialEncoder/Tests/Unit/Strategy/Wkb
+vendor/bin/phpunit --no-coverage tests/Unit/Strategy/Wkb
 ```
 
 
 ## Explicit EWKB examples
 
-`LongitudeOne/SpatialEncoder/Tests/Unit/Strategy/Ewkb/Examples/` contains 136
-literal examples: populated and empty values for all 68 concrete classes.
+`Unit/Strategy/Ewkb/Examples/` contains 136
+literal examples: populated and empty values for 68 concrete classes of the supported types.
 Each test includes its complete constructor, WKT comment and expected hex.
 The expectations use the GDAL-verified ISO coordinate payloads with EWKB
 Z/M flags and a single outer SRID, following
@@ -186,7 +186,7 @@ duplicate positions, member and ordinate order, omitted reference metadata, and
 XYM/XYZM rejection including empty aggregates.
 Concrete XY/XYZ examples also verify rejection of mixed non-empty/EMPTY members
 and aggregates containing only EMPTY Points in both families, using spatial-types
-`0.0.1-alpha.2`.
+`1.0.0-RC.1`.
 
 Polygon examples cover both families in XY/XYZ, EMPTY, holes, Z and ring order,
 reference omission, antimeridian preservation, measured rejection and invalid
@@ -211,3 +211,27 @@ preservation. Real nested Triangle and incompatible members verify failure
 propagation; XYM/XYZM are rejected including EMPTY. The exception tests cover a
 missing collection interface and a nested non-finite Point using its ordinary
 constructor, preserving the original JSON exception.
+
+## spatial-types 1.0 migration
+
+The literal Geometry WKT, WKB and EWKB examples use the mutable
+`Types\Dimension*` classes. Their Geography counterparts use the renamed
+`Types\Dimension*\Geography\*Immutable` classes. Together they retain 136
+populated and EMPTY cases per format across XY, XYZ, XYM and XYZM.
+The existing strategy and regression suites additionally exercise immutable
+Geometry objects.
+
+`MutableEncodingTest` covers all six strategies with mutable Geography inputs,
+mutation between encoding calls, nested XYZ collections and EMPTY members,
+GeoJSON aggregates, and MySQL acceptance/rejection boundaries. Expected binary
+outputs remain complete literal hexadecimal strings.
+
+```bash
+vendor/bin/phpunit --no-coverage --filter MutableEncodingTest
+```
+
+`UnvalidatedPointTest` records the observed behavior of mutable and immutable
+`Point(1, null)` inputs across all six strategies: WKT/EWKT `TypeError`, native
+binary conversion of null to zero, and JSON containing a null ordinate. These
+checks support the [validation guide](../docs/validation.md); they do not turn
+invalid geometries into supported serialization inputs.

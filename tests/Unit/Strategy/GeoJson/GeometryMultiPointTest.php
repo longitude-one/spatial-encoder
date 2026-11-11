@@ -22,8 +22,8 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedGeometryStructureException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy;
 use LongitudeOne\SpatialTypes\Reference\SpatialReference;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPointImmutable as MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable as Point;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -40,7 +40,7 @@ class GeometryMultiPointTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testAdditionalXyzPositions(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPoint([[3, 4, 9.5], [1, 2, -2], [-7, 8, 0]]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([[3, 4, 9.5], [1, 2, -2], [-7, 8, 0]]);
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
@@ -64,7 +64,7 @@ class GeometryMultiPointTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testDeclaredEpsg(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPoint([[1, 2, 3], [4, 5, 6]], new SpatialReference(4326, 'EPSG'));
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([[1, 2, 3], [4, 5, 6]], new SpatialReference(4326, 'EPSG'));
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
@@ -88,7 +88,7 @@ class GeometryMultiPointTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testEmptyXyz(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPoint([]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([]);
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
@@ -112,7 +112,7 @@ class GeometryMultiPointTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectEmptyXym(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPoint([]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPointImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
     }
@@ -120,7 +120,7 @@ class GeometryMultiPointTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectEmptyXyzm(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPoint([]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPointImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
     }
@@ -136,7 +136,7 @@ class GeometryMultiPointTest extends TestCase
     /** Reject an EMPTY member after a non-empty position without returning partial output. */
     public function testRejectMixedEmptyMembersXyz(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPoint([new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point(1, 2, 3), new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point()]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(1, 2, 3), new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable()]);
         $this->expectException(UnsupportedGeometryStructureException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
     }
@@ -152,7 +152,7 @@ class GeometryMultiPointTest extends TestCase
     /** Distinguish an aggregate containing only EMPTY members from one with no members. */
     public function testRejectOnlyEmptyMembersXyz(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPoint([new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point(), new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point()]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(), new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable()]);
         $this->expectException(UnsupportedGeometryStructureException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
     }
@@ -160,7 +160,7 @@ class GeometryMultiPointTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectXym(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPoint([[1, 2, 3], [4, 5, 6]]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPointImmutable([[1, 2, 3], [4, 5, 6]]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
     }
@@ -168,7 +168,7 @@ class GeometryMultiPointTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectXyzm(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPoint([[1, 2, 3, 4], [5, 6, 7, 8]]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPointImmutable([[1, 2, 3, 4], [5, 6, 7, 8]]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
     }
@@ -197,7 +197,7 @@ class GeometryMultiPointTest extends TestCase
     /** Preserve a singleton as a MultiPoint. */
     public function testSingletonXyz(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPoint([[1, 2, 3]]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([[1, 2, 3]]);
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
         static::assertIsString($encoded);
         static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3]]}', $encoded);
@@ -230,7 +230,7 @@ class GeometryMultiPointTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testXyz(): void
     {
-        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPoint([[1, 2, 3], [4, 5, 6]]);
+        $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([[1, 2, 3], [4, 5, 6]]);
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);

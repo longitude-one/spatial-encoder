@@ -18,15 +18,15 @@ namespace LongitudeOne\SpatialEncoder\Tests\Unit\Strategy\Ewkb\Examples;
 
 use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\EwkbBinaryStrategy;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiLineString;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Polygon;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PolyhedralSurface;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Point;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\PolyhedralSurface;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\SpatialCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -42,10 +42,10 @@ class GeometryXyzmTest extends TestCase
     /** Write a collection containing a point and a line. */
     public function testGeometryCollection(): void
     {
-        $collection = new GeometryCollection(4326, [
+        $collection = new SpatialCollection([
             new Point(1, 2, 5, 10, 4326),
             new LineString([[0, 0, 6, 20], [2, 3, 7, 30]], 4326),
-        ]);
+        ], 4326);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION ZM (POINT ZM (1 2 5 10), LINESTRING ZM (0 0 6 20, 2 3 7 30))
         static::assertSame(
@@ -57,7 +57,7 @@ class GeometryXyzmTest extends TestCase
     /** Preserve the type and dimension of an empty GeometryCollection. */
     public function testGeometryCollectionEmpty(): void
     {
-        $collection = new GeometryCollection(4326, []);
+        $collection = new SpatialCollection([], 4326);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION ZM EMPTY
         static::assertSame(

@@ -22,7 +22,7 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedGeometryStructureException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy;
 use LongitudeOne\SpatialTypes\Reference\SpatialReference;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geography\LineStringImmutable as LineString;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -51,7 +51,7 @@ class GeographyLineStringTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testAdditionalXyzPositions(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineString([[3, 4, 9.5], [1, 2, -2], [-7, 8, 0]]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineStringImmutable([[3, 4, 9.5], [1, 2, -2], [-7, 8, 0]]);
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
@@ -75,7 +75,7 @@ class GeographyLineStringTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testDeclaredEpsg(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineString([[1, 2, 3], [4, 5, 6]], new SpatialReference(4326, 'EPSG'));
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineStringImmutable([[1, 2, 3], [4, 5, 6]], new SpatialReference(4326, 'EPSG'));
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
@@ -99,7 +99,7 @@ class GeographyLineStringTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testEmptyXyz(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineString([]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineStringImmutable([]);
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
@@ -123,7 +123,7 @@ class GeographyLineStringTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectEmptyXym(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\LineString([]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\LineStringImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($line);
     }
@@ -131,7 +131,7 @@ class GeographyLineStringTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectEmptyXyzm(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\LineString([]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\LineStringImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($line);
     }
@@ -147,7 +147,7 @@ class GeographyLineStringTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectSingletonXyz(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineString([[1, 2, 3]]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineStringImmutable([[1, 2, 3]]);
         $this->expectException(UnsupportedGeometryStructureException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($line);
     }
@@ -155,7 +155,7 @@ class GeographyLineStringTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectXym(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\LineString([[1, 2, 3], [4, 5, 6]]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\LineStringImmutable([[1, 2, 3], [4, 5, 6]]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($line);
     }
@@ -163,7 +163,7 @@ class GeographyLineStringTest extends TestCase
     /** Reject an incompatible concrete input without modifying it. */
     public function testRejectXyzm(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\LineString([[1, 2, 3, 4], [5, 6, 7, 8]]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\LineStringImmutable([[1, 2, 3, 4], [5, 6, 7, 8]]);
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($line);
     }
@@ -195,7 +195,7 @@ class GeographyLineStringTest extends TestCase
     /** Preserve coordinates and their order without reference metadata. */
     public function testXyz(): void
     {
-        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineString([[1, 2, 3], [4, 5, 6]]);
+        $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineStringImmutable([[1, 2, 3], [4, 5, 6]]);
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);

@@ -17,13 +17,13 @@ declare(strict_types=1);
 namespace LongitudeOne\SpatialEncoder\Tests\Unit\Strategy\MySQL;
 
 use LongitudeOne\SpatialEncoder\Strategy\MySQLBinaryStrategy;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiLineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollectionImmutable as GeometryCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\LineStringImmutable as LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiLineStringImmutable as MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPointImmutable as MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygonImmutable as MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PolygonImmutable as Polygon;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

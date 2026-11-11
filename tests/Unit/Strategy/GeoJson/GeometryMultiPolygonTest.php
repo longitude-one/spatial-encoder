@@ -22,8 +22,8 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedGeometryStructureException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy;
 use LongitudeOne\SpatialTypes\Reference\SpatialReference;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygonImmutable as MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PolygonImmutable as Polygon;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -62,7 +62,7 @@ class GeometryMultiPolygonTest extends TestCase
     /** An empty XYZ aggregate has no dimension marker. */
     public function testEmptyXyz(): void
     {
-        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPolygon([]);
+        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPolygonImmutable([]);
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
         static::assertIsString($encoded);
@@ -100,7 +100,7 @@ class GeometryMultiPolygonTest extends TestCase
     /** Reject measured dimensions without discarding M. */
     public function testRejectEmptyXym(): void
     {
-        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPolygon([]);
+        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
@@ -109,7 +109,7 @@ class GeometryMultiPolygonTest extends TestCase
     /** Reject measured dimensions without discarding M. */
     public function testRejectEmptyXyzm(): void
     {
-        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPolygon([]);
+        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
@@ -127,7 +127,7 @@ class GeometryMultiPolygonTest extends TestCase
     /** Reject measured dimensions without discarding M. */
     public function testRejectXym(): void
     {
-        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPolygon([[[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]]);
+        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPolygonImmutable([[[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
@@ -136,7 +136,7 @@ class GeometryMultiPolygonTest extends TestCase
     /** Reject measured dimensions without discarding M. */
     public function testRejectXyzm(): void
     {
-        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPolygon([[[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]]]]);
+        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPolygonImmutable([[[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
@@ -176,7 +176,7 @@ class GeometryMultiPolygonTest extends TestCase
     /** Keep the singleton wrapper, Z and coordinates without reference metadata. */
     public function testXyz(): void
     {
-        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPolygon([[[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]], new SpatialReference(999999, 'CUSTOM'));
+        $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPolygonImmutable([[[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]], new SpatialReference(999999, 'CUSTOM'));
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
         static::assertIsString($encoded);

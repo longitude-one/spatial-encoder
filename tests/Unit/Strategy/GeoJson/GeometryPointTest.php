@@ -22,8 +22,8 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy;
 use LongitudeOne\SpatialTypes\Reference\SpatialReference;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\TriangleImmutable as Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -52,7 +52,7 @@ class GeometryPointTest extends TestCase
     /** Preserve the supplied point coordinates without reference metadata. */
     public function testEmptyXyz(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point();
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable();
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
@@ -100,7 +100,7 @@ class GeometryPointTest extends TestCase
     /** Reject measured points without dropping or reinterpreting M. */
     public function testRejectEmptyXym(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Point();
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable();
         $this->expectException(UnsupportedDimensionException::class);
         (new GeoJsonStrategy())->encode($point);
     }
@@ -108,7 +108,7 @@ class GeometryPointTest extends TestCase
     /** Reject measured points without dropping or reinterpreting M. */
     public function testRejectEmptyXyzm(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Point();
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable();
         $this->expectException(UnsupportedDimensionException::class);
         (new GeoJsonStrategy())->encode($point);
     }
@@ -124,7 +124,7 @@ class GeometryPointTest extends TestCase
     /** Reject measured points without dropping or reinterpreting M. */
     public function testRejectXym(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Point(1, 2, 4);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(1, 2, 4);
         $this->expectException(UnsupportedDimensionException::class);
         (new GeoJsonStrategy())->encode($point);
     }
@@ -132,7 +132,7 @@ class GeometryPointTest extends TestCase
     /** Reject measured points without dropping or reinterpreting M. */
     public function testRejectXyzm(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Point(1, 2, 3, 4);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable(1, 2, 3, 4);
         $this->expectException(UnsupportedDimensionException::class);
         (new GeoJsonStrategy())->encode($point);
     }
@@ -164,7 +164,7 @@ class GeometryPointTest extends TestCase
     /** Preserve the supplied point coordinates without reference metadata. */
     public function testXyz(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point(1, 2, 3);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(1, 2, 3);
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
