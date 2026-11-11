@@ -1,0 +1,21 @@
+# PHPMD configuration, see https://phpmd.org/documentation/creating-a-ruleset.html
+name: 'Doctrine Spatial rule set'
+description: 'Alexandre Tranchant rule set.'
+rules:
+  - ref: rulesets/cleancode.xml
+    exclude:
+      - BooleanArgumentFlag
+      - StaticAccess
+  - ref: rulesets/codesize.xml
+    exclude:
+      - CyclomaticComplexity
+      - ExcessiveClassComplexity
+      - NPathComplexity
+  - ref: rulesets/controversial.xml
+  - ref: rulesets/design.xml
+    exclude:
+      - CountInLoopExpression
+      - NumberOfChildren
+  - ref: rulesets/unusedcode.xml
+    exclude:
+      - UnusedPrivateMethod

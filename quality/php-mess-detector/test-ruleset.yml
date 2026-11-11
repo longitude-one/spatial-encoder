@@ -1,0 +1,21 @@
+# PHPMD configuration, see https://phpmd.org/documentation/creating-a-ruleset.html
+name: 'Alexandre PHPMD rule set'
+description: 'Specific custom rule set that checks longitude-one/doctrine-spatial test code.'
+rules:
+  - ref: rulesets/cleancode.xml
+    exclude:
+      - BooleanArgumentFlag
+      - MissingImport
+      - StaticAccess
+  - ref: rulesets/codesize.xml
+    exclude:
+      - TooManyPublicMethods
+      - TooManyMethods
+  - ref: rulesets/controversial.xml
+    exclude:
+      - Superglobals
+  - ref: rulesets/design.xml
+    exclude:
+      - CouplingBetweenObjects
+      - NumberOfChildren
+  - ref: rulesets/unusedcode.xml
