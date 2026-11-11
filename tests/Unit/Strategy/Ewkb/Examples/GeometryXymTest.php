@@ -18,14 +18,14 @@ namespace LongitudeOne\SpatialEncoder\Tests\Unit\Strategy\Ewkb\Examples;
 
 use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\EwkbBinaryStrategy;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\GeometryCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiLineString;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Polygon;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\Point;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\SpatialCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -41,10 +41,10 @@ class GeometryXymTest extends TestCase
     /** Write a collection containing a point and a line. */
     public function testGeometryCollection(): void
     {
-        $collection = new GeometryCollection(4326, [
+        $collection = new SpatialCollection([
             new Point(1, 2, 10, 4326),
             new LineString([[0, 0, 20], [2, 3, 30]], 4326),
-        ]);
+        ], 4326);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION M (POINT M (1 2 10), LINESTRING M (0 0 20, 2 3 30))
         static::assertSame(
@@ -56,7 +56,7 @@ class GeometryXymTest extends TestCase
     /** Preserve the type and dimension of an empty GeometryCollection. */
     public function testGeometryCollectionEmpty(): void
     {
-        $collection = new GeometryCollection(4326, []);
+        $collection = new SpatialCollection([], 4326);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION M EMPTY
         static::assertSame(

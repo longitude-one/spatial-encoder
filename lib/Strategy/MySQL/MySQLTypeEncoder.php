@@ -69,7 +69,7 @@ class MySQLTypeEncoder
             throw new UnsupportedDimensionException('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         }
 
-        if ($spatial->isEmpty() && GeometryTypeEnum::GEOMETRYCOLLECTION !== $spatial->getType()) {
+        if ([] === $spatial->toArray() && GeometryTypeEnum::GEOMETRYCOLLECTION !== $spatial->getType()) {
             throw new UnsupportedSpatialTypeException(\sprintf('MySQL adapter does not support empty %s; only GeometryCollection may be empty.', $spatial->getType()->value));
         }
     }

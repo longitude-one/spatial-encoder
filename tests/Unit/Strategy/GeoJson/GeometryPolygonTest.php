@@ -22,7 +22,7 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedGeometryStructureException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy;
 use LongitudeOne\SpatialTypes\Reference\SpatialReference;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PolygonImmutable as Polygon;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -91,7 +91,7 @@ class GeometryPolygonTest extends TestCase
     /** EMPTY has no artificial dimension marker. */
     public function testEmptyXyz(): void
     {
-        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Polygon([]);
+        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PolygonImmutable([]);
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
         static::assertIsString($encoded);
@@ -111,7 +111,7 @@ class GeometryPolygonTest extends TestCase
     /** Reject measured dimensions even when EMPTY. */
     public function testRejectEmptyXym(): void
     {
-        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Polygon([]);
+        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($polygon);
@@ -120,7 +120,7 @@ class GeometryPolygonTest extends TestCase
     /** Reject measured dimensions even when EMPTY. */
     public function testRejectEmptyXyzm(): void
     {
-        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Polygon([]);
+        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($polygon);
@@ -142,7 +142,7 @@ class GeometryPolygonTest extends TestCase
     /** M must not be serialized as altitude. */
     public function testRejectXym(): void
     {
-        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Polygon([[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]);
+        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PolygonImmutable([[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($polygon);
@@ -151,7 +151,7 @@ class GeometryPolygonTest extends TestCase
     /** M must not be discarded. */
     public function testRejectXyzm(): void
     {
-        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Polygon([[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]]]);
+        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PolygonImmutable([[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
         (new Encoder(new GeoJsonStrategy()))->encode($polygon);
@@ -187,7 +187,7 @@ class GeometryPolygonTest extends TestCase
     /** Varying height does not change the XY winding or position order. */
     public function testVaryingAltitudeAndMultipleHoles(): void
     {
-        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Polygon([
+        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PolygonImmutable([
             [[0, 0, 1], [8, 0, 2], [8, 8, 3], [0, 8, 4], [0, 0, 1]],
             [[1, 1, 5], [1, 2, 6], [2, 2, 7], [2, 1, 8], [1, 1, 5]],
             [[4, 4, 9], [4, 5, 10], [5, 5, 11], [5, 4, 12], [4, 4, 9]],
@@ -212,7 +212,7 @@ class GeometryPolygonTest extends TestCase
     /** Preserve every Z value and omit declared reference metadata. */
     public function testXyz(): void
     {
-        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Polygon([[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]], new SpatialReference(999999, 'CUSTOM'));
+        $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PolygonImmutable([[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]], new SpatialReference(999999, 'CUSTOM'));
 
         $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
         static::assertIsString($encoded);

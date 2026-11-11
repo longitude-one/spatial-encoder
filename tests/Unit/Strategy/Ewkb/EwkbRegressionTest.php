@@ -22,10 +22,10 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\EwkbBinaryStrategy;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollectionImmutable as GeometryCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineStringImmutable as LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\TriangleImmutable as Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -79,7 +79,7 @@ class EwkbRegressionTest extends TestCase
     /** Preserve dimension flags even when the SRID is zero. */
     public function testXyEmptyWithoutSrid(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point(srid: 0);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable(srid: 0);
         static::assertSame(
             '0101000000000000000000f87f000000000000f87f',
             bin2hex((new EwkbBinaryStrategy())->encode($point))
@@ -89,7 +89,7 @@ class EwkbRegressionTest extends TestCase
     /** Preserve dimension flags even when the SRID is zero. */
     public function testXymEmptyWithoutSrid(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Point(srid: 0);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(srid: 0);
         static::assertSame(
             '0101000040000000000000f87f000000000000f87f000000000000f87f',
             bin2hex((new EwkbBinaryStrategy())->encode($point))
@@ -99,7 +99,7 @@ class EwkbRegressionTest extends TestCase
     /** Preserve dimension flags even when the SRID is zero. */
     public function testXymPointWithoutSrid(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Point(1, 2, 4, 0);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(1, 2, 4, 0);
         static::assertSame(
             '0101000040000000000000f03f00000000000000400000000000001040',
             bin2hex((new EwkbBinaryStrategy())->encode($point))
@@ -109,7 +109,7 @@ class EwkbRegressionTest extends TestCase
     /** Preserve dimension flags even when the SRID is zero. */
     public function testXyPointWithoutSrid(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point(1, 2, 0);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable(1, 2, 0);
         static::assertSame(
             '0101000000000000000000f03f0000000000000040',
             bin2hex((new EwkbBinaryStrategy())->encode($point))
@@ -119,7 +119,7 @@ class EwkbRegressionTest extends TestCase
     /** Preserve dimension flags even when the SRID is zero. */
     public function testXyzEmptyWithoutSrid(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point(srid: 0);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(srid: 0);
         static::assertSame(
             '0101000080000000000000f87f000000000000f87f000000000000f87f',
             bin2hex((new EwkbBinaryStrategy())->encode($point))
@@ -149,7 +149,7 @@ class EwkbRegressionTest extends TestCase
     /** Preserve dimension flags even when the SRID is zero. */
     public function testXyzPointWithoutSrid(): void
     {
-        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point(1, 2, 3, 0);
+        $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(1, 2, 3, 0);
         static::assertSame(
             '0101000080000000000000f03f00000000000000400000000000000840',
             bin2hex((new EwkbBinaryStrategy())->encode($point))

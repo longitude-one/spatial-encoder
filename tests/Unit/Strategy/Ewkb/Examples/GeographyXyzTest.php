@@ -18,15 +18,15 @@ namespace LongitudeOne\SpatialEncoder\Tests\Unit\Strategy\Ewkb\Examples;
 
 use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\EwkbBinaryStrategy;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\GeographyCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineString;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\Polygon;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\PolyhedralSurface;
-use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\GeographyCollectionImmutable as GeographyCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\LineStringImmutable as LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiLineStringImmutable as MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiPointImmutable as MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\MultiPolygonImmutable as MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\PolygonImmutable as Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\PolyhedralSurfaceImmutable as PolyhedralSurface;
+use LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\TriangleImmutable as Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

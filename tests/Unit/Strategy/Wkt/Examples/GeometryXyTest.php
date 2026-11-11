@@ -18,14 +18,14 @@ namespace LongitudeOne\SpatialEncoder\Tests\Unit\Strategy\Wkt\Examples;
 
 use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\WktTextStrategy;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiLineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Polygon;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension2\LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension2\MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\SpatialCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -41,10 +41,10 @@ class GeometryXyTest extends TestCase
     /** Write a collection containing a point and a line. */
     public function testGeometryCollection(): void
     {
-        $collection = new GeometryCollection(4326, [
+        $collection = new SpatialCollection([
             new Point(1, 2, 4326),
             new LineString([[0, 0], [2, 3]], 4326),
-        ]);
+        ], 4326);
 
         static::assertSame(
             'GEOMETRYCOLLECTION (POINT (1 2), LINESTRING (0 0, 2 3))',
@@ -55,7 +55,7 @@ class GeometryXyTest extends TestCase
     /** Preserve the type and dimension of an empty GeometryCollection. */
     public function testGeometryCollectionEmpty(): void
     {
-        $collection = new GeometryCollection(4326, []);
+        $collection = new SpatialCollection([], 4326);
 
         static::assertSame('GEOMETRYCOLLECTION EMPTY', (new WktTextStrategy())->encode($collection));
     }

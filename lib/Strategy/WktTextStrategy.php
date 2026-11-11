@@ -27,6 +27,7 @@ use LongitudeOne\SpatialTypes\Interfaces\PointInterface;
 use LongitudeOne\SpatialTypes\Interfaces\PolygonInterface;
 use LongitudeOne\SpatialTypes\Interfaces\PolyhedralSurfaceInterface;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
+use TypeError as CoordinateTypeError;
 
 /**
  * Writes WKT in coordinate order X Y [Z] [M], without SRID metadata.
@@ -55,7 +56,7 @@ class WktTextStrategy implements StrategyInterface
      */
     private function writeBody(SpatialInterface $spatial): string
     {
-        if ($spatial->isEmpty()) {
+        if ([] === $spatial->toArray()) {
             return 'EMPTY';
         }
 
@@ -68,12 +69,17 @@ class WktTextStrategy implements StrategyInterface
      * JSON uses PHP's serialize_precision setting, whose default (-1) preserves
      * floating-point values using their shortest round-trip representation.
      *
-     * @param float|int $coordinate the ordinate to format
+     * @param float|int|null $coordinate the ordinate to format
      *
-     * @throws \JsonException when the coordinate is not finite
+     * @throws CoordinateTypeError when the ordinate is null
+     * @throws \JsonException      when the coordinate is not finite
      */
-    private function writeCoordinate(float|int $coordinate): string
+    private function writeCoordinate(float|int|null $coordinate): string
     {
+        if (null === $coordinate) {
+            throw new CoordinateTypeError('WKT requires numeric ordinates; null given.');
+        }
+
         return json_encode($coordinate, \JSON_THROW_ON_ERROR);
     }
 

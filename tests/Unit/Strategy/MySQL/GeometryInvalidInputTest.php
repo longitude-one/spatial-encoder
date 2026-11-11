@@ -20,13 +20,13 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedDimensionException;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\MySQL\MySQLTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\MySQLBinaryStrategy;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiLineString;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPoint;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygon;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\Polygon;
-use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\GeometryCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\LineStringImmutable as LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiLineStringImmutable as MultiLineString;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPointImmutable as MultiPoint;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygonImmutable as MultiPolygon;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PolygonImmutable as Polygon;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\GeometryCollectionImmutable as GeometryCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -114,8 +114,8 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testNestedEmptyPoint(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollection(4326, [
-            new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollection(4326, [new Point(srid: 4326)]),
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollectionImmutable(4326, [
+            new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollectionImmutable(4326, [new Point(srid: 4326)]),
         ]);
         $this->expectException(UnsupportedSpatialTypeException::class);
         $this->expectExceptionMessage('MySQL adapter does not support empty Point; only GeometryCollection may be empty.');
@@ -134,7 +134,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXymEmptyPoint(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Point(srid: 4326);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(srid: 4326);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);
@@ -143,7 +143,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXymPoint(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\Point(1, 2, 4, 4326);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(1, 2, 4, 4326);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);
@@ -152,7 +152,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXyzEmptyCollection(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\GeometryCollection(4326, []);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\GeometryCollectionImmutable(4326, []);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);
@@ -161,7 +161,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXyzEmptyPoint(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point(srid: 4326);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(srid: 4326);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);
@@ -170,7 +170,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXyzmEmptyCollection(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollection(4326, []);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollectionImmutable(4326, []);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);
@@ -179,7 +179,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXyzmEmptyPoint(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Point(srid: 4326);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable(srid: 4326);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);
@@ -188,7 +188,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXyzmPoint(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Point(1, 2, 3, 4, 4326);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable(1, 2, 3, 4, 4326);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);
@@ -197,7 +197,7 @@ class GeometryInvalidInputTest extends TestCase
     /** Reject incompatible input instead of emitting a lossy or invalid value. */
     public function testXyzPoint(): void
     {
-        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\Point(1, 2, 3, 4326);
+        $spatial = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(1, 2, 3, 4326);
         $this->expectException(UnsupportedDimensionException::class);
         $this->expectExceptionMessage('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         (new MySQLBinaryStrategy())->encode($spatial);

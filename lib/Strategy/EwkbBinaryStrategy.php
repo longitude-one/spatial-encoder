@@ -213,7 +213,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writePoint(PointInterface $point): string
     {
-        if ($point->isEmpty()) {
+        if ([] === $point->toArray()) {
             $dimension = 2 + ($point->hasZ() ? 1 : 0) + ($point->hasM() ? 1 : 0);
 
             // Canonical little-endian IEEE-754 quiet NaN for every ordinate.

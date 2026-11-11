@@ -22,10 +22,10 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\Wkb\WkbTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\WkbBinaryStrategy;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollection;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineString;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Point;
-use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\Triangle;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollectionImmutable as GeometryCollection;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineStringImmutable as LineString;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable as Point;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\TriangleImmutable as Triangle;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
