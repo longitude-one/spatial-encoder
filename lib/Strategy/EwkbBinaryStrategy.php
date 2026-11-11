@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -76,7 +76,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writeCollection(CollectionInterface $collection): string
     {
-        $wkb = pack('V', count($collection->getElements()));
+        $wkb = pack('V', \count($collection->getElements()));
 
         foreach ($collection->getElements() as $element) {
             $wkb .= $this->writeGeometry($element);
@@ -138,7 +138,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writeLineString(LineStringInterface $lineString): string
     {
-        $wkb = pack('V', count($lineString->getPoints()));
+        $wkb = pack('V', \count($lineString->getPoints()));
         foreach ($lineString->getPoints() as $point) {
             $wkb .= $this->writePoint($point);
         }
@@ -157,7 +157,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writeMultiLineString(MultiLineStringInterface $multiLineString): string
     {
-        $wkb = pack('V', count($multiLineString->getLineStrings()));
+        $wkb = pack('V', \count($multiLineString->getLineStrings()));
         foreach ($multiLineString->getLineStrings() as $lineString) {
             $wkb .= $this->writeGeometry($lineString);
         }
@@ -176,7 +176,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writeMultiPoint(MultiPointInterface $multiPoint): string
     {
-        $wkb = pack('V', count($multiPoint->getPoints()));
+        $wkb = pack('V', \count($multiPoint->getPoints()));
 
         foreach ($multiPoint->getPoints() as $point) {
             $wkb .= $this->writeGeometry($point);
@@ -196,7 +196,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writeMultiPolygon(MultiPolygonInterface $multiPolygon): string
     {
-        $wkb = pack('V', count($multiPolygon->getPolygons()));
+        $wkb = pack('V', \count($multiPolygon->getPolygons()));
         foreach ($multiPolygon->getPolygons() as $polygon) {
             $wkb .= $this->writeGeometry($polygon);
         }
@@ -232,7 +232,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writePolygon(PolygonInterface $polygon): string
     {
-        $wkb = pack('V', count($polygon->getRings()));
+        $wkb = pack('V', \count($polygon->getRings()));
 
         foreach ($polygon->getRings() as $ring) {
             $wkb .= $this->writeLineString($ring);
@@ -248,7 +248,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      */
     private function writePolyhedralSurface(PolyhedralSurfaceInterface $surface): string
     {
-        $wkb = pack('V', count($surface->getPatches()));
+        $wkb = pack('V', \count($surface->getPatches()));
         foreach ($surface->getPatches() as $patch) {
             $wkb .= $this->writeGeometry($patch);
         }

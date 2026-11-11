@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -92,7 +92,7 @@ final class GeometryEncoder
         }
 
         $coordinates = $spatial->toArray();
-        if (1 === count($coordinates)) {
+        if (1 === \count($coordinates)) {
             throw new UnsupportedGeometryStructureException('A non-empty GeoJSON LineString requires at least two positions.');
         }
 
@@ -114,7 +114,7 @@ final class GeometryEncoder
 
         $coordinates = $spatial->toArray();
         foreach ($coordinates as $line) {
-            if (count($line) < 2) {
+            if (\count($line) < 2) {
                 throw new UnsupportedGeometryStructureException('Every GeoJSON MultiLineString member requires at least two positions.');
             }
         }
@@ -136,7 +136,7 @@ final class GeometryEncoder
         }
 
         $coordinates = $spatial->toArray();
-        if (in_array([], $coordinates, true)) {
+        if (\in_array([], $coordinates, true)) {
             throw new UnsupportedGeometryStructureException('A GeoJSON MultiPoint cannot contain an EMPTY Point.');
         }
 

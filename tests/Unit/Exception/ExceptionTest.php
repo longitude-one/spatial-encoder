@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -35,18 +35,6 @@ use PHPUnit\Framework\TestCase;
 class ExceptionTest extends TestCase
 {
     /**
-     * Let's check that all internal exceptions are instances of ExceptionInterface.
-     *
-     * @param object $exception exception to test
-     */
-    #[DataProvider('exceptionProvider')]
-    public function testUnavailableResourceException(object $exception): void
-    {
-        static::assertInstanceOf(\Exception::class, $exception);
-        static::assertInstanceOf(ExceptionInterface::class, $exception);
-    }
-
-    /**
      * @return \Generator<string, array{0: object}, null, void>
      */
     public static function exceptionProvider(): \Generator
@@ -58,5 +46,17 @@ class ExceptionTest extends TestCase
         yield 'UnsupportedDimensionException' => [new UnsupportedDimensionException()];
 
         yield 'UnsupportedSpatialInterfaceException' => [new UnsupportedSpatialInterfaceException()];
+    }
+
+    /**
+     * Let's check that all internal exceptions are instances of ExceptionInterface.
+     *
+     * @param object $exception exception to test
+     */
+    #[DataProvider('exceptionProvider')]
+    public function testUnavailableResourceException(object $exception): void
+    {
+        static::assertInstanceOf(\Exception::class, $exception);
+        static::assertInstanceOf(ExceptionInterface::class, $exception);
     }
 }

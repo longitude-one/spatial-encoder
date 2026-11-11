@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -55,21 +55,21 @@ class ExceptionContractTest extends TestCase
     /** A nested real member retains the original JSON exception. */
     public function testCollectionEncodingFailure(): void
     {
-        $collection = new GeometryCollection(0, [new Point(1, 2), new GeometryCollection(0, [new Point(INF, 3)])]);
+        $collection = new GeometryCollection(0, [new Point(1, 2), new GeometryCollection(0, [new Point(\INF, 3)])]);
 
         try {
             (new Encoder(new GeoJsonStrategy()))->encode($collection);
             static::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** The installed model accepts this float through its ordinary constructor. */
     public function testInfinityEncodingFailure(): void
     {
-        $point = new Point(INF, 2);
+        $point = new Point(\INF, 2);
 
         try {
             (new GeoJsonStrategy())->encode($point);
@@ -77,7 +77,7 @@ class ExceptionContractTest extends TestCase
         } catch (JsonEncodingException $exception) {
             static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -99,63 +99,63 @@ class ExceptionContractTest extends TestCase
     /** The installed model accepts non-finite ordinates in real line strings. */
     public function testLineStringEncodingFailure(): void
     {
-        $line = new LineString([[1, 2], [INF, 3]]);
+        $line = new LineString([[1, 2], [\INF, 3]]);
 
         try {
             (new Encoder(new GeoJsonStrategy()))->encode($line);
             static::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** Non-finite line members use the shared JSON failure contract. */
     public function testMultiLineStringEncodingFailure(): void
     {
-        $multiLine = new MultiLineString([[[1, 2], [3, 4]], [[5, 6], [INF, 8]]]);
+        $multiLine = new MultiLineString([[[1, 2], [3, 4]], [[5, 6], [\INF, 8]]]);
 
         try {
             (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
             static::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** Non-finite MultiPoint members use the shared JSON failure contract. */
     public function testMultiPointEncodingFailure(): void
     {
-        $multiPoint = new MultiPoint([[1, 2], [INF, 3]]);
+        $multiPoint = new MultiPoint([[1, 2], [\INF, 3]]);
 
         try {
             (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
             static::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** A real polygon member with non-finite Z retains the shared JSON failure. */
     public function testMultiPolygonEncodingFailure(): void
     {
-        $multiPolygon = new MultiPolygon([[[[0, 0, 1], [2, 0, INF], [0, 2, 3], [0, 0, 1]]]]);
+        $multiPolygon = new MultiPolygon([[[[0, 0, 1], [2, 0, \INF], [0, 2, 3], [0, 0, 1]]]]);
 
         try {
             (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
             static::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** The installed model accepts this float through its ordinary constructor. */
     public function testNanEncodingFailure(): void
     {
-        $point = new Point(NAN, 2);
+        $point = new Point(\NAN, 2);
 
         try {
             (new GeoJsonStrategy())->encode($point);
@@ -163,14 +163,14 @@ class ExceptionContractTest extends TestCase
         } catch (JsonEncodingException $exception) {
             static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** The installed model accepts this float through its ordinary constructor. */
     public function testNegativeInfinityEncodingFailure(): void
     {
-        $point = new Point(-INF, 2);
+        $point = new Point(-\INF, 2);
 
         try {
             (new GeoJsonStrategy())->encode($point);
@@ -178,21 +178,21 @@ class ExceptionContractTest extends TestCase
         } catch (JsonEncodingException $exception) {
             static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** A real Polygon with non-finite Z uses the ordinary JSON failure path. */
     public function testPolygonEncodingFailure(): void
     {
-        $polygon = new Polygon([[[0, 0, 1], [2, 0, INF], [0, 2, 3], [0, 0, 1]]]);
+        $polygon = new Polygon([[[0, 0, 1], [2, 0, \INF], [0, 2, 3], [0, 0, 1]]]);
 
         try {
             (new Encoder(new GeoJsonStrategy()))->encode($polygon);
             static::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
             static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 

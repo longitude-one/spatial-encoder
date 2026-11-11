@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -51,7 +51,7 @@ class MySQLTypeEncoder
             GeometryTypeEnum::MULTILINESTRING => pack('V', 5),
             GeometryTypeEnum::MULTIPOLYGON => pack('V', 6),
             GeometryTypeEnum::GEOMETRYCOLLECTION => pack('V', 7),
-            default => throw new UnsupportedSpatialTypeException(sprintf('MySQL adapter does not support spatial type %s', $spatial->getType()->value)),
+            default => throw new UnsupportedSpatialTypeException(\sprintf('MySQL adapter does not support spatial type %s', $spatial->getType()->value)),
         };
     }
 
@@ -70,7 +70,7 @@ class MySQLTypeEncoder
         }
 
         if ($spatial->isEmpty() && GeometryTypeEnum::GEOMETRYCOLLECTION !== $spatial->getType()) {
-            throw new UnsupportedSpatialTypeException(sprintf('MySQL adapter does not support empty %s; only GeometryCollection may be empty.', $spatial->getType()->value));
+            throw new UnsupportedSpatialTypeException(\sprintf('MySQL adapter does not support empty %s; only GeometryCollection may be empty.', $spatial->getType()->value));
         }
     }
 }

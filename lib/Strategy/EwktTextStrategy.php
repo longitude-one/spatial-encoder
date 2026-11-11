@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -35,6 +35,6 @@ class EwktTextStrategy extends WktTextStrategy
         $wkt = parent::encode($spatial);
         $srid = $spatial->getSrid();
 
-        return 0 === $srid ? $wkt : sprintf('SRID=%d;%s', $srid, $wkt);
+        return 0 === $srid ? $wkt : \sprintf('SRID=%d;%s', $srid, $wkt);
     }
 }

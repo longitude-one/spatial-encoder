@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -44,7 +44,7 @@ class WktTypeEncoder
             GeometryTypeEnum::GEOMETRYCOLLECTION,
             GeometryTypeEnum::TRIANGLE,
             GeometryTypeEnum::POLYHEDRALSURFACE => mb_strtoupper($spatial->getType()->value),
-            default => throw new UnsupportedSpatialTypeException(sprintf('WKT adapter does not support spatial type %s', $spatial->getType()->value)),
+            default => throw new UnsupportedSpatialTypeException(\sprintf('WKT adapter does not support spatial type %s', $spatial->getType()->value)),
         };
         $dimension = ($spatial->hasZ() ? 'Z' : '').($spatial->hasM() ? 'M' : '');
 
