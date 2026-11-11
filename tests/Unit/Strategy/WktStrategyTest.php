@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -34,6 +34,76 @@ use PHPUnit\Framework\TestCase;
  */
 class WktStrategyTest extends TestCase
 {
+    /**
+     * Provide coordinates and independently specified text for XY, XYZ, XYM and XYZM.
+     *
+     * @return \Generator<string, array{list<list<int>>, list<string>, ' M'|' Z'|' ZM'|''}>
+     */
+    public static function dimensionProvider(): \Generator
+    {
+        yield 'Dimension2' => [[[0, 0], [2, 0], [0, 2], [0, 0]], ['0 0', '2 0', '0 2', '0 0'], ''];
+
+        yield 'Dimension3z' => [[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]], ['0 0 3', '2 0 3', '0 2 3', '0 0 3'], ' Z'];
+
+        yield 'Dimension3m' => [[[0, 0, 4], [2, 0, 4], [0, 2, 4], [0, 0, 4]], ['0 0 4', '2 0 4', '0 2 4', '0 0 4'], ' M'];
+
+        yield 'Dimension4zm' => [[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]], ['0 0 3 4', '2 0 3 4', '0 2 3 4', '0 0 3 4'], ' ZM'];
+    }
+
+    /**
+     * Provide both populated and empty instances, all declared with SRID 4326.
+     *
+     * @return \Generator<string, array{SpatialInterface, string}>
+     */
+    public static function geometryProvider(): \Generator
+    {
+        foreach (self::dimensionProvider() as $dimension => [$coordinates, $positions, $marker]) {
+            foreach (['Geometry', 'Geography'] as $family) {
+                $namespace = 'LongitudeOne\SpatialTypes\Types\\'.$dimension.'\\'.$family.'\\';
+                foreach (self::typeProvider($coordinates, $positions) as $type => [$arguments, $body]) {
+                    $className = $namespace.$type;
+                    if ('GeometryCollection' === $type && 'Geography' === $family) {
+                        $className = $namespace.'GeographyCollection';
+                    }
+                    if ('PolyhedralSurface' === $type && !\in_array($dimension, ['Dimension3z', 'Dimension4zm'], true)) {
+                        continue;
+                    }
+
+                    if ('GeometryCollection' === $type) {
+                        /** @var class-string<SpatialInterface> $pointClass */
+                        $pointClass = $namespace.'Point';
+                        $arguments = [4326, [new $pointClass(...[...$coordinates[1], 4326])]];
+                        $body = '(POINT'.$marker.' ('.$positions[1].'))';
+                    }
+
+                    /** @var class-string<SpatialInterface> $className */
+                    $spatial = new $className(...$arguments);
+                    $name = mb_strtoupper($type).$marker;
+
+                    yield $dimension.' '.$family.' '.$type => [$spatial, $name.' '.$body];
+
+                    $emptyArguments = match ($type) {
+                        'Point' => ['srid' => 4326],
+                        'GeometryCollection' => [4326, []],
+                        default => [[], 4326],
+                    };
+
+                    yield $dimension.' '.$family.' '.$type.' empty' => [new $className(...$emptyArguments), $name.' EMPTY'];
+                }
+            }
+        }
+    }
+
+    /** @return \Generator<string, array{float}> */
+    public static function nonFiniteProvider(): \Generator
+    {
+        yield 'infinity' => [\INF];
+
+        yield 'negative infinity' => [-\INF];
+
+        yield 'not a number' => [\NAN];
+    }
+
     /**
      * Provide constructor arguments and WKT bodies for the available types.
      *
@@ -80,50 +150,6 @@ class WktStrategyTest extends TestCase
     }
 
     /**
-     * Provide both populated and empty instances, all declared with SRID 4326.
-     *
-     * @return \Generator<string, array{SpatialInterface, string}>
-     */
-    public static function geometryProvider(): \Generator
-    {
-        foreach (self::dimensionProvider() as $dimension => [$coordinates, $positions, $marker]) {
-            foreach (['Geometry', 'Geography'] as $family) {
-                $namespace = 'LongitudeOne\SpatialTypes\Types\\'.$dimension.'\\'.$family.'\\';
-                foreach (self::typeProvider($coordinates, $positions) as $type => [$arguments, $body]) {
-                    $className = $namespace.$type;
-                    if ('GeometryCollection' === $type && 'Geography' === $family) {
-                        $className = $namespace.'GeographyCollection';
-                    }
-                    if ('PolyhedralSurface' === $type && !in_array($dimension, ['Dimension3z', 'Dimension4zm'], true)) {
-                        continue;
-                    }
-
-                    if ('GeometryCollection' === $type) {
-                        /** @var class-string<SpatialInterface> $pointClass */
-                        $pointClass = $namespace.'Point';
-                        $arguments = [4326, [new $pointClass(...[...$coordinates[1], 4326])]];
-                        $body = '(POINT'.$marker.' ('.$positions[1].'))';
-                    }
-
-                    /** @var class-string<SpatialInterface> $className */
-                    $spatial = new $className(...$arguments);
-                    $name = mb_strtoupper($type).$marker;
-
-                    yield $dimension.' '.$family.' '.$type => [$spatial, $name.' '.$body];
-
-                    $emptyArguments = match ($type) {
-                        'Point' => ['srid' => 4326],
-                        'GeometryCollection' => [4326, []],
-                        default => [[], 4326],
-                    };
-
-                    yield $dimension.' '.$family.' '.$type.' empty' => [new $className(...$emptyArguments), $name.' EMPTY'];
-                }
-            }
-        }
-    }
-
-    /**
      * Verify collection recursion preserves member types, order, empties and dimensions.
      *
      * @param int[][]  $coordinates the coordinates in the given dimension
@@ -158,22 +184,6 @@ class WktStrategyTest extends TestCase
     }
 
     /**
-     * Provide coordinates and independently specified text for XY, XYZ, XYM and XYZM.
-     *
-     * @return \Generator<string, array{list<list<int>>, list<string>, ' M'|' Z'|' ZM'|''}>
-     */
-    public static function dimensionProvider(): \Generator
-    {
-        yield 'Dimension2' => [[[0, 0], [2, 0], [0, 2], [0, 0]], ['0 0', '2 0', '0 2', '0 0'], ''];
-
-        yield 'Dimension3z' => [[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]], ['0 0 3', '2 0 3', '0 2 3', '0 0 3'], ' Z'];
-
-        yield 'Dimension3m' => [[[0, 0, 4], [2, 0, 4], [0, 2, 4], [0, 0, 4]], ['0 0 4', '2 0 4', '0 2 4', '0 0 4'], ' M'];
-
-        yield 'Dimension4zm' => [[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]], ['0 0 3 4', '2 0 3 4', '0 2 3 4', '0 0 3 4'], ' ZM'];
-    }
-
-    /**
      * Test non-finite ordinates cannot produce invalid WKT.
      *
      * @param float $coordinate the non-finite ordinate
@@ -185,37 +195,27 @@ class WktStrategyTest extends TestCase
         (new WktTextStrategy())->encode(new Point($coordinate, 0));
     }
 
-    /** @return \Generator<string, array{float}> */
-    public static function nonFiniteProvider(): \Generator
-    {
-        yield 'infinity' => [INF];
-
-        yield 'negative infinity' => [-INF];
-
-        yield 'not a number' => [NAN];
-    }
-
     /** Test formatting does not follow the process decimal separator. */
     public function testNumericLocale(): void
     {
-        $previous = setlocale(LC_NUMERIC, '0');
-        if (false === $previous || false === setlocale(LC_NUMERIC, 'fr_FR.UTF-8', 'fr_FR.utf8', 'fr_FR')) {
+        $previous = setlocale(\LC_NUMERIC, '0');
+        if (false === $previous || false === setlocale(\LC_NUMERIC, 'fr_FR.UTF-8', 'fr_FR.utf8', 'fr_FR')) {
             static::markTestSkipped('A French numeric locale is not installed.');
         }
 
         try {
             static::assertSame('POINT (42.42 -2.5)', (new WktTextStrategy())->encode(new Point(42.42, -2.5)));
         } finally {
-            setlocale(LC_NUMERIC, $previous);
+            setlocale(\LC_NUMERIC, $previous);
         }
     }
 
     /** Test decimal, negative, very small and high-precision ordinates. */
     public function testNumericPrecision(): void
     {
-        $collection = new GeometryCollection(0, [new Point(-42.42, 2.123456789012345), new Point(1.0e-20, PHP_INT_MAX)]);
+        $collection = new GeometryCollection(0, [new Point(-42.42, 2.123456789012345), new Point(1.0e-20, \PHP_INT_MAX)]);
         static::assertSame(
-            'GEOMETRYCOLLECTION (POINT (-42.42 2.123456789012345), POINT (1.0e-20 '.PHP_INT_MAX.'))',
+            'GEOMETRYCOLLECTION (POINT (-42.42 2.123456789012345), POINT (1.0e-20 '.\PHP_INT_MAX.'))',
             (new WktTextStrategy())->encode($collection)
         );
     }

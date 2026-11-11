@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -67,7 +67,7 @@ class MySQLGeometryEncoder
             $spatial instanceof MultiLineStringInterface => $this->writeMultiLineString($spatial),
             $spatial instanceof MultiPolygonInterface => $this->writeMultiPolygon($spatial),
             $spatial instanceof CollectionInterface => $this->writeCollection($spatial),
-            default => throw new UnsupportedSpatialInterfaceException(sprintf('MySQL adapter does not support the spatial class %s', $spatial::class)),
+            default => throw new UnsupportedSpatialInterfaceException(\sprintf('MySQL adapter does not support the spatial class %s', $spatial::class)),
         };
     }
 
@@ -80,7 +80,7 @@ class MySQLGeometryEncoder
      */
     private function writeCollection(CollectionInterface $collection): string
     {
-        $binary = pack('V', count($collection->getElements()));
+        $binary = pack('V', \count($collection->getElements()));
 
         foreach ($collection->getElements() as $element) {
             $binary .= $this->writeNestedGeometry($element);
@@ -98,7 +98,7 @@ class MySQLGeometryEncoder
      */
     private function writeLineString(LineStringInterface $lineString): string
     {
-        $binary = pack('V', count($lineString->getPoints()));
+        $binary = pack('V', \count($lineString->getPoints()));
 
         foreach ($lineString->getPoints() as $point) {
             $binary .= $this->pointEncoder->writePoint($point);
@@ -117,7 +117,7 @@ class MySQLGeometryEncoder
     private function writeMultiLineString(MultiLineStringInterface $multiLineString): string
     {
         $lineStrings = $multiLineString->getLineStrings();
-        $binary = pack('V', count($lineStrings));
+        $binary = pack('V', \count($lineStrings));
 
         foreach ($lineStrings as $lineString) {
             $binary .= $this->writeNestedGeometry($lineString);
@@ -135,7 +135,7 @@ class MySQLGeometryEncoder
      */
     private function writeMultiPoint(MultiPointInterface $multiPoint): string
     {
-        $binary = pack('V', count($multiPoint->getPoints()));
+        $binary = pack('V', \count($multiPoint->getPoints()));
 
         foreach ($multiPoint->getPoints() as $point) {
             $binary .= $this->writeNestedGeometry($point);
@@ -153,7 +153,7 @@ class MySQLGeometryEncoder
      */
     private function writeMultiPolygon(MultiPolygonInterface $multiPolygon): string
     {
-        $binary = pack('V', count($multiPolygon->getPolygons()));
+        $binary = pack('V', \count($multiPolygon->getPolygons()));
 
         foreach ($multiPolygon->getPolygons() as $polygon) {
             $binary .= $this->writeNestedGeometry($polygon);
@@ -185,7 +185,7 @@ class MySQLGeometryEncoder
      */
     private function writePolygon(PolygonInterface $polygon): string
     {
-        $binary = pack('V', count($polygon->getRings()));
+        $binary = pack('V', \count($polygon->getRings()));
 
         foreach ($polygon->getRings() as $ring) {
             $binary .= $this->writeLineString($ring);

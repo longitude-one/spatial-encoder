@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -94,18 +94,6 @@ class EwkbStrategyTest extends TestCase
     }
 
     /**
-     * Let's check the EWKB strategy with a collection.
-     *
-     * @param CollectionInterface $collection the collection to encode
-     * @param string              $expected   the expected result in hexadecimal format
-     */
-    #[DataProvider('collectionProvider')]
-    public function testCollection(CollectionInterface $collection, string $expected): void
-    {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($collection))));
-    }
-
-    /**
      * Collection provider.
      *
      * @return \Generator<string, array{0: CollectionInterface, 1: string}, null, void>
@@ -161,21 +149,6 @@ class EwkbStrategyTest extends TestCase
     }
 
     /**
-     * Test the conversion of line-strings into their Well-Known Binary representation.
-     *
-     * @param LineStringInterface $lineString line-string to test
-     * @param string              $expected   expected result in hexadecimal format
-     *
-     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid line-strings
-     * @throws UnsupportedSpatialTypeException      Data provider only provides valid line-strings
-     */
-    #[DataProvider('lineStringProvider')]
-    public function testLineString(LineStringInterface $lineString, string $expected): void
-    {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($lineString)));
-    }
-
-    /**
      * Data provider for line-strings.
      *
      * @return \Generator<string, array{0: LineStringInterface, 1: string}, null, void>
@@ -214,21 +187,6 @@ class EwkbStrategyTest extends TestCase
     }
 
     /**
-     * Test the conversion of multi-line-strings into their Well-Known Binary representation.
-     *
-     * @param MultiLineStringInterface $multiLineString multi-line-string to test
-     * @param string                   $expected        expected result in hexadecimal format
-     *
-     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid multi-line-strings
-     * @throws UnsupportedSpatialTypeException      Data provider only provides valid multi-line-strings
-     */
-    #[DataProvider('multiLineStringProvider')]
-    public function testMultiLineString(MultiLineStringInterface $multiLineString, string $expected): void
-    {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiLineString)));
-    }
-
-    /**
      * Data provider for multi-line-strings.
      *
      * @return \Generator<string, array{0: MultiLineStringInterface, 1: string}, null, void>
@@ -259,21 +217,6 @@ class EwkbStrategyTest extends TestCase
     }
 
     /**
-     * Test the conversion of multi-points into their Well-Known Binary representation.
-     *
-     * @param MultiPointInterface $multiPoint multi-point to test
-     * @param string              $expected   expected result in hexadecimal format
-     *
-     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid multi-points
-     * @throws UnsupportedSpatialTypeException      Data provider only provides valid multi-points
-     */
-    #[DataProvider('multiPointProvider')]
-    public function testMultiPoint(MultiPointInterface $multiPoint, string $expected): void
-    {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPoint)));
-    }
-
-    /**
      * Data provider for multi-points.
      *
      * @return \Generator<string, array{0: MultiPointInterface, 1: string}, null, void>
@@ -291,21 +234,6 @@ class EwkbStrategyTest extends TestCase
             new MultiPoint([$origin, $summit, $destination]),
             self::MULTI_POINT_EXPECTED,
         ];
-    }
-
-    /**
-     * Test the conversion of multi-polygons into their Well-Known Binary representation.
-     *
-     * @param MultiPolygonInterface $multiPolygon multi-polygon to test
-     * @param string                $expected     expected result in hexadecimal format
-     *
-     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid multi-polygons
-     * @throws UnsupportedSpatialTypeException      Data provider only provides valid multi-polygons
-     */
-    #[DataProvider('multiPolygonProvider')]
-    public function testMultiPolygon(MultiPolygonInterface $multiPolygon, string $expected): void
-    {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPolygon)));
     }
 
     /**
@@ -339,21 +267,6 @@ class EwkbStrategyTest extends TestCase
             new MultiPolygon([new Polygon([[$left, $bottom, $right, $top, $left]]), new Polygon([[$moreLeft, $moreBottom, $moreRight, $moreTop, $moreLeft]])]),
             self::MULTI_POLYGON_EXPECTED_MULTI_POLYGONS,
         ];
-    }
-
-    /**
-     * Test the conversion of points into their Well-Known Binary representation.
-     *
-     * @param PointInterface $point    point to test
-     * @param string         $expected expected result in hexadecimal format
-     *
-     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid points
-     * @throws UnsupportedSpatialTypeException      Data provider only provides valid points
-     */
-    #[DataProvider('pointProvider')]
-    public function testPoint(PointInterface $point, string $expected): void
-    {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($point)));
     }
 
     /**
@@ -415,21 +328,6 @@ class EwkbStrategyTest extends TestCase
     }
 
     /**
-     * Test the conversion of polygons into their Well-Known Binary representation.
-     *
-     * @param PolygonInterface $polygon  polygon to test
-     * @param string           $expected expected result in hexadecimal format
-     *
-     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid polygons
-     * @throws UnsupportedSpatialTypeException      Data provider only provides valid polygons
-     */
-    #[DataProvider('polygonProvider')]
-    public function testPolygon(PolygonInterface $polygon, string $expected): void
-    {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($polygon)));
-    }
-
-    /**
      * Data provider for polygons.
      *
      * @return \Generator<string, array{0: PolygonInterface, 1: string}, null, void>
@@ -460,5 +358,107 @@ class EwkbStrategyTest extends TestCase
             new Polygon([[$left, $bottom, $right, $top, $left], [$moreLeft, $moreBottom, $moreRight, $moreTop, $moreLeft]]),
             self::POLYGON_EXPECTED_WITH_HOLE,
         ];
+    }
+
+    /**
+     * Let's check the EWKB strategy with a collection.
+     *
+     * @param CollectionInterface $collection the collection to encode
+     * @param string              $expected   the expected result in hexadecimal format
+     */
+    #[DataProvider('collectionProvider')]
+    public function testCollection(CollectionInterface $collection, string $expected): void
+    {
+        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($collection))));
+    }
+
+    /**
+     * Test the conversion of line-strings into their Well-Known Binary representation.
+     *
+     * @param LineStringInterface $lineString line-string to test
+     * @param string              $expected   expected result in hexadecimal format
+     *
+     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid line-strings
+     * @throws UnsupportedSpatialTypeException      Data provider only provides valid line-strings
+     */
+    #[DataProvider('lineStringProvider')]
+    public function testLineString(LineStringInterface $lineString, string $expected): void
+    {
+        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($lineString)));
+    }
+
+    /**
+     * Test the conversion of multi-line-strings into their Well-Known Binary representation.
+     *
+     * @param MultiLineStringInterface $multiLineString multi-line-string to test
+     * @param string                   $expected        expected result in hexadecimal format
+     *
+     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid multi-line-strings
+     * @throws UnsupportedSpatialTypeException      Data provider only provides valid multi-line-strings
+     */
+    #[DataProvider('multiLineStringProvider')]
+    public function testMultiLineString(MultiLineStringInterface $multiLineString, string $expected): void
+    {
+        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiLineString)));
+    }
+
+    /**
+     * Test the conversion of multi-points into their Well-Known Binary representation.
+     *
+     * @param MultiPointInterface $multiPoint multi-point to test
+     * @param string              $expected   expected result in hexadecimal format
+     *
+     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid multi-points
+     * @throws UnsupportedSpatialTypeException      Data provider only provides valid multi-points
+     */
+    #[DataProvider('multiPointProvider')]
+    public function testMultiPoint(MultiPointInterface $multiPoint, string $expected): void
+    {
+        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPoint)));
+    }
+
+    /**
+     * Test the conversion of multi-polygons into their Well-Known Binary representation.
+     *
+     * @param MultiPolygonInterface $multiPolygon multi-polygon to test
+     * @param string                $expected     expected result in hexadecimal format
+     *
+     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid multi-polygons
+     * @throws UnsupportedSpatialTypeException      Data provider only provides valid multi-polygons
+     */
+    #[DataProvider('multiPolygonProvider')]
+    public function testMultiPolygon(MultiPolygonInterface $multiPolygon, string $expected): void
+    {
+        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPolygon)));
+    }
+
+    /**
+     * Test the conversion of points into their Well-Known Binary representation.
+     *
+     * @param PointInterface $point    point to test
+     * @param string         $expected expected result in hexadecimal format
+     *
+     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid points
+     * @throws UnsupportedSpatialTypeException      Data provider only provides valid points
+     */
+    #[DataProvider('pointProvider')]
+    public function testPoint(PointInterface $point, string $expected): void
+    {
+        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($point)));
+    }
+
+    /**
+     * Test the conversion of polygons into their Well-Known Binary representation.
+     *
+     * @param PolygonInterface $polygon  polygon to test
+     * @param string           $expected expected result in hexadecimal format
+     *
+     * @throws UnsupportedSpatialInterfaceException Data provider only provides valid polygons
+     * @throws UnsupportedSpatialTypeException      Data provider only provides valid polygons
+     */
+    #[DataProvider('polygonProvider')]
+    public function testPolygon(PolygonInterface $polygon, string $expected): void
+    {
+        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($polygon)));
     }
 }

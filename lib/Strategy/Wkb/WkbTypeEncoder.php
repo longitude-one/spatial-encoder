@@ -4,8 +4,8 @@
  *
  * PHP 8.4 | 8.5
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2024-2026
- * Copyright Longitude One 2024-2026
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
+ * Copyright Longitude One 2026
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -48,7 +48,7 @@ class WkbTypeEncoder
     public function writeType(SpatialInterface $spatial): string
     {
         $type = self::TYPE_CODES[$spatial->getType()->value]
-            ?? throw new UnsupportedSpatialTypeException(sprintf('WKB adapter does not support spatial type %s', $spatial->getType()->value));
+            ?? throw new UnsupportedSpatialTypeException(\sprintf('WKB adapter does not support spatial type %s', $spatial->getType()->value));
         $dimension = ($spatial->hasZ() ? 1000 : 0) + ($spatial->hasM() ? 2000 : 0);
 
         return pack('V', $type + $dimension);
