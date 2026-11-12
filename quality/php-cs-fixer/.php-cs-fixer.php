@@ -1,27 +1,14 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
 declare(strict_types=1);
-
-/**
- * This file is part of the BB-One Project.
- *
- * PHP 8.2 | Symfony 6.3.*
- *
- * Copyright LongitudeOne - Alexandre Tranchant
- * Copyright 2023
- */
 
 // Replace the value of this variable with the project's launch year.
 const FIRST_YEAR = 2026;
@@ -42,10 +29,13 @@ $header = str_replace('%year%', __copyright(FIRST_YEAR), $header);
 $finder = PhpCsFixer\Finder::create()
     ->in([
         __DIR__.'/../../lib/',
-        __DIR__.'/../../quality/',
         __DIR__.'/../../tests/',
+        __DIR__.'/../../quality/',
     ])
-    ->append([__FILE__]);
+    ->append([
+        __FILE__,
+    ])
+;
 
 $config = new PhpCsFixer\Config();
 
@@ -65,7 +55,7 @@ return $config
 
         // Headers
         'header_comment' => [
-            'comment_type' => 'PHPDoc',
+            'comment_type' => 'comment',
             'header' => $header,
             'location' => 'after_open',
             'separate' => 'bottom',
@@ -80,6 +70,7 @@ return $config
         'ordered_class_elements' => [
             'order' => [
                 'use_trait',
+                'case',
                 'constant_public',
                 'constant_protected',
                 'constant_private',
@@ -110,10 +101,13 @@ return $config
 
         // LongitudeOne conventions / overrides
         'declare_strict_types' => true,
+        'php_unit_test_case_static_method_calls' => [
+            'call_type' => 'self',
+            'target' => 'newest',
+        ],
 
-        // Required for PHPMD compatibility.
         'new_expression_parentheses' => [
-            'use_parentheses' => true,
+            'use_parentheses' => false,
         ],
     ])
     ->setFinder($finder)
