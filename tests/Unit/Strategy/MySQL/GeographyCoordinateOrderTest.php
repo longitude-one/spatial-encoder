@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -40,9 +41,9 @@ class GeographyCoordinateOrderTest extends TestCase
         ]);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION (POINT (1 2), LINESTRING (0 0, 2 3))
-        static::assertSame(
+        self::assertSame(
             'e61000000107000000020000000101000000000000000000f03f00000000000000400102000000020000000000000000000000000000000000000000000000000000400000000000000840',
-            bin2hex((new MySQLBinaryStrategy())->encode($collection))
+            bin2hex(new MySQLBinaryStrategy()->encode($collection))
         );
     }
 
@@ -52,9 +53,9 @@ class GeographyCoordinateOrderTest extends TestCase
         $collection = new GeographyCollection(4326, []);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION EMPTY
-        static::assertSame(
+        self::assertSame(
             'e6100000010700000000000000',
-            bin2hex((new MySQLBinaryStrategy())->encode($collection))
+            bin2hex(new MySQLBinaryStrategy()->encode($collection))
         );
     }
 
@@ -64,9 +65,9 @@ class GeographyCoordinateOrderTest extends TestCase
         $line = new LineString([[0, 0], [2, 3], [4, 1]], 4326);
 
         // Reference geometry in WKT: LINESTRING (0 0, 2 3, 4 1)
-        static::assertSame(
+        self::assertSame(
             'e610000001020000000300000000000000000000000000000000000000000000000000004000000000000008400000000000001040000000000000f03f',
-            bin2hex((new MySQLBinaryStrategy())->encode($line))
+            bin2hex(new MySQLBinaryStrategy()->encode($line))
         );
     }
 
@@ -79,9 +80,9 @@ class GeographyCoordinateOrderTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: MULTILINESTRING ((0 0, 2 3), (4 1, 5 2))
-        static::assertSame(
+        self::assertSame(
             'e610000001050000000200000001020000000200000000000000000000000000000000000000000000000000004000000000000008400102000000020000000000000000001040000000000000f03f00000000000014400000000000000040',
-            bin2hex((new MySQLBinaryStrategy())->encode($lines))
+            bin2hex(new MySQLBinaryStrategy()->encode($lines))
         );
     }
 
@@ -91,9 +92,9 @@ class GeographyCoordinateOrderTest extends TestCase
         $points = new MultiPoint([[1, 2], [3, 4]], 4326);
 
         // Reference geometry in WKT: MULTIPOINT ((1 2), (3 4))
-        static::assertSame(
+        self::assertSame(
             'e61000000104000000020000000101000000000000000000f03f0000000000000040010100000000000000000008400000000000001040',
-            bin2hex((new MySQLBinaryStrategy())->encode($points))
+            bin2hex(new MySQLBinaryStrategy()->encode($points))
         );
     }
 
@@ -106,9 +107,9 @@ class GeographyCoordinateOrderTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: MULTIPOLYGON (((0 0, 2 0, 0 2, 0 0)), ((3 3, 5 3, 3 5, 3 3)))
-        static::assertSame(
+        self::assertSame(
             'e610000001060000000200000001030000000100000004000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000040000000000000000000000000000000000103000000010000000400000000000000000008400000000000000840000000000000144000000000000008400000000000000840000000000000144000000000000008400000000000000840',
-            bin2hex((new MySQLBinaryStrategy())->encode($polygons))
+            bin2hex(new MySQLBinaryStrategy()->encode($polygons))
         );
     }
 
@@ -119,9 +120,9 @@ class GeographyCoordinateOrderTest extends TestCase
             new Point(2.35, 48.86, 4326),
             new GeographyCollection(4326, [new GeographyCollection(4326, [])]),
         ]);
-        static::assertSame(
+        self::assertSame(
             'e61000000107000000020000000101000000cdcccccccccc0240ae47e17a146e4840010700000001000000010700000000000000',
-            bin2hex((new MySQLBinaryStrategy())->encode($collection))
+            bin2hex(new MySQLBinaryStrategy()->encode($collection))
         );
     }
 
@@ -137,9 +138,9 @@ class GeographyCoordinateOrderTest extends TestCase
             new GeographyCollection(4326, [$lines]),
         ]);
 
-        static::assertSame(
+        self::assertSame(
             'e610000001070000000200000001070000000000000001070000000100000001050000000200000001020000000200000000000000000000000000000000000000000000000000004000000000000008400102000000020000000000000000001040000000000000f03f00000000000014400000000000000040',
-            bin2hex((new MySQLBinaryStrategy())->encode($collection))
+            bin2hex(new MySQLBinaryStrategy()->encode($collection))
         );
     }
 
@@ -152,9 +153,9 @@ class GeographyCoordinateOrderTest extends TestCase
             new GeographyCollection(4326, [$points]),
         ]);
 
-        static::assertSame(
+        self::assertSame(
             'e61000000107000000020000000107000000000000000107000000010000000104000000020000000101000000000000000000f03f0000000000000040010100000000000000000008400000000000001040',
-            bin2hex((new MySQLBinaryStrategy())->encode($collection))
+            bin2hex(new MySQLBinaryStrategy()->encode($collection))
         );
     }
 
@@ -170,9 +171,9 @@ class GeographyCoordinateOrderTest extends TestCase
             new GeographyCollection(4326, [$polygons]),
         ]);
 
-        static::assertSame(
+        self::assertSame(
             'e610000001070000000200000001070000000000000001070000000100000001060000000200000001030000000100000004000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000040000000000000000000000000000000000103000000010000000400000000000000000008400000000000000840000000000000144000000000000008400000000000000840000000000000144000000000000008400000000000000840',
-            bin2hex((new MySQLBinaryStrategy())->encode($collection))
+            bin2hex(new MySQLBinaryStrategy()->encode($collection))
         );
     }
 
@@ -180,9 +181,9 @@ class GeographyCoordinateOrderTest extends TestCase
     public function testParisPoint(): void
     {
         $point = new Point(2.35, 48.86, 4326);
-        static::assertSame(
+        self::assertSame(
             'e61000000101000000cdcccccccccc0240ae47e17a146e4840',
-            bin2hex((new MySQLBinaryStrategy())->encode($point))
+            bin2hex(new MySQLBinaryStrategy()->encode($point))
         );
     }
 
@@ -192,9 +193,9 @@ class GeographyCoordinateOrderTest extends TestCase
         $point = new Point(2.5, -3, 4326);
 
         // Reference geometry in WKT: POINT (2.5 -3)
-        static::assertSame(
+        self::assertSame(
             'e61000000101000000000000000000044000000000000008c0',
-            bin2hex((new MySQLBinaryStrategy())->encode($point))
+            bin2hex(new MySQLBinaryStrategy()->encode($point))
         );
     }
 
@@ -207,9 +208,9 @@ class GeographyCoordinateOrderTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))
-        static::assertSame(
+        self::assertSame(
             'e610000001030000000200000005000000000000000000000000000000000000000000000000001040000000000000000000000000000010400000000000001040000000000000000000000000000010400000000000000000000000000000000005000000000000000000f03f000000000000f03f000000000000f03f0000000000000040000000000000004000000000000000400000000000000040000000000000f03f000000000000f03f000000000000f03f',
-            bin2hex((new MySQLBinaryStrategy())->encode($polygon))
+            bin2hex(new MySQLBinaryStrategy()->encode($polygon))
         );
     }
 }

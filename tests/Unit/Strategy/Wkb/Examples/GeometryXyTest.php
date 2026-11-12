@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -43,9 +44,9 @@ class GeometryXyTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION (POINT (1 2), LINESTRING (0 0, 2 3))
-        static::assertSame(
+        self::assertSame(
             '0107000000020000000101000000000000000000f03f00000000000000400102000000020000000000000000000000000000000000000000000000000000400000000000000840',
-            bin2hex((new WkbBinaryStrategy())->encode($collection))
+            bin2hex(new WkbBinaryStrategy()->encode($collection))
         );
     }
 
@@ -55,9 +56,9 @@ class GeometryXyTest extends TestCase
         $collection = new SpatialCollection([], 4326);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION EMPTY
-        static::assertSame(
+        self::assertSame(
             '010700000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($collection))
+            bin2hex(new WkbBinaryStrategy()->encode($collection))
         );
     }
 
@@ -67,9 +68,9 @@ class GeometryXyTest extends TestCase
         $line = new LineString([[0, 0], [2, 3], [4, 1]], 4326);
 
         // Reference geometry in WKT: LINESTRING (0 0, 2 3, 4 1)
-        static::assertSame(
+        self::assertSame(
             '01020000000300000000000000000000000000000000000000000000000000004000000000000008400000000000001040000000000000f03f',
-            bin2hex((new WkbBinaryStrategy())->encode($line))
+            bin2hex(new WkbBinaryStrategy()->encode($line))
         );
     }
 
@@ -79,9 +80,9 @@ class GeometryXyTest extends TestCase
         $line = new LineString([], 4326);
 
         // Reference geometry in WKT: LINESTRING EMPTY
-        static::assertSame(
+        self::assertSame(
             '010200000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($line))
+            bin2hex(new WkbBinaryStrategy()->encode($line))
         );
     }
 
@@ -94,9 +95,9 @@ class GeometryXyTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: MULTILINESTRING ((0 0, 2 3), (4 1, 5 2))
-        static::assertSame(
+        self::assertSame(
             '01050000000200000001020000000200000000000000000000000000000000000000000000000000004000000000000008400102000000020000000000000000001040000000000000f03f00000000000014400000000000000040',
-            bin2hex((new WkbBinaryStrategy())->encode($lines))
+            bin2hex(new WkbBinaryStrategy()->encode($lines))
         );
     }
 
@@ -106,9 +107,9 @@ class GeometryXyTest extends TestCase
         $lines = new MultiLineString([], 4326);
 
         // Reference geometry in WKT: MULTILINESTRING EMPTY
-        static::assertSame(
+        self::assertSame(
             '010500000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($lines))
+            bin2hex(new WkbBinaryStrategy()->encode($lines))
         );
     }
 
@@ -118,9 +119,9 @@ class GeometryXyTest extends TestCase
         $points = new MultiPoint([[1, 2], [3, 4]], 4326);
 
         // Reference geometry in WKT: MULTIPOINT ((1 2), (3 4))
-        static::assertSame(
+        self::assertSame(
             '0104000000020000000101000000000000000000f03f0000000000000040010100000000000000000008400000000000001040',
-            bin2hex((new WkbBinaryStrategy())->encode($points))
+            bin2hex(new WkbBinaryStrategy()->encode($points))
         );
     }
 
@@ -130,9 +131,9 @@ class GeometryXyTest extends TestCase
         $points = new MultiPoint([], 4326);
 
         // Reference geometry in WKT: MULTIPOINT EMPTY
-        static::assertSame(
+        self::assertSame(
             '010400000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($points))
+            bin2hex(new WkbBinaryStrategy()->encode($points))
         );
     }
 
@@ -145,9 +146,9 @@ class GeometryXyTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: MULTIPOLYGON (((0 0, 2 0, 0 2, 0 0)), ((3 3, 5 3, 3 5, 3 3)))
-        static::assertSame(
+        self::assertSame(
             '01060000000200000001030000000100000004000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000040000000000000000000000000000000000103000000010000000400000000000000000008400000000000000840000000000000144000000000000008400000000000000840000000000000144000000000000008400000000000000840',
-            bin2hex((new WkbBinaryStrategy())->encode($polygons))
+            bin2hex(new WkbBinaryStrategy()->encode($polygons))
         );
     }
 
@@ -157,9 +158,9 @@ class GeometryXyTest extends TestCase
         $polygons = new MultiPolygon([], 4326);
 
         // Reference geometry in WKT: MULTIPOLYGON EMPTY
-        static::assertSame(
+        self::assertSame(
             '010600000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($polygons))
+            bin2hex(new WkbBinaryStrategy()->encode($polygons))
         );
     }
 
@@ -169,9 +170,9 @@ class GeometryXyTest extends TestCase
         $point = new Point(2.5, -3, 4326);
 
         // Reference geometry in WKT: POINT (2.5 -3)
-        static::assertSame(
+        self::assertSame(
             '0101000000000000000000044000000000000008c0',
-            bin2hex((new WkbBinaryStrategy())->encode($point))
+            bin2hex(new WkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -181,9 +182,9 @@ class GeometryXyTest extends TestCase
         $point = new Point(srid: 4326);
 
         // Reference geometry in WKT: POINT EMPTY
-        static::assertSame(
+        self::assertSame(
             '0101000000000000000000f87f000000000000f87f',
-            bin2hex((new WkbBinaryStrategy())->encode($point))
+            bin2hex(new WkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -196,9 +197,9 @@ class GeometryXyTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))
-        static::assertSame(
+        self::assertSame(
             '01030000000200000005000000000000000000000000000000000000000000000000001040000000000000000000000000000010400000000000001040000000000000000000000000000010400000000000000000000000000000000005000000000000000000f03f000000000000f03f000000000000f03f0000000000000040000000000000004000000000000000400000000000000040000000000000f03f000000000000f03f000000000000f03f',
-            bin2hex((new WkbBinaryStrategy())->encode($polygon))
+            bin2hex(new WkbBinaryStrategy()->encode($polygon))
         );
     }
 
@@ -208,9 +209,9 @@ class GeometryXyTest extends TestCase
         $polygon = new Polygon([], 4326);
 
         // Reference geometry in WKT: POLYGON EMPTY
-        static::assertSame(
+        self::assertSame(
             '010300000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($polygon))
+            bin2hex(new WkbBinaryStrategy()->encode($polygon))
         );
     }
 
@@ -220,9 +221,9 @@ class GeometryXyTest extends TestCase
         $triangle = new Triangle([[[0, 0], [2, 0], [0, 2], [0, 0]]], 4326);
 
         // Reference geometry in WKT: TRIANGLE ((0 0, 2 0, 0 2, 0 0))
-        static::assertSame(
+        self::assertSame(
             '0111000000010000000400000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000004000000000000000000000000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($triangle))
+            bin2hex(new WkbBinaryStrategy()->encode($triangle))
         );
     }
 
@@ -232,9 +233,9 @@ class GeometryXyTest extends TestCase
         $triangle = new Triangle([], 4326);
 
         // Reference geometry in WKT: TRIANGLE EMPTY
-        static::assertSame(
+        self::assertSame(
             '011100000000000000',
-            bin2hex((new WkbBinaryStrategy())->encode($triangle))
+            bin2hex(new WkbBinaryStrategy()->encode($triangle))
         );
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -40,36 +41,36 @@ class MutableEncodingTest extends TestCase
         $point = new Point(1, 2, 4326);
         $encoder = new Encoder(new WkbBinaryStrategy());
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertSame('0101000000000000000000f03f0000000000000040', bin2hex($encoded));
+        self::assertIsString($encoded);
+        self::assertSame('0101000000000000000000f03f0000000000000040', bin2hex($encoded));
 
         $point->setX(3);
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertSame('010100000000000000000008400000000000000040', bin2hex($encoded));
-        static::assertSame([3, 2], $point->toArray());
+        self::assertIsString($encoded);
+        self::assertSame('010100000000000000000008400000000000000040', bin2hex($encoded));
+        self::assertSame([3, 2], $point->toArray());
     }
 
     /** Mutable XYZM EWKT retains the complete declared dimension and SRID. */
     public function testEwktXyzm(): void
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Point(1, 2, 3, 4, 4326);
-        static::assertSame('SRID=4326;POINT ZM (1 2 3 4)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT ZM (1 2 3 4)', new EwktTextStrategy()->encode($point));
 
         $point->setM(5);
-        static::assertSame('SRID=4326;POINT ZM (1 2 3 5)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT ZM (1 2 3 5)', new EwktTextStrategy()->encode($point));
     }
 
     /** The instance-level Geography family preserves longitude-first coordinates. */
     public function testGeographyAcrossFormats(): void
     {
         $point = new Point(1, 2, 4326, SpatialModelEnum::GEOGRAPHY);
-        static::assertSame('POINT (1 2)', (new WktTextStrategy())->encode($point));
-        static::assertSame('SRID=4326;POINT (1 2)', (new EwktTextStrategy())->encode($point));
-        static::assertSame('0101000000000000000000f03f0000000000000040', bin2hex((new WkbBinaryStrategy())->encode($point)));
-        static::assertSame('0101000020e6100000000000000000f03f0000000000000040', bin2hex((new EwkbBinaryStrategy())->encode($point)));
-        static::assertSame('e61000000101000000000000000000f03f0000000000000040', bin2hex((new MySQLBinaryStrategy())->encode($point)));
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', (new GeoJsonStrategy())->encode($point));
+        self::assertSame('POINT (1 2)', new WktTextStrategy()->encode($point));
+        self::assertSame('SRID=4326;POINT (1 2)', new EwktTextStrategy()->encode($point));
+        self::assertSame('0101000000000000000000f03f0000000000000040', bin2hex(new WkbBinaryStrategy()->encode($point)));
+        self::assertSame('0101000020e6100000000000000000f03f0000000000000040', bin2hex(new EwkbBinaryStrategy()->encode($point)));
+        self::assertSame('e61000000101000000000000000000f03f0000000000000040', bin2hex(new MySQLBinaryStrategy()->encode($point)));
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** All RFC aggregate types retain their concrete mutable members. */
@@ -81,9 +82,9 @@ class MutableEncodingTest extends TestCase
             new \LongitudeOne\SpatialTypes\Types\Dimension2\Polygon([[[0, 0], [2, 0], [0, 2], [0, 0]]], 4326),
             new \LongitudeOne\SpatialTypes\Types\Dimension2\MultiPolygon([[[[0, 0], [2, 0], [0, 2], [0, 0]]]], 4326),
         ], 4326);
-        static::assertJsonStringEqualsJsonString(
+        self::assertJsonStringEqualsJsonString(
             '{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[1,2],[3,4]]},{"type":"MultiLineString","coordinates":[[[1,2],[3,4]]]},{"type":"Polygon","coordinates":[[[0,0],[2,0],[0,2],[0,0]]]},{"type":"MultiPolygon","coordinates":[[[[0,0],[2,0],[0,2],[0,0]]]]}]}',
-            (new GeoJsonStrategy())->encode($collection)
+            new GeoJsonStrategy()->encode($collection)
         );
     }
 
@@ -91,7 +92,7 @@ class MutableEncodingTest extends TestCase
     public function testGeoJsonMeasuredEmpty(): void
     {
         $this->expectException(UnsupportedDimensionException::class);
-        (new GeoJsonStrategy())->encode(new \LongitudeOne\SpatialTypes\Types\Dimension3m\Point());
+        new GeoJsonStrategy()->encode(new \LongitudeOne\SpatialTypes\Types\Dimension3m\Point());
     }
 
     /** Mutable GeoJSON recursively retains nesting, members and declared Z. */
@@ -104,9 +105,9 @@ class MutableEncodingTest extends TestCase
                 new \LongitudeOne\SpatialTypes\Types\Dimension3z\Point(srid: 4326),
             ], 4326),
         ], 4326);
-        static::assertJsonStringEqualsJsonString(
+        self::assertJsonStringEqualsJsonString(
             '{"type":"GeometryCollection","geometries":[{"type":"Point","coordinates":[1,2,3]},{"type":"GeometryCollection","geometries":[{"type":"LineString","coordinates":[[4,5,6],[7,8,9]]},{"type":"Point","coordinates":[]}]}]}',
-            (new GeoJsonStrategy())->encode($collection)
+            new GeoJsonStrategy()->encode($collection)
         );
     }
 
@@ -117,9 +118,9 @@ class MutableEncodingTest extends TestCase
             new Point(1, 2, 4326),
             new LineString([[0, 0], [2, 3]], 4326),
         ], 4326);
-        static::assertSame(
+        self::assertSame(
             'e61000000107000000020000000101000000000000000000f03f00000000000000400102000000020000000000000000000000000000000000000000000000000000400000000000000840',
-            bin2hex((new MySQLBinaryStrategy())->encode($collection))
+            bin2hex(new MySQLBinaryStrategy()->encode($collection))
         );
     }
 
@@ -127,13 +128,13 @@ class MutableEncodingTest extends TestCase
     public function testMysqlEmptyCollection(): void
     {
         $collection = new SpatialCollection([], 4326);
-        static::assertSame('e6100000010700000000000000', bin2hex((new MySQLBinaryStrategy())->encode($collection)));
+        self::assertSame('e6100000010700000000000000', bin2hex(new MySQLBinaryStrategy()->encode($collection)));
     }
 
     /** The MySQL EMPTY exception policy also applies to mutable objects. */
     public function testMysqlEmptyPoint(): void
     {
         $this->expectException(UnsupportedSpatialTypeException::class);
-        (new MySQLBinaryStrategy())->encode(new Point());
+        new MySQLBinaryStrategy()->encode(new Point());
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -47,38 +48,38 @@ class EwkbRegressionTest extends TestCase
         ]);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION ZM (POINT ZM EMPTY, GEOMETRYCOLLECTION ZM (POINT ZM (1 2 3 4), LINESTRING ZM EMPTY), TRIANGLE ZM EMPTY)
-        static::assertSame(
+        self::assertSame(
             '01070000e0e61000000300000001010000c0000000000000f87f000000000000f87f000000000000f87f000000000000f87f01070000c00200000001010000c0000000000000f03f00000000000000400000000000000840000000000000104001020000c00000000001110000c000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($collection))
+            bin2hex(new EwkbBinaryStrategy()->encode($collection))
         );
     }
 
     /** Reject an unsupported interface rather than emit a partial geometry. */
     public function testUnsupportedInterface(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::POINT);
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new EwkbBinaryStrategy())->encode($spatial);
+        new EwkbBinaryStrategy()->encode($spatial);
     }
 
     /** Reject enum cases without concrete supported spatial types. */
     public function testUnsupportedType(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::CIRCULARSTRING);
         $this->expectException(UnsupportedSpatialTypeException::class);
         $this->expectExceptionMessage('EWKB adapter does not support spatial type CircularString');
-        (new EwkbBinaryStrategy())->encode($spatial);
+        new EwkbBinaryStrategy()->encode($spatial);
     }
 
     /** Preserve dimension flags even when the SRID is zero. */
     public function testXyEmptyWithoutSrid(): void
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable(srid: 0);
-        static::assertSame(
+        self::assertSame(
             '0101000000000000000000f87f000000000000f87f',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -86,9 +87,9 @@ class EwkbRegressionTest extends TestCase
     public function testXymEmptyWithoutSrid(): void
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(srid: 0);
-        static::assertSame(
+        self::assertSame(
             '0101000040000000000000f87f000000000000f87f000000000000f87f',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -96,9 +97,9 @@ class EwkbRegressionTest extends TestCase
     public function testXymPointWithoutSrid(): void
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(1, 2, 4, 0);
-        static::assertSame(
+        self::assertSame(
             '0101000040000000000000f03f00000000000000400000000000001040',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -106,9 +107,9 @@ class EwkbRegressionTest extends TestCase
     public function testXyPointWithoutSrid(): void
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable(1, 2, 0);
-        static::assertSame(
+        self::assertSame(
             '0101000000000000000000f03f0000000000000040',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -116,9 +117,9 @@ class EwkbRegressionTest extends TestCase
     public function testXyzEmptyWithoutSrid(): void
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(srid: 0);
-        static::assertSame(
+        self::assertSame(
             '0101000080000000000000f87f000000000000f87f000000000000f87f',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -126,9 +127,9 @@ class EwkbRegressionTest extends TestCase
     public function testXyzmEmptyWithoutSrid(): void
     {
         $point = new Point(srid: 0);
-        static::assertSame(
+        self::assertSame(
             '01010000c0000000000000f87f000000000000f87f000000000000f87f000000000000f87f',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -136,9 +137,9 @@ class EwkbRegressionTest extends TestCase
     public function testXyzmPointWithoutSrid(): void
     {
         $point = new Point(1, 2, 3, 4, 0);
-        static::assertSame(
+        self::assertSame(
             '01010000c0000000000000f03f000000000000004000000000000008400000000000001040',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -146,9 +147,9 @@ class EwkbRegressionTest extends TestCase
     public function testXyzPointWithoutSrid(): void
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(1, 2, 3, 0);
-        static::assertSame(
+        self::assertSame(
             '0101000080000000000000f03f00000000000000400000000000000840',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 }

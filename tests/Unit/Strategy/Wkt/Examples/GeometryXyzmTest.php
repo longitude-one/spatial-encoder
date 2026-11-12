@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -43,9 +44,9 @@ class GeometryXyzmTest extends TestCase
             new LineString([[0, 0, 6, 20], [2, 3, 7, 30]], 4326),
         ], 4326);
 
-        static::assertSame(
+        self::assertSame(
             'GEOMETRYCOLLECTION ZM (POINT ZM (1 2 5 10), LINESTRING ZM (0 0 6 20, 2 3 7 30))',
-            (new WktTextStrategy())->encode($collection)
+            new WktTextStrategy()->encode($collection)
         );
     }
 
@@ -54,7 +55,7 @@ class GeometryXyzmTest extends TestCase
     {
         $collection = new SpatialCollection([], 4326);
 
-        static::assertSame('GEOMETRYCOLLECTION ZM EMPTY', (new WktTextStrategy())->encode($collection));
+        self::assertSame('GEOMETRYCOLLECTION ZM EMPTY', new WktTextStrategy()->encode($collection));
     }
 
     /** Write three points in their original order. */
@@ -62,7 +63,7 @@ class GeometryXyzmTest extends TestCase
     {
         $line = new LineString([[0, 0, 5, 10], [2, 3, 6, 20], [4, 1, 7, 30]], 4326);
 
-        static::assertSame('LINESTRING ZM (0 0 5 10, 2 3 6 20, 4 1 7 30)', (new WktTextStrategy())->encode($line));
+        self::assertSame('LINESTRING ZM (0 0 5 10, 2 3 6 20, 4 1 7 30)', new WktTextStrategy()->encode($line));
     }
 
     /** Preserve the type and dimension of an empty LineString. */
@@ -70,7 +71,7 @@ class GeometryXyzmTest extends TestCase
     {
         $line = new LineString([], 4326);
 
-        static::assertSame('LINESTRING ZM EMPTY', (new WktTextStrategy())->encode($line));
+        self::assertSame('LINESTRING ZM EMPTY', new WktTextStrategy()->encode($line));
     }
 
     /** Write two lines in their original order. */
@@ -81,9 +82,9 @@ class GeometryXyzmTest extends TestCase
             [[4, 1, 7, 30], [5, 2, 8, 40]],
         ], 4326);
 
-        static::assertSame(
+        self::assertSame(
             'MULTILINESTRING ZM ((0 0 5 10, 2 3 6 20), (4 1 7 30, 5 2 8 40))',
-            (new WktTextStrategy())->encode($lines)
+            new WktTextStrategy()->encode($lines)
         );
     }
 
@@ -92,7 +93,7 @@ class GeometryXyzmTest extends TestCase
     {
         $lines = new MultiLineString([], 4326);
 
-        static::assertSame('MULTILINESTRING ZM EMPTY', (new WktTextStrategy())->encode($lines));
+        self::assertSame('MULTILINESTRING ZM EMPTY', new WktTextStrategy()->encode($lines));
     }
 
     /** Write two distinct points with separate parentheses. */
@@ -100,7 +101,7 @@ class GeometryXyzmTest extends TestCase
     {
         $points = new MultiPoint([[1, 2, 5, 10], [3, 4, 6, 20]], 4326);
 
-        static::assertSame('MULTIPOINT ZM ((1 2 5 10), (3 4 6 20))', (new WktTextStrategy())->encode($points));
+        self::assertSame('MULTIPOINT ZM ((1 2 5 10), (3 4 6 20))', new WktTextStrategy()->encode($points));
     }
 
     /** Preserve the type and dimension of an empty MultiPoint. */
@@ -108,7 +109,7 @@ class GeometryXyzmTest extends TestCase
     {
         $points = new MultiPoint([], 4326);
 
-        static::assertSame('MULTIPOINT ZM EMPTY', (new WktTextStrategy())->encode($points));
+        self::assertSame('MULTIPOINT ZM EMPTY', new WktTextStrategy()->encode($points));
     }
 
     /** Write two polygons with their own closed exterior rings. */
@@ -119,9 +120,9 @@ class GeometryXyzmTest extends TestCase
             [[[3, 3, 6, 20], [5, 3, 6, 20], [3, 5, 6, 20], [3, 3, 6, 20]]],
         ], 4326);
 
-        static::assertSame(
+        self::assertSame(
             'MULTIPOLYGON ZM (((0 0 5 10, 2 0 5 10, 0 2 5 10, 0 0 5 10)), ((3 3 6 20, 5 3 6 20, 3 5 6 20, 3 3 6 20)))',
-            (new WktTextStrategy())->encode($polygons)
+            new WktTextStrategy()->encode($polygons)
         );
     }
 
@@ -130,7 +131,7 @@ class GeometryXyzmTest extends TestCase
     {
         $polygons = new MultiPolygon([], 4326);
 
-        static::assertSame('MULTIPOLYGON ZM EMPTY', (new WktTextStrategy())->encode($polygons));
+        self::assertSame('MULTIPOLYGON ZM EMPTY', new WktTextStrategy()->encode($polygons));
     }
 
     /** Write a point with fractional and negative ordinates. */
@@ -138,7 +139,7 @@ class GeometryXyzmTest extends TestCase
     {
         $point = new Point(2.5, -3, 5, 10, 4326);
 
-        static::assertSame('POINT ZM (2.5 -3 5 10)', (new WktTextStrategy())->encode($point));
+        self::assertSame('POINT ZM (2.5 -3 5 10)', new WktTextStrategy()->encode($point));
     }
 
     /** Preserve the type and dimension of an empty Point. */
@@ -146,7 +147,7 @@ class GeometryXyzmTest extends TestCase
     {
         $point = new Point(srid: 4326);
 
-        static::assertSame('POINT ZM EMPTY', (new WktTextStrategy())->encode($point));
+        self::assertSame('POINT ZM EMPTY', new WktTextStrategy()->encode($point));
     }
 
     /** Write an exterior ring followed by an interior hole. */
@@ -157,9 +158,9 @@ class GeometryXyzmTest extends TestCase
             [[1, 1, 5, 10], [1, 2, 5, 10], [2, 2, 5, 10], [2, 1, 5, 10], [1, 1, 5, 10]],
         ], 4326);
 
-        static::assertSame(
+        self::assertSame(
             'POLYGON ZM ((0 0 5 10, 4 0 5 10, 4 4 5 10, 0 4 5 10, 0 0 5 10), (1 1 5 10, 1 2 5 10, 2 2 5 10, 2 1 5 10, 1 1 5 10))',
-            (new WktTextStrategy())->encode($polygon)
+            new WktTextStrategy()->encode($polygon)
         );
     }
 
@@ -168,7 +169,7 @@ class GeometryXyzmTest extends TestCase
     {
         $polygon = new Polygon([], 4326);
 
-        static::assertSame('POLYGON ZM EMPTY', (new WktTextStrategy())->encode($polygon));
+        self::assertSame('POLYGON ZM EMPTY', new WktTextStrategy()->encode($polygon));
     }
 
     /** Write two adjacent polygon patches sharing an edge. */
@@ -179,9 +180,9 @@ class GeometryXyzmTest extends TestCase
             [[[1, 0, 5, 10], [2, 0, 5, 10], [2, 1, 5, 10], [1, 1, 5, 10], [1, 0, 5, 10]]],
         ], 4326);
 
-        static::assertSame(
+        self::assertSame(
             'POLYHEDRALSURFACE ZM (((0 0 5 10, 1 0 5 10, 1 1 5 10, 0 1 5 10, 0 0 5 10)), ((1 0 5 10, 2 0 5 10, 2 1 5 10, 1 1 5 10, 1 0 5 10)))',
-            (new WktTextStrategy())->encode($surface)
+            new WktTextStrategy()->encode($surface)
         );
     }
 
@@ -190,7 +191,7 @@ class GeometryXyzmTest extends TestCase
     {
         $surface = new PolyhedralSurface([], 4326);
 
-        static::assertSame('POLYHEDRALSURFACE ZM EMPTY', (new WktTextStrategy())->encode($surface));
+        self::assertSame('POLYHEDRALSURFACE ZM EMPTY', new WktTextStrategy()->encode($surface));
     }
 
     /** Write three vertices and the closing position. */
@@ -198,7 +199,7 @@ class GeometryXyzmTest extends TestCase
     {
         $triangle = new Triangle([[[0, 0, 5, 10], [2, 0, 5, 10], [0, 2, 5, 10], [0, 0, 5, 10]]], 4326);
 
-        static::assertSame('TRIANGLE ZM ((0 0 5 10, 2 0 5 10, 0 2 5 10, 0 0 5 10))', (new WktTextStrategy())->encode($triangle));
+        self::assertSame('TRIANGLE ZM ((0 0 5 10, 2 0 5 10, 0 2 5 10, 0 0 5 10))', new WktTextStrategy()->encode($triangle));
     }
 
     /** Preserve the type and dimension of an empty Triangle. */
@@ -206,6 +207,6 @@ class GeometryXyzmTest extends TestCase
     {
         $triangle = new Triangle([], 4326);
 
-        static::assertSame('TRIANGLE ZM EMPTY', (new WktTextStrategy())->encode($triangle));
+        self::assertSame('TRIANGLE ZM EMPTY', new WktTextStrategy()->encode($triangle));
     }
 }

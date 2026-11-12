@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -37,9 +38,9 @@ class GeographyPolygonTest extends TestCase
     {
         $polygon = new Polygon([[[170, 40], [170, 50], [-170, 50], [-170, 40], [170, 40]]], 4326);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[170,40],[170,50],[-170,50],[-170,40],[170,40]]]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[170,40],[170,50],[-170,50],[-170,40],[170,40]]]}', $encoded);
     }
 
     /** Reject clockwise exteriors without reversing the source ring. */
@@ -48,10 +49,10 @@ class GeographyPolygonTest extends TestCase
         $polygon = new Polygon([[[0, 0], [0, 2], [2, 0], [0, 0]]]);
 
         try {
-            (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-            static::fail('Clockwise exterior must be rejected.');
+            new Encoder(new GeoJsonStrategy())->encode($polygon);
+            self::fail('Clockwise exterior must be rejected.');
         } catch (UnsupportedGeometryStructureException) {
-            static::assertSame([[[0, 0], [0, 2], [2, 0], [0, 0]]], $polygon->toArray());
+            self::assertSame([[[0, 0], [0, 2], [2, 0], [0, 0]]], $polygon->toArray());
         }
     }
 
@@ -61,7 +62,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new Polygon([[[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]], [[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** A positive signed area does not claim or require ring simplicity. */
@@ -69,9 +70,9 @@ class GeographyPolygonTest extends TestCase
     {
         $polygon = new Polygon([[[0, 0], [3, 3], [0, 3], [2, 0], [0, 0]]]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0],[3,3],[0,3],[2,0],[0,0]]]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0],[3,3],[0,3],[2,0],[0,0]]]}', $encoded);
     }
 
     /** EMPTY is an empty coordinates array. */
@@ -79,9 +80,9 @@ class GeographyPolygonTest extends TestCase
     {
         $polygon = new Polygon([]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[]}', $encoded);
     }
 
     /** EMPTY has no artificial dimension marker. */
@@ -89,9 +90,9 @@ class GeographyPolygonTest extends TestCase
     {
         $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\PolygonImmutable([]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[]}', $encoded);
     }
 
     /** Preserve exterior and interior ring order and winding. */
@@ -99,9 +100,9 @@ class GeographyPolygonTest extends TestCase
     {
         $polygon = new Polygon([[[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]], [[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]]]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0],[4,0],[4,4],[0,4],[0,0]],[[1,1],[1,2],[2,2],[2,1],[1,1]]]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0],[4,0],[4,4],[0,4],[0,0]],[[1,1],[1,2],[2,2],[2,1],[1,1]]]}', $encoded);
     }
 
     /** Reject measured dimensions even when EMPTY. */
@@ -110,7 +111,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\PolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** Reject measured dimensions even when EMPTY. */
@@ -119,7 +120,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\PolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** A later hole must also be checked before returning any output. */
@@ -132,7 +133,7 @@ class GeographyPolygonTest extends TestCase
         ]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** M must not be serialized as altitude. */
@@ -141,7 +142,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geography\PolygonImmutable([[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** M must not be discarded. */
@@ -150,7 +151,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geography\PolygonImmutable([[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** The bow-tie is rejected for zero signed area, without topology analysis. */
@@ -159,7 +160,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new Polygon([[[0, 0], [2, 2], [0, 2], [2, 0], [0, 0]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** Collinear rings have no winding and are rejected by the approved policy. */
@@ -168,7 +169,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new Polygon([[[0, 0], [1, 0], [2, 0], [0, 0]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** The orientation policy applies to every interior ring as well. */
@@ -177,7 +178,7 @@ class GeographyPolygonTest extends TestCase
         $polygon = new Polygon([[[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]], [[1, 1], [2, 1], [3, 1], [1, 1]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($polygon);
+        new Encoder(new GeoJsonStrategy())->encode($polygon);
     }
 
     /** Varying height does not change the XY winding or position order. */
@@ -189,9 +190,9 @@ class GeographyPolygonTest extends TestCase
             [[4, 4, 9], [4, 5, 10], [5, 5, 11], [5, 4, 12], [4, 4, 9]],
         ]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0,1],[8,0,2],[8,8,3],[0,8,4],[0,0,1]],[[1,1,5],[1,2,6],[2,2,7],[2,1,8],[1,1,5]],[[4,4,9],[4,5,10],[5,5,11],[5,4,12],[4,4,9]]]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0,1],[8,0,2],[8,8,3],[0,8,4],[0,0,1]],[[1,1,5],[1,2,6],[2,2,7],[2,1,8],[1,1,5]],[[4,4,9],[4,5,10],[5,5,11],[5,4,12],[4,4,9]]]}', $encoded);
     }
 
     /** Preserve the exterior ring and the original object. */
@@ -199,10 +200,10 @@ class GeographyPolygonTest extends TestCase
     {
         $polygon = new Polygon([[[0, 0], [2, 0], [0, 2], [0, 0]]], 4326);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0],[2,0],[0,2],[0,0]]]}', $encoded);
-        static::assertSame([[[0, 0], [2, 0], [0, 2], [0, 0]]], $polygon->toArray());
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0],[2,0],[0,2],[0,0]]]}', $encoded);
+        self::assertSame([[[0, 0], [2, 0], [0, 2], [0, 0]]], $polygon->toArray());
     }
 
     /** Preserve every Z value and omit declared reference metadata. */
@@ -210,8 +211,8 @@ class GeographyPolygonTest extends TestCase
     {
         $polygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geography\PolygonImmutable([[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]], new SpatialReference(999999, 'CUSTOM'));
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0,3],[2,0,3],[0,2,3],[0,0,3]]]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($polygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Polygon","coordinates":[[[0,0,3],[2,0,3],[0,2,3],[0,0,3]]]}', $encoded);
     }
 }

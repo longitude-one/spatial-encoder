@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -42,9 +43,9 @@ class GeographyXyTest extends TestCase
             new LineString([[0, 0], [2, 3]], 4326),
         ]);
 
-        static::assertSame(
+        self::assertSame(
             'GEOMETRYCOLLECTION (POINT (1 2), LINESTRING (0 0, 2 3))',
-            (new WktTextStrategy())->encode($collection)
+            new WktTextStrategy()->encode($collection)
         );
     }
 
@@ -53,7 +54,7 @@ class GeographyXyTest extends TestCase
     {
         $collection = new GeographyCollection(4326, []);
 
-        static::assertSame('GEOMETRYCOLLECTION EMPTY', (new WktTextStrategy())->encode($collection));
+        self::assertSame('GEOMETRYCOLLECTION EMPTY', new WktTextStrategy()->encode($collection));
     }
 
     /** Write three points in their original order. */
@@ -61,7 +62,7 @@ class GeographyXyTest extends TestCase
     {
         $line = new LineString([[0, 0], [2, 3], [4, 1]], 4326);
 
-        static::assertSame('LINESTRING (0 0, 2 3, 4 1)', (new WktTextStrategy())->encode($line));
+        self::assertSame('LINESTRING (0 0, 2 3, 4 1)', new WktTextStrategy()->encode($line));
     }
 
     /** Preserve the type and dimension of an empty LineString. */
@@ -69,7 +70,7 @@ class GeographyXyTest extends TestCase
     {
         $line = new LineString([], 4326);
 
-        static::assertSame('LINESTRING EMPTY', (new WktTextStrategy())->encode($line));
+        self::assertSame('LINESTRING EMPTY', new WktTextStrategy()->encode($line));
     }
 
     /** Write two lines in their original order. */
@@ -80,7 +81,7 @@ class GeographyXyTest extends TestCase
             [[4, 1], [5, 2]],
         ], 4326);
 
-        static::assertSame('MULTILINESTRING ((0 0, 2 3), (4 1, 5 2))', (new WktTextStrategy())->encode($lines));
+        self::assertSame('MULTILINESTRING ((0 0, 2 3), (4 1, 5 2))', new WktTextStrategy()->encode($lines));
     }
 
     /** Preserve the type and dimension of an empty MultiLineString. */
@@ -88,7 +89,7 @@ class GeographyXyTest extends TestCase
     {
         $lines = new MultiLineString([], 4326);
 
-        static::assertSame('MULTILINESTRING EMPTY', (new WktTextStrategy())->encode($lines));
+        self::assertSame('MULTILINESTRING EMPTY', new WktTextStrategy()->encode($lines));
     }
 
     /** Write two distinct points with separate parentheses. */
@@ -96,7 +97,7 @@ class GeographyXyTest extends TestCase
     {
         $points = new MultiPoint([[1, 2], [3, 4]], 4326);
 
-        static::assertSame('MULTIPOINT ((1 2), (3 4))', (new WktTextStrategy())->encode($points));
+        self::assertSame('MULTIPOINT ((1 2), (3 4))', new WktTextStrategy()->encode($points));
     }
 
     /** Preserve the type and dimension of an empty MultiPoint. */
@@ -104,7 +105,7 @@ class GeographyXyTest extends TestCase
     {
         $points = new MultiPoint([], 4326);
 
-        static::assertSame('MULTIPOINT EMPTY', (new WktTextStrategy())->encode($points));
+        self::assertSame('MULTIPOINT EMPTY', new WktTextStrategy()->encode($points));
     }
 
     /** Write two polygons with their own closed exterior rings. */
@@ -115,9 +116,9 @@ class GeographyXyTest extends TestCase
             [[[3, 3], [5, 3], [3, 5], [3, 3]]],
         ], 4326);
 
-        static::assertSame(
+        self::assertSame(
             'MULTIPOLYGON (((0 0, 2 0, 0 2, 0 0)), ((3 3, 5 3, 3 5, 3 3)))',
-            (new WktTextStrategy())->encode($polygons)
+            new WktTextStrategy()->encode($polygons)
         );
     }
 
@@ -126,7 +127,7 @@ class GeographyXyTest extends TestCase
     {
         $polygons = new MultiPolygon([], 4326);
 
-        static::assertSame('MULTIPOLYGON EMPTY', (new WktTextStrategy())->encode($polygons));
+        self::assertSame('MULTIPOLYGON EMPTY', new WktTextStrategy()->encode($polygons));
     }
 
     /** Write a point with fractional and negative ordinates. */
@@ -134,7 +135,7 @@ class GeographyXyTest extends TestCase
     {
         $point = new Point(2.5, -3, 4326);
 
-        static::assertSame('POINT (2.5 -3)', (new WktTextStrategy())->encode($point));
+        self::assertSame('POINT (2.5 -3)', new WktTextStrategy()->encode($point));
     }
 
     /** Preserve the type and dimension of an empty Point. */
@@ -142,7 +143,7 @@ class GeographyXyTest extends TestCase
     {
         $point = new Point(srid: 4326);
 
-        static::assertSame('POINT EMPTY', (new WktTextStrategy())->encode($point));
+        self::assertSame('POINT EMPTY', new WktTextStrategy()->encode($point));
     }
 
     /** Write an exterior ring followed by an interior hole. */
@@ -153,9 +154,9 @@ class GeographyXyTest extends TestCase
             [[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]],
         ], 4326);
 
-        static::assertSame(
+        self::assertSame(
             'POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))',
-            (new WktTextStrategy())->encode($polygon)
+            new WktTextStrategy()->encode($polygon)
         );
     }
 
@@ -164,7 +165,7 @@ class GeographyXyTest extends TestCase
     {
         $polygon = new Polygon([], 4326);
 
-        static::assertSame('POLYGON EMPTY', (new WktTextStrategy())->encode($polygon));
+        self::assertSame('POLYGON EMPTY', new WktTextStrategy()->encode($polygon));
     }
 
     /** Write three vertices and the closing position. */
@@ -172,7 +173,7 @@ class GeographyXyTest extends TestCase
     {
         $triangle = new Triangle([[[0, 0], [2, 0], [0, 2], [0, 0]]], 4326);
 
-        static::assertSame('TRIANGLE ((0 0, 2 0, 0 2, 0 0))', (new WktTextStrategy())->encode($triangle));
+        self::assertSame('TRIANGLE ((0 0, 2 0, 0 2, 0 0))', new WktTextStrategy()->encode($triangle));
     }
 
     /** Preserve the type and dimension of an empty Triangle. */
@@ -180,6 +181,6 @@ class GeographyXyTest extends TestCase
     {
         $triangle = new Triangle([], 4326);
 
-        static::assertSame('TRIANGLE EMPTY', (new WktTextStrategy())->encode($triangle));
+        self::assertSame('TRIANGLE EMPTY', new WktTextStrategy()->encode($triangle));
     }
 }

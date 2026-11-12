@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -39,9 +40,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3.5,4.25],[1,2],[-7,8]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3.5,4.25],[1,2],[-7,8]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3.5,4.25],[1,2],[-7,8]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3.5,4.25],[1,2],[-7,8]]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -51,9 +52,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -63,9 +64,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[170,45],[-170,45]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[170,45],[-170,45]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[170,45],[-170,45]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[170,45],[-170,45]]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -75,9 +76,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -87,9 +88,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -99,9 +100,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -111,9 +112,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -121,7 +122,7 @@ class GeometryLineStringTest extends TestCase
     {
         $line = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\LineStringImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($line);
+        new Encoder(new GeoJsonStrategy())->encode($line);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -129,7 +130,7 @@ class GeometryLineStringTest extends TestCase
     {
         $line = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineStringImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($line);
+        new Encoder(new GeoJsonStrategy())->encode($line);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -137,7 +138,7 @@ class GeometryLineStringTest extends TestCase
     {
         $line = new LineString([[1, 2]]);
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($line);
+        new Encoder(new GeoJsonStrategy())->encode($line);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -145,7 +146,7 @@ class GeometryLineStringTest extends TestCase
     {
         $line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\LineStringImmutable([[1, 2, 3]]);
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($line);
+        new Encoder(new GeoJsonStrategy())->encode($line);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -153,7 +154,7 @@ class GeometryLineStringTest extends TestCase
     {
         $line = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\LineStringImmutable([[1, 2, 3], [4, 5, 6]]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($line);
+        new Encoder(new GeoJsonStrategy())->encode($line);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -161,7 +162,7 @@ class GeometryLineStringTest extends TestCase
     {
         $line = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineStringImmutable([[1, 2, 3, 4], [5, 6, 7, 8]]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($line);
+        new Encoder(new GeoJsonStrategy())->encode($line);
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -171,9 +172,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -183,9 +184,9 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2],[3,4]]}', new GeoJsonStrategy()->encode($line));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -195,8 +196,8 @@ class GeometryLineStringTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($line);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', (new GeoJsonStrategy())->encode($line));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}', new GeoJsonStrategy()->encode($line));
     }
 }

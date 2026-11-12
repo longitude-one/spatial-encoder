@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -52,7 +53,7 @@ class ExceptionTest extends TestCase
     #[DataProvider('exceptionProvider')]
     public function testUnavailableResourceException(object $exception): void
     {
-        static::assertInstanceOf(\Exception::class, $exception);
-        static::assertInstanceOf(ExceptionInterface::class, $exception);
+        self::assertInstanceOf(\Exception::class, $exception);
+        self::assertInstanceOf(ExceptionInterface::class, $exception);
     }
 }

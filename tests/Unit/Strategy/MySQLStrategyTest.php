@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -282,7 +283,7 @@ class MySQLStrategyTest extends TestCase
     #[DataProvider('collectionProvider')]
     public function testCollection(CollectionInterface $collection, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($collection))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($collection))));
     }
 
     /**
@@ -294,7 +295,7 @@ class MySQLStrategyTest extends TestCase
     #[DataProvider('lineStringProvider')]
     public function testLineString(LineStringInterface $lineString, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($lineString))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($lineString))));
     }
 
     /**
@@ -306,7 +307,7 @@ class MySQLStrategyTest extends TestCase
     #[DataProvider('multiLineStringProvider')]
     public function testMultiLineString(MultiLineStringInterface $multiLineString, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($multiLineString))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($multiLineString))));
     }
 
     /**
@@ -318,7 +319,7 @@ class MySQLStrategyTest extends TestCase
     #[DataProvider('multiPointProvider')]
     public function testMultiPoint(MultiPointInterface $multiPoint, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($multiPoint))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($multiPoint))));
     }
 
     /**
@@ -330,7 +331,7 @@ class MySQLStrategyTest extends TestCase
     #[DataProvider('multiPolygonProvider')]
     public function testMultiPolygon(MultiPolygonInterface $multiPolygon, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($multiPolygon))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($multiPolygon))));
     }
 
     /**
@@ -342,7 +343,7 @@ class MySQLStrategyTest extends TestCase
     #[DataProvider('pointProvider')]
     public function testPoint(PointInterface $point, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($point))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($point))));
     }
 
     /**
@@ -354,6 +355,6 @@ class MySQLStrategyTest extends TestCase
     #[DataProvider('polygonProvider')]
     public function testPolygon(PolygonInterface $polygon, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($polygon))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($polygon))));
     }
 }

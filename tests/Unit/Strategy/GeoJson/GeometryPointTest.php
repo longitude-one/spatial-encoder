@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -40,9 +41,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -52,9 +53,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -64,9 +65,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -76,9 +77,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[2.35,48.86]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[2.35,48.86]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[2.35,48.86]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[2.35,48.86]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -88,9 +89,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Reject measured points without dropping or reinterpreting M. */
@@ -98,7 +99,7 @@ class GeometryPointTest extends TestCase
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable();
         $this->expectException(UnsupportedDimensionException::class);
-        (new GeoJsonStrategy())->encode($point);
+        new GeoJsonStrategy()->encode($point);
     }
 
     /** Reject measured points without dropping or reinterpreting M. */
@@ -106,7 +107,7 @@ class GeometryPointTest extends TestCase
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable();
         $this->expectException(UnsupportedDimensionException::class);
-        (new GeoJsonStrategy())->encode($point);
+        new GeoJsonStrategy()->encode($point);
     }
 
     /** Do not encode a recognized non-GeoJSON type to another geometry. */
@@ -114,7 +115,7 @@ class GeometryPointTest extends TestCase
     {
         $triangle = new Triangle([]);
         $this->expectException(UnsupportedSpatialTypeException::class);
-        (new GeoJsonStrategy())->encode($triangle);
+        new GeoJsonStrategy()->encode($triangle);
     }
 
     /** Reject measured points without dropping or reinterpreting M. */
@@ -122,7 +123,7 @@ class GeometryPointTest extends TestCase
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\PointImmutable(1, 2, 4);
         $this->expectException(UnsupportedDimensionException::class);
-        (new GeoJsonStrategy())->encode($point);
+        new GeoJsonStrategy()->encode($point);
     }
 
     /** Reject measured points without dropping or reinterpreting M. */
@@ -130,7 +131,7 @@ class GeometryPointTest extends TestCase
     {
         $point = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable(1, 2, 3, 4);
         $this->expectException(UnsupportedDimensionException::class);
-        (new GeoJsonStrategy())->encode($point);
+        new GeoJsonStrategy()->encode($point);
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -140,9 +141,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -152,9 +153,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -164,9 +165,9 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2,3]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2,3]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2,3]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2,3]}', new GeoJsonStrategy()->encode($point));
     }
 
     /** Preserve the supplied point coordinates without reference metadata. */
@@ -176,8 +177,8 @@ class GeometryPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($point);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', (new GeoJsonStrategy())->encode($point));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"Point","coordinates":[1,2]}', new GeoJsonStrategy()->encode($point));
     }
 }
