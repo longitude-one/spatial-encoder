@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -116,7 +117,7 @@ class EwkbBinaryStrategy implements StrategyInterface
     {
         $includeSrid = $includeSrid && 0 !== $spatial->getSrid();
         $wkb = $this->writeByteOrder();
-        $wkb .= (new EwkbTypeEncoder())->writeType($spatial, $includeSrid);
+        $wkb .= new EwkbTypeEncoder()->writeType($spatial, $includeSrid);
         if ($includeSrid) {
             $wkb .= pack('V', $spatial->getSrid());
         }

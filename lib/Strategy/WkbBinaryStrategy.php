@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -48,7 +49,7 @@ class WkbBinaryStrategy implements StrategyInterface
     public function encode(SpatialInterface $spatial): string
     {
         $wkb = $this->writeByteOrder();
-        $wkb .= (new WkbTypeEncoder())->writeType($spatial);
+        $wkb .= new WkbTypeEncoder()->writeType($spatial);
         $wkb .= $this->writeCoordinates($spatial);
 
         return $wkb;

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -42,7 +43,7 @@ class GeoJsonStrategy implements StrategyInterface
             throw new UnsupportedDimensionException('GeoJSON does not support measured coordinates.');
         }
 
-        $geometry = (new GeometryEncoder())->encode($spatial);
+        $geometry = new GeometryEncoder()->encode($spatial);
 
         try {
             return json_encode($geometry, \JSON_THROW_ON_ERROR);

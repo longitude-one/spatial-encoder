@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the LongitudeOne Spatial project.
  *
@@ -106,7 +107,7 @@ class WktTextStrategy implements StrategyInterface
      */
     private function writeGeometry(SpatialInterface $spatial): string
     {
-        return (new WktTypeEncoder())->writeType($spatial).' '.$this->writeBody($spatial);
+        return new WktTypeEncoder()->writeType($spatial).' '.$this->writeBody($spatial);
     }
 
     /**
