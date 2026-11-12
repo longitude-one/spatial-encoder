@@ -79,11 +79,11 @@ Use PHP 8.4 or newer and Composer 2. CI exercises PHP 8.4 and 8.5.
 There is no application server or build step.
 
 - `composer install`: install library and test dependencies.
-- `composer install-quality-tools`: install the four quality tool environments.
+- `composer update-tools`: install the four quality tool environments.
 - `composer test`: run PHPUnit.
 - `vendor/bin/phpunit --no-coverage --filter WkbStrategyTest`: run focused tests without coverage.
-- `composer test-local`: run tests and print the coverage summary; enable PCOV or Xdebug coverage first. Reports go to `.phpunit-cache/`.
-- `composer quality`: apply PHP CS Fixer, then run PHPStan at level 9, PHP Mess Detector, and PHP_CodeSniffer. Review formatter changes before committing.
+- `composer coverage`: run tests and print the coverage summary; enable PCOV or Xdebug coverage first. Reports go to `build/coverage/`.
+- `composer quality`: check PHP CS Fixer, PHPStan at level 9, PHP Mess Detector, PHP_CodeSniffer and Markdown without changing source files. Use `composer cs-fix` to apply formatting.
 
 ## Coding Style & Naming Conventions
 

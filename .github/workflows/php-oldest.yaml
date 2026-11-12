@@ -58,15 +58,23 @@ jobs:
 
             - name: Run test suite and with coverage for PHP 8.4
               run: |
-                composer run-script test
-                cat .phpunit-cache/coverage-results.txt
+                composer coverage
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v7
+              with:
+                  node-version: '22'
+            - name: Install Markdown tools
+              run: npm install --ignore-scripts
+            - name: Check Markdown
+              run: composer markdown
 
             - name: Upload coverage to CodeCov
               if: ${{ env.HAS_CC_SECRET == 'true' }}
               uses: codecov/codecov-action@v7
               with:
                 token: ${{ secrets.CODECOV_TOKEN }}
-                files: .phpunit-cache/coverage.xml
+                files: build/coverage/clover.xml
                 slug: longitude-one/spatial-encoder
 
             ## Quality checks

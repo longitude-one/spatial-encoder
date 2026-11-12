@@ -58,10 +58,10 @@ SELECT encode(ST_AsBinary(ST_GeomFromText('POINT Z (1 2 3)', 4326), 'NDR'), 'hex
 ## Coverage
 
 ```bash
-composer test-local
+composer coverage
 ```
 
-This command generates a coverage report at ./phpunit-cache/coverage.xml that can be imported by your IDE to track code coverage.
+This command generates a coverage report at build/coverage/clover.xml that can be imported by your IDE to track code coverage.
 
 ![Sunburst](https://codecov.io/gh/longitude-one/spatial-encoder/graphs/sunburst.svg?token=NIFES3ETWH)
 
