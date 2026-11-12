@@ -4,18 +4,16 @@ description: 'Specific custom rule set that checks longitude-one/doctrine-spatia
 rules:
   - ref: rulesets/cleancode.xml
     exclude:
-      - BooleanArgumentFlag
       - MissingImport
-      - StaticAccess
   - ref: rulesets/codesize.xml
     exclude:
       - TooManyPublicMethods
       - TooManyMethods
   - ref: rulesets/controversial.xml
-    exclude:
-      - Superglobals
   - ref: rulesets/design.xml
     exclude:
       - CouplingBetweenObjects
-      - NumberOfChildren
+  - ref: rulesets/naming.xml
+    exclude:
+        - LongMethodName
   - ref: rulesets/unusedcode.xml
