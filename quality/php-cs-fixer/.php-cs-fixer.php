@@ -57,11 +57,11 @@ return $config
         '@Symfony:risky' => true,
 
         // PHP version
-        '@PHP8x4Migration' => true,
-        '@PHP8x4Migration:risky' => true,
+        '@autoPHPMigration' => true,
+        '@autoPHPMigration:risky' => true,
 
         // PHP Unit Version
-        '@PHPUnit11x0Migration:risky' => true,
+        '@autoPHPUnitMigration:risky' => true,
 
         // Headers
         'header_comment' => [
