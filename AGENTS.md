@@ -444,3 +444,7 @@ When uncertain whether a decision is:
 - or a normative interpretation;
 
 the agent MUST escalate the question rather than silently making the decision.
+
+CI coverage uses `composer coverage-ci` and `phpunit.ci.xml` (Clover XML only).
+Local `composer coverage` reports are unchanged. See `CONTRIBUTING.md` for triggers,
+cache policy and the aggregate `CI` check.

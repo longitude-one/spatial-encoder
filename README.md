@@ -20,7 +20,7 @@ See the [strategy guide](docs/strategies.md) for a comparison of the five format
 ![Minimum PHP Version](https://img.shields.io/packagist/php-v/longitude-one/spatial-encoder.svg?maxAge=3600)
 [![Packagist License](https://img.shields.io/packagist/l/longitude-one/spatial-encoder)](https://github.com/longitude-one/spatial-encoder/blob/main/LICENSE)
 
-[![Last integration test](https://github.com/longitude-one/spatial-encoder/actions/workflows/php-oldest.yaml/badge.svg)](https://github.com/longitude-one/spatial-encoder/actions/workflows/php-oldest.yaml)
+[![Last integration test](https://github.com/longitude-one/spatial-encoder/actions/workflows/ci.yml/badge.svg)](https://github.com/longitude-one/spatial-encoder/actions/workflows/ci.yml)
 [![Downloads](https://img.shields.io/packagist/dm/longitude-one/spatial-encoder.svg)](https://packagist.org/packages/longitude-one/spatial-encoder)
 [![codecov](https://codecov.io/gh/longitude-one/spatial-encoder/branch/main/graph/badge.svg?token=NIFES3ETWH)](https://codecov.io/gh/longitude-one/spatial-encoder)
 

@@ -1,0 +1,168 @@
+name: CI
+'on':
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: 37 16 * * 3
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  changes:
+    name: Select relevant checks
+    runs-on: ubuntu-24.04
+    outputs:
+      code: ${{ steps.select.outputs.code }}
+      markdown: ${{ steps.select.outputs.markdown }}
+      matrix: ${{ steps.select.outputs.matrix }}
+    steps:
+      - name: Inspect changed paths
+        id: select
+        uses: actions/github-script@v8
+        with:
+          script: >
+            const scheduled = context.eventName !== 'pull_request';
+
+            let code = scheduled;
+
+            let markdown = scheduled;
+
+            if (!scheduled) {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                ...context.repo, pull_number: context.issue.number, per_page: 100
+              });
+              const paths = files.flatMap(file => [file.filename, file.previous_filename].filter(Boolean));
+              const markdownOnly = path => path.endsWith('.md') || path.startsWith('docs/') ||
+                ['package.json', 'package-lock.json'].includes(path) || path.startsWith('.markdownlint');
+              code = paths.some(path => path !== 'LICENSE' && !markdownOnly(path));
+              markdown = paths.some(path => markdownOnly(path) || path.startsWith('.github/'));
+            }
+
+            core.setOutput('code', String(code));
+
+            core.setOutput('markdown', String(markdown));
+
+            const stable = [{"php": "8.4", "coverage": true}, {"php": "8.5", "coverage": false}];
+
+            const experimental = [];
+
+            core.setOutput('matrix', JSON.stringify({include: scheduled ? [...stable, ...experimental] :
+            stable}));
+  tests:
+    name: ${{ matrix.php }}
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      COMPOSER_NO_INTERACTION: '1'
+      HAS_CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN != '' }}
+    strategy:
+      fail-fast: ${{ github.event_name == 'pull_request' }}
+      matrix: ${{ fromJSON(needs.changes.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Prepare Composer cache
+        run: echo "COMPOSER_CACHE_DIR=$RUNNER_TEMP/composer-cache" >> "$GITHUB_ENV"
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: ${{ matrix.coverage && 'pcov' || 'none' }}
+          tools: composer:v2
+          extensions: mbstring
+      - name: Cache Composer downloads
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/composer-cache
+          key: >-
+            ${{ runner.os }}-composer-${{ matrix.php }}-${{ hashFiles('composer.json',
+            'quality/php-cs-fixer/composer.json', 'quality/php-stan/composer.json',
+            'quality/php-mess-detector/composer.json', 'quality/php-code-sniffer/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.php }}-
+      - name: Validate Composer metadata
+        run: composer validate
+      - name: Resolve and install current dependencies
+        run: composer update --prefer-dist --no-interaction ${{ !matrix.coverage && '--ignore-platform-req=ext-pcov' || '' }}
+      - name: Run tests without coverage
+        if: ${{ !matrix.coverage }}
+        run: composer test
+      - name: Generate Clover coverage only
+        if: matrix.coverage
+        run: composer coverage-ci
+      - name: Check coverage threshold
+        if: matrix.coverage
+        run: composer coverage-check
+      - name: Update isolated PHP quality tools
+        run: composer update-tools --no-interaction
+        if: matrix.coverage
+      - name: Check PHP formatting
+        run: composer cs-check
+        if: matrix.coverage
+      - name: Run PHPStan
+        run: composer phpstan
+        if: matrix.coverage
+      - name: Run PHPMD
+        run: composer phpmd
+        if: matrix.coverage
+      - name: Run PHP_CodeSniffer
+        run: composer phpcs
+        if: matrix.coverage
+      - name: Send Clover report to Codecov
+        if: matrix.coverage && env.HAS_CODECOV_TOKEN == 'true'
+        uses: codecov/codecov-action@v7.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: longitude-one/spatial-encoder
+          files: build/coverage/clover.xml
+          disable_search: true
+          fail_ci_if_error: true
+  markdown:
+    name: Markdown
+    needs: changes
+    if: needs.changes.outputs.markdown == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Cache npm downloads
+        uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json') }}
+          restore-keys: ${{ runner.os }}-npm-
+      - name: Install Markdown tools
+        run: npm install --ignore-scripts
+      - name: Check Markdown
+        run: npm run lint:markdown
+  ci:
+    name: CI
+    if: ${{ always() }}
+    needs:
+      - changes
+      - tests
+      - markdown
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require all relevant checks to succeed
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |-
+          python3 - <<'PYTHON'
+          import json, os, sys
+          results = json.loads(os.environ['RESULTS'])
+          failed = [name for name, job in results.items() if job['result'] not in ('success', 'skipped')]
+          if results['changes']['result'] != 'success' or failed:
+              print('Failed or cancelled checks:', ', '.join(failed))
+              sys.exit(1)
+          print('All relevant checks passed.')
+          PYTHON
