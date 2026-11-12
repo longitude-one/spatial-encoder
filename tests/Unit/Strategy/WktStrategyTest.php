@@ -247,7 +247,7 @@ class WktStrategyTest extends TestCase
         $spatial->method('getType')->willReturn(GeometryTypeEnum::CIRCULARSTRING);
         $spatial->method('toArray')->willReturn([]);
         $this->expectException(UnsupportedSpatialTypeException::class);
-        $this->expectExceptionMessage('WKT adapter does not support spatial type CircularString');
+        $this->expectExceptionMessageIsOrContains('WKT adapter does not support spatial type CircularString');
         new WktTextStrategy()->encode($spatial);
     }
 }
