@@ -1,9 +1,5 @@
-This file is part of the spatial-encoder project.
+This file is part of the LongitudeOne Spatial project.
 
-PHP 8.4 | 8.5
+Copyright (c) %year% Alexandre Tranchant <alexandre.tranchant@gmail.com>
 
-Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> %year%
-Copyright Longitude One %year%
-
-For the full copyright and license information, please view the LICENSE
-file that was distributed with this source code.
+See LICENSE for copyright and license information.
