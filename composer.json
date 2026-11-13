@@ -20,6 +20,7 @@
         "longitude-one/spatial-types": "1.0.0-RC.1"
     },
     "require-dev": {
+        "ext-dom": "*",
         "phpunit/phpunit": "^13.2",
         "jetbrains/phpstorm-attributes": "^1.1"
     },
