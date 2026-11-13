@@ -1,81 +1,60 @@
-# How to contribute to spatial-encoder
+# Contributing
 
-This library is open to contributions.
-It comes with a set of quality tools to help you to maintain the quality of the code and pass the CI's tests.
+## Before starting
 
-## How to run the quality tools
+For a bug report, include a minimal reproducer, the expected behavior,
+and your PHP and dependency versions.
+
+Discuss significant changes in a GitHub issue before implementing them.
+Public API, compatibility, architecture, and unresolved standards decisions
+require maintainer approval.
+
+## Development
+
+Work on a dedicated branch and keep each contribution focused.
+
+- Follow the configured coding standards.
+- Cover behavior changes with tests and add regression tests for bug fixes.
+- Update documentation when usage or behavior changes.
+- Preserve supported PHP and dependency versions.
+- Do not weaken tests or quality rules to make checks pass.
+
+See [Tests](tests/README.md) and [Quality tools](quality/README.md)
+for setup and commands.
+
+## Before committing
 
 ```bash
-# install library-dependencies if not already done
-composer install
-
-# install quality tools
-composer update-tools
-
-# launch quality checks
+composer test
 composer quality
+git diff --check
 ```
 
-In this repository we use PHP_CodeSniffer (phpcs), PHP CS Fixer, PHP Mess Detector (phpmd), and PHPStan to enforce and improve code quality:
+Review your changes and stage only files related to the contribution.
+Do not commit dependencies, local lockfiles, caches, or generated reports.
 
-* **PHP_CodeSniffer** enforces the project's coding standards and flags style violations and suspicious constructs;
-* **PHP CS Fixer** automatically reformats source code to the configured style rules while preserving behavior;
-* **PHP Mess Detector** detects potential bugs, dead or unused code, and maintainability issues such as high cyclomatic complexity;
-* **PHPStan** performs advanced static analysis with type inference to surface type-related errors, incorrect API usage, and contract violations before runtime.
+Use Conventional Commits, with an optional scope:
 
-## How to run the tests
+```text
+fix(parser): handle empty input
+docs: clarify installation
+```
+
+Use the commit types configured in [.versionrc.json](.versionrc.json).
+
+## Submitting a pull request
+
+Run the complete checks from the repository root:
 
 ```bash
-# Run all test
-composer coverage
+composer check
 ```
 
-## Composer commands
+Resolve failures before submitting. In the pull request:
 
-Prepare the PHP and Markdown tools before running quality checks:
+- Link the related issue and explain what changed and why.
+- Report the checks performed and their results.
+- Highlight compatibility changes and any remaining limitations.
 
-```bash
-composer install
-composer update-tools
-npm install --ignore-scripts
-```
-
-`composer update-tools` updates only the four isolated PHP quality environments.
-Use `composer update` separately to update the library dependencies. Composer
-lockfiles remain local and ignored.
-
-| Command | Purpose |
-| --- | --- |
-| `composer test` | Run PHPUnit without coverage |
-| `composer coverage` | Generate coverage reports |
-| `composer coverage-check` | Check the coverage threshold |
-| `composer cs-check` | Check formatting without changing files |
-| `composer cs-fix` | Apply formatting corrections |
-| `composer phpstan` | Run static analysis |
-| `composer phpmd` | Analyze production code and tests |
-| `composer phpcs` | Check coding standards |
-| `composer markdown` | Check Markdown |
-| `composer quality` | Check PHP and Markdown without changing source files |
-| `composer update-tools` | Update PHP quality tools |
-| `composer audit-dependencies` | Audit PHP dependencies |
-| `composer check` | Run all checks |
-
-No minimum coverage percentage is configured; the coverage check requires a
-valid, non-empty report.
-
-## Continuous integration
-
-Pull requests run the supported PHP combinations and a separate Markdown check
-when relevant files change. Superseded pull request runs are cancelled.
-The `CI` check summarizes the relevant jobs, including documentation-only changes.
-
-CI uses `composer coverage-ci` with `phpunit.ci.xml` to generate only
-`build/coverage/clover.xml` for Codecov. No HTML/text coverage reports or coverage
-artifacts are produced. `composer coverage` keeps the local reports unchanged.
-After relevant changes reach `main`, a lightweight workflow updates Codecov
-without repeating the PHP quality checks or compatibility matrix.
-
-Weekly runs resolve current dependencies and collect the complete matrix results.
-Composer and npm caches contain downloads; lockfiles remain local and ignored.
-Matrix jobs without coverage disable the coverage driver. They ignore only the
-optional development requirement `ext-pcov` during dependency installation.
+Keep checks passing when updating the pull request.
+Contributions require successful CI checks and independent review before merge.

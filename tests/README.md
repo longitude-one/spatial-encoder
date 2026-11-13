@@ -1,232 +1,44 @@
-# Test Execution Guide
+# Tests
 
-This directory contains the automated test suite for the spatial encoder library.
+This directory contains the automated PHPUnit tests.
+Run all commands from the repository root.
 
-## How tests are executed
+## Setup
 
-Tests are run through Composer using the project scripts defined in the root configuration. In practice, the typical command is:
+```bash
+composer install
+```
+
+## Run tests
+
+Run the complete suite without coverage:
 
 ```bash
 composer test
 ```
 
-This runs the PHPUnit suite configured for the repository and validates the behavior of the spatial serialization and binary strategy implementations.
-
-## MySQL internal storage references
-
-Use `HEX()` directly on the geometry to include MySQL's four-byte SRID prefix.
-For longitude-first geographic coordinates, explicitly select the input order:
-
-```sql
-SELECT HEX(ST_GeomFromText('POINT(2.35 48.86)', 4326, 'axis-order=long-lat'));
--- E61000000101000000CDCCCCCCCCCC0240AE47E17A146E4840
-```
-
-Without that option, 4326 input defaults to latitude then longitude. Internal
-storage still contains longitude then latitude. `ST_AsBinary()` exports WKB;
-it does not return the internal representation with its SRID prefix.
-
-`Strategy/MySQL/GeometryCoordinateOrderTest.php` and
-`Strategy/MySQL/GeographyCoordinateOrderTest.php`, under
-`Unit/`, contain literal regression examples
-for all seven supported types, empty and nested collections, polygon holes,
-and the Paris point from issue #5. Each family also has separate tests for
-nested MultiPoint, MultiLineString and MultiPolygon values with SRID 4326
-and an empty sibling collection. They assert complete literal bytes, including
-a single outer SRID prefix. Run them with:
+Run a specific test class or method, replacing `ExampleTest` with its name:
 
 ```bash
-vendor/bin/phpunit --no-coverage --filter 'CoordinateOrderTest|MySQLStrategyTest'
-```
-
-## How to create test for the Extended WKB Strategy
-
-This is the same process, but connect on a PostGis Database, and use this kind of request:
-
-```sql
-SELECT ST_AsEwkb(ST_GeomFromText('POINT(42.1 42.42)', 4326));
-```
-
-## How to create test for the WKB Strategy
-
-This is the same process, but connect on a PostGis Database, and use this kind of request:
-
-```sql
-SELECT encode(ST_AsBinary(ST_GeomFromText('POINT Z (1 2 3)', 4326), 'NDR'), 'hex');
+composer test -- --filter ExampleTest
 ```
 
 ## Coverage
 
+With PCOV installed, generate coverage reports and check the configured threshold:
+
 ```bash
 composer coverage
+composer coverage-check
 ```
 
-This command generates a coverage report at build/coverage/clover.xml that can be imported by your IDE to track code coverage.
+Reports are available in `build/coverage/`, including HTML in
+`build/coverage/html/index.html`.
 
-![Sunburst](https://codecov.io/gh/longitude-one/spatial-encoder/graphs/sunburst.svg?token=NIFES3ETWH)
+## Contributing
 
-## WKT strategy
+Cover behavior changes and add a regression test for each bug fix.
+Run the complete suite before each commit.
 
-Run `vendor/bin/phpunit --no-coverage --filter WktStrategyTest` for text output.
-The datasets exercise each available Geometry/Geography class and dimension,
-empty values, nested collections, polygon holes, numeric precision, and errors.
-Compare complete WKT strings, including parentheses and dimension markers.
-PostGIS `SELECT ST_AsText(ST_GeomFromText('POINT(42.1 42.42)', 4326));`
-provides reference output; whitespace around punctuation may differ.
-
-### Explicit WKT examples
-
-`Unit/Strategy/Wkt/Examples/` contains eight
-standalone test classes: `GeometryXyTest`, `GeometryXyzTest`, `GeometryXymTest`,
-`GeometryXyzmTest`, and their `Geography` equivalents.
-
-Each class spells out one populated and one empty example for every supported
-type in that family and dimension. Each test contains a direct
-constructor call with literal coordinates and a complete literal WKT assertion.
-There are no data providers, loops, shared fixtures, or calculated expected
-strings in these files. Populated and empty tests are adjacent.
-
-The 136 examples cover 68 concrete classes. Polyhedral surfaces are available
-only in XYZ and XYZM. Examples include polygon holes, multiple members, mixed
-collections, and adjacent surface patches.
-
-Run this additional suite independently:
-
-```bash
-vendor/bin/phpunit --no-coverage tests/Unit/Strategy/Wkt/Examples
-```
-
-## EWKT strategy
-
-Run `vendor/bin/phpunit --no-coverage --filter EwktStrategyTest` for explicit
-EWKT examples. These tests cover nonzero, zero, and default SRIDs; empty
-values; Z/M/ZM dimensions; nested collections with a single outer SRID
-prefix; repeated conversions; and integration with `Encoder`.
-
-## Explicit ISO WKB examples
-
-`Unit/Strategy/Wkb/Examples/` contains 136
-literal examples covering 68 concrete classes of the supported types in both Geometry and
-Geography families and all available XY, XYZ, XYM and XYZM dimensions.
-Each type has a populated and an empty example, with direct constructors,
-a complete hexadecimal expectation, and a WKT comment for readability.
-Expected bytes were verified independently with GDAL 3.6.4's
-`OGR_G_ExportToIsoWkb` using little-endian byte order. GDAL is not needed to
-run the tests. No expected bytes or geometry fixtures are built at runtime.
-
-These cases cover ISO type offsets, NaN empty points, polygon holes, triangles,
-and adjacent polyhedral patches. `WkbRegressionTest` adds nested collections
-with empty members and explicit failures for unsupported types/interfaces.
-Every example with SRID 4326 verifies that WKB omits the SRID.
-
-```bash
-vendor/bin/phpunit --no-coverage tests/Unit/Strategy/Wkb
-```
-
-## Explicit EWKB examples
-
-`Unit/Strategy/Ewkb/Examples/` contains 136
-literal examples: populated and empty values for 68 concrete classes of the supported types.
-Each test includes its complete constructor, WKT comment and expected hex.
-The expectations use the GDAL-verified ISO coordinate payloads with EWKB
-Z/M flags and a single outer SRID, following
-[PostGIS's encoding rules](https://github.com/postgis/postgis/blob/master/liblwgeom/lwout_wkb.c).
-They are fixed literals, independent of the PHP encoder; tests perform no
-fixture or expected-byte generation and require no database.
-
-`EwkbRegressionTest` covers zero SRIDs in every dimension, empty points,
-nested collections with empty members, and unsupported types/interfaces.
-Run all EWKB tests with:
-
-```bash
-vendor/bin/phpunit --no-coverage --filter Ewkb
-```
-
-For an independent PostGIS reference, use
-`SELECT encode(ST_AsEWKB(ST_GeomFromEWKT('SRID=4326;POINT Z (1 2 3)'), 'NDR'), 'hex');`.
-
-## MySQL rejected inputs
-
-`Strategy/MySQL/GeometryInvalidInputTest.php` and
-`Strategy/MySQL/GeographyInvalidInputTest.php` explicitly expect
-`UnsupportedDimensionException` for Z/M/ZM inputs and
-`UnsupportedSpatialTypeException` for unsupported empty geometries.
-Cases cover all six non-collection XY types, dimensional empty points and
-collections, nested empty points, and empty line/polygon members of
-multi-geometries. Existing coordinate-order tests verify that empty XY
-collections remain accepted.
-
-```bash
-vendor/bin/phpunit --no-coverage --filter InvalidInputTest
-```
-
-## GeoJSON strategy
-
-Run `vendor/bin/phpunit --no-coverage --filter GeoJson` for explicit Geometry and
-Geography Point examples, XY/XYZ EMPTY, measured rejection, spatial references,
-unsupported Triangle types and public exception contracts. JSON assertions compare
-complete structures, numeric values and coordinate order without prescribing
-whitespace or property order. Non-finite failure fixtures use real Geometry Point
-constructors accepted by the installed model, with no invariant bypass.
-
-LineString examples cover both families in XY/XYZ, EMPTY, additional positions,
-Z and position order, antimeridian preservation, reference omission, measured
-rejection and singleton rejection. Singleton lines use ordinary constructors;
-the model itself forbids EMPTY member points and inconsistent dimensions.
-`ExceptionContractTest` also verifies a concrete non-finite LineString encoding
-failure and the unchanged internal exception for a missing LineString interface.
-
-MultiPoint examples cover both families in XY/XYZ, empty aggregates, singletons,
-duplicate positions, member and ordinate order, omitted reference metadata, and
-XYM/XYZM rejection including empty aggregates.
-Concrete XY/XYZ examples also verify rejection of mixed non-empty/EMPTY members
-and aggregates containing only EMPTY Points in both families, using spatial-types
-`1.0.0-RC.1`.
-
-Polygon examples cover both families in XY/XYZ, EMPTY, holes, Z and ring order,
-reference omission, antimeridian preservation, measured rejection and invalid
-winding. Zero-area collinear and crossed rings are rejected under the approved
-orientation policy; a crossed ring with positive area demonstrates that no general
-topology validator was added. Fixtures use the ordinary model constructors.
-`ExceptionContractTest` verifies Polygon interface errors and a non-finite altitude
-encoding failure with the original JSON exception preserved.
-
-MultiPolygon examples cover both families in XY/XYZ, empty aggregates, singleton
-wrapping, Polygon/ring/position order, Z, reference omission and antimeridian
-preservation. Real Polygon members verify rejection of mixed and all-EMPTY
-aggregates, incompatible exterior/interior winding and zero signed area. Measured
-XYM/XYZM aggregates are rejected including EMPTY. The shared exception tests
-cover a missing MultiPolygon interface and a real non-finite altitude with the
-original JSON exception preserved.
-
-GeometryCollection and GeographyCollection examples cover all six integrated
-member types, XY/XYZ, EMPTY collections and nested EMPTY members, singleton and
-homogeneous preservation, member order, Z, reference omission and antimeridian
-preservation. Real nested Triangle and incompatible members verify failure
-propagation; XYM/XYZM are rejected including EMPTY. The exception tests cover a
-missing collection interface and a nested non-finite Point using its ordinary
-constructor, preserving the original JSON exception.
-
-## spatial-types 1.0 migration
-
-The literal Geometry WKT, WKB and EWKB examples use the mutable
-`Types\Dimension*` classes. Their Geography counterparts use the renamed
-`Types\Dimension*\Geography\*Immutable` classes. Together they retain 136
-populated and EMPTY cases per format across XY, XYZ, XYM and XYZM.
-The existing strategy and regression suites additionally exercise immutable
-Geometry objects.
-
-`MutableEncodingTest` covers all six strategies with mutable Geography inputs,
-mutation between encoding calls, nested XYZ collections and EMPTY members,
-GeoJSON aggregates, and MySQL acceptance/rejection boundaries. Expected binary
-outputs remain complete literal hexadecimal strings.
-
-```bash
-vendor/bin/phpunit --no-coverage --filter MutableEncodingTest
-```
-
-`UnvalidatedPointTest` records the observed behavior of mutable and immutable
-`Point(1, null)` inputs across all six strategies: WKT/EWKT `TypeError`, native
-binary conversion of null to zero, and JSON containing a null ordinate. These
-checks support the [validation guide](../docs/validation.md); they do not turn
-invalid geometries into supported serialization inputs.
+See [Quality tools](../quality/README.md) for checks required before submitting
+a merge request.

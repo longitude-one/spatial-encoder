@@ -1,52 +1,32 @@
-# Serialization Strategies
+# Serialization strategies
 
-Spatial Encoder encodes `spatial-types` objects into text or binary data.
-All strategies implement
-[`StrategyInterface`](../lib/Strategy/StrategyInterface.php)
-and expose `encode(SpatialInterface $spatial): string`.
-[`Encoder`](../lib/Encoder.php) delegates conversion to
-the selected strategy. Conversion does not perform any reprojection.
+Choose a strategy for the format expected by your consumer.
+The encoder accepts mutable and immutable spatial objects without modifying them.
 
-The caller must validate geometry before encoding. See [Validate Before Encoding](validation.md)
-for incomplete-coordinate failures, native conversions, and a Spatial Validator example.
+## Choose a format
 
-## Choosing a Strategy
+| Strategy | Output | Dimensions | SRID included |
+| --- | --- | --- | --- |
+| `WktTextStrategy` | Readable WKT text | XY, XYZ, XYM, XYZM | No |
+| `EwktTextStrategy` | WKT with a spatial reference | XY, XYZ, XYM, XYZM | When nonzero |
+| `WkbBinaryStrategy` | ISO WKB bytes | XY, XYZ, XYM, XYZM | No |
+| `EwkbBinaryStrategy` | PostGIS EWKB bytes | XY, XYZ, XYM, XYZM | When nonzero |
+| `MySQLBinaryStrategy` | MySQL internal bytes | XY | Always, as a prefix |
+| `GeoJsonStrategy` | GeoJSON geometry text | XY, XYZ | No |
 
-This table describes the capabilities of the repository's current implementation.
+All strategies support Point, LineString, Polygon, their multi-geometries,
+and geometry collections. WKT, EWKT, WKB, and EWKB also support Triangle
+and PolyhedralSurface; polyhedral surfaces are available in XYZ and XYZM.
+Curved geometries and TIN are unsupported.
 
-| Class. | Output | SRID in output | Dimensions written | Usage |
-| --------------------- | ------------------------------- | ----------------- | ------------------ | ---------------------------------------------------------------- |
-| `GeoJsonStrategy` | GeoJSON geometry text | No | XY, XYZ | RFC 7946 geometry encoding |
-| `WktTextStrategy` | WKT Well Known Text | No | XY, XYZ, XYM, XYZM | Display, text exchanges, functions accepting WKT |
-| `EwktTextStrategy` | EWKT Extended Well Known Text. | Yes, when nonzero | XY, XYZ, XYM, XYZM | Text exchanges that include the spatial reference |
-| `WkbBinaryStrategy` | ISO WKB Well Known Binary. | No | XY, XYZ, XYM, XYZM | Exchanges with a standard WKB consumer |
-| `EwkbBinaryStrategy` | EWKB Extended Well Known Binary | Yes, when nonzero | XY, XYZ, XYM, XYZM | Exchanges with a consumer of the extended PostGIS format |
-| `MySQLBinaryStrategy` | Internal MySQL binary format | Yes, as a prefix | XY | Integrations expecting spatial values in MySQL's internal format |
-
-The GeoJSON strategy supports Point, LineString, MultiPoint, MultiLineString, Polygon,
-MultiPolygon, and GeometryCollection encoding according to RFC 7946.
-
-The binary and WKT/EWKT strategies support `Point`, `LineString`, `Polygon`,
-`MultiPoint`, `MultiLineString`, `MultiPolygon`, and geometry collections.
-WKB, EWKB, WKT, and EWKT also support `Triangle` and `PolyhedralSurface`. Classes in the Geometry
-and Geography families use the same output type names; for example,
-`GeographyCollection` becomes `GEOMETRYCOLLECTION`.
-
-## Common Usage
-
-The examples in the following sections reuse the imports, point, and encoder
-below. The SRID is passed to the spatial object's constructor.
+## Encode an object
 
 ```php
 require 'vendor/autoload.php';
 
-use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable;
-use LongitudeOne\SpatialEncoder\Strategy\EwkbBinaryStrategy;
-use LongitudeOne\SpatialEncoder\Strategy\EwktTextStrategy;
-use LongitudeOne\SpatialEncoder\Strategy\MySQLBinaryStrategy;
-use LongitudeOne\SpatialEncoder\Strategy\WkbBinaryStrategy;
-use LongitudeOne\SpatialEncoder\Strategy\WktTextStrategy;
 use LongitudeOne\SpatialEncoder\Encoder;
+use LongitudeOne\SpatialEncoder\Strategy\WktTextStrategy;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable;
 
 $point = new PointImmutable(1, 2, 4326);
 $encoder = new Encoder(new WktTextStrategy());
@@ -55,435 +35,54 @@ echo $encoder->encode($point);
 // POINT (1 2)
 ```
 
-The strategy can also be called directly:
-`(new WktTextStrategy())->encode($point)`.
-Binary outputs are PHP byte strings. `bin2hex()` is used to display them;
-it is not part of their serialization format.
-
-## Mutable and Immutable Inputs
-
-This version requires `longitude-one/spatial-types` `1.0.0-RC.1`.
-Strategies consume the shared read interfaces and accept both concrete variants.
-Serialization preserves the supplied coordinates and never edits the source object.
-
-| Variant | XY Geometry point | Family | Collection constructor |
-| --- | --- | --- | --- |
-| Immutable | `Types\Dimension2\Geometry\PointImmutable` | Fixed by the Geometry/Geography namespace | `new GeometryCollectionImmutable(4326, [$point])` |
-| Mutable | `Types\Dimension2\Point` | Constructor argument, defaults to Geometry | `new SpatialCollection([$point], 4326)` |
-
-```php
-$mutable = new \LongitudeOne\SpatialTypes\Types\Dimension2\Point(1, 2, 4326);
-echo (new WktTextStrategy())->encode($mutable);
-// POINT (1 2)
-
-$mutable->setX(3);
-echo (new WktTextStrategy())->encode($mutable);
-// POINT (3 2)
-```
-
-Mutable Geography objects use `LongitudeOne\Core\Enum\SpatialModelEnum::GEOGRAPHY`
-as their final constructor argument. XYZ, XYM and XYZM use `Dimension3z`,
-`Dimension3m` and `Dimension4zm`, subject to each format's dimension limits.
-The migration preserves the existing supported formats and types; it does not
-add encoding for CircularString or CompoundCurve.
-
-## WKT — `WktTextStrategy`
-
-[This strategy](../lib/Strategy/WktTextStrategy.php)
-produces a readable representation with parentheses and space-separated
-coordinates. It preserves X Y order, followed by Z and M when present.
-It writes the `Z`, `M`, or `ZM` markers, including for empty values such as
-`POINT Z EMPTY`. Collections can be nested.
-
-The supported types listed above are covered, including their empty variants.
-Polyhedral surfaces are available only in XYZ and XYZM.
-The SRID is omitted, as required by WKT; output starting with `SRID=4326;`
-would be EWKT, which this strategy does not produce.
-
-Numeric formatting uses `json_encode()` and PHP's `serialize_precision`
-setting. Keeping its default value of `-1` produces a short representation
-that preserves floating-point values when read back. A non-finite coordinate
-throws a `JsonException`.
-
-References: [GEOS WKT syntax and examples](https://libgeos.org/specifications/wkt/),
-[PostGIS WKT conversion: ST_AsText](https://postgis.net/docs/ST_AsText.html).
-
-## EWKT — `EwktTextStrategy`
-
-[This strategy](../lib/Strategy/EwktTextStrategy.php)
-extends `WktTextStrategy`. It adds `SRID=<value>;` before the WKT when the
-object's SRID is nonzero. A default or explicit SRID of zero produces plain
-WKT with no prefix.
-
-```php
-$encoder->setStrategy(new EwktTextStrategy());
-echo $encoder->encode($point);
-// SRID=4326;POINT (1 2)
-```
-
-All geometry types, coordinate ordering, dimension markers, empty values,
-and numeric formatting are inherited from WKT. For example, an empty XYZM
-point with SRID 4326 produces `SRID=4326;POINT ZM EMPTY`. For collections,
-the prefix appears only once, before the outermost geometry; nested members
-retain their WKT representation without additional SRID prefixes.
-
-The strategy performs no coordinate transformation. Its dimension markers
-follow `WktTextStrategy`, so the text can differ from PostGIS's own formatting.
-
-Reference: [PostGIS EWKT output: ST_AsEWKT](https://postgis.net/docs/ST_AsEWKT.html).
-
-## WKB — `WkbBinaryStrategy`
-
-[This strategy](../lib/Strategy/WkbBinaryStrategy.php)
-writes the byte-order indicator, the type identifier, then the coordinates
-and counts required for composite objects. It preserves X Y order and ignores
-the SRID. The recipient must therefore know the reference system separately.
-
-```php
-$encoder->setStrategy(new WkbBinaryStrategy());
-echo bin2hex($encoder->encode($point));
-// 0101000000000000000000f03f0000000000000040
-```
-
-The output follows ISO WKB in little-endian byte order on every platform.
-It preserves X Y, followed by Z and M when present. Type identifiers use
-`+1000` for XYZ, `+2000` for XYM, and `+3000` for XYZM; these are ISO offsets,
-not EWKB flags. Base identifiers are 1–7 for the standard geometries,
-15 for `PolyhedralSurface`, and 17 for `Triangle`.
-
-The supported Geometry/Geography types listed above are encoded in both
-mutable and immutable forms. Polyhedral surfaces
-are available in XYZ and XYZM. Composite members carry their own WKB headers;
-polygon and triangle rings contain only point counts and coordinates.
-The SRID is omitted from both the outer geometry and its members.
-
-```php
-$pointZ = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(1, 2, 3, 4326);
-echo bin2hex($encoder->encode($pointZ));
-// 01e9030000000000000000f03f00000000000000400000000000000840
-```
-
-An empty point contains one IEEE-754 quiet NaN per ordinate
-(`000000000000f87f` in little-endian hexadecimal), preserving its dimensional
-type identifier. Other empty types contain a zero member or ring count.
-Nested empty members are retained. A consumer must support the corresponding
-ISO dimensions and geometry types to read this output.
-
-References: [GEOS WKB structure](https://libgeos.org/specifications/wkb/#iso-wkb),
-[PostGIS WKB conversion: ST_AsBinary](https://postgis.net/docs/ST_AsBinary.html),
-[GDAL geometry type identifiers](https://github.com/OSGeo/gdal/blob/master/ogr/ogr_core.h).
-
-## EWKB — `EwkbBinaryStrategy`
-
-[This strategy](../lib/Strategy/EwkbBinaryStrategy.php)
-uses the PostGIS extension of WKB to include the SRID. When the SRID is
-nonzero, it sets the type's `0x20000000` flag and writes the SRID after the
-type. An SRID of zero omits this field and flag. Coordinate order is X Y,
-followed by Z and M when present. Dimension flags remain present even with
-a zero SRID: `0x80000000` for Z, `0x40000000` for M, or both for ZM.
-These flags differ from ISO WKB dimensional offsets.
-
-```php
-$encoder->setStrategy(new EwkbBinaryStrategy());
-echo bin2hex($encoder->encode($point));
-// 0101000020e6100000000000000000f03f0000000000000040
-```
-
-The supported Geometry/Geography types are encoded in their available
-dimensions, including triangles and polyhedral surfaces, in mutable and immutable
-forms. Empty points contain
-one quiet NaN per ordinate; other empty geometries contain a zero count.
-All integers and coordinates are explicitly little-endian.
-
-The SRID is written only in the outermost geometry, including when empty.
-Members of multi-geometries, collections, and polyhedral surfaces inherit it;
-their individual headers retain their type and dimension flags. This also
-applies to nested collections. Earlier versions repeated the SRID in some
-multi-geometry members; output now follows PostGIS's single outer SRID.
-
-For example, `POINT Z (1 2 3)` with SRID 4326 produces
-`01010000a0e6100000000000000000f03f00000000000000400000000000000840`.
-Curved geometries and TIN remain unsupported by this encoder, including the
-CircularString and CompoundCurve classes available in spatial-types.
-
-References: [GEOS EWKB flags and structure](https://libgeos.org/specifications/wkb/#extended-wkb),
-[PostGIS ST_AsEWKB documentation](https://postgis.net/docs/ST_AsEWKB.html).
-
-## Internal MySQL Format — `MySQLBinaryStrategy`
-
-[This strategy](../lib/Strategy/MySQLBinaryStrategy.php)
-writes a four-byte SRID prefix followed by a binary representation of the
-geometry. This prefix belongs to MySQL's internal format: do not pass this
-output unchanged to a function that expects WKB alone.
-
-Coordinates are always written in X Y order: longitude then latitude for
-geographic objects, including SRID 4326. The SRID appears once as a prefix;
-collection members preserve the same coordinate order without extra prefixes.
-
-MySQL's SQL constructors interpret geographic input using the SRID axis order
-by default (latitude then longitude for 4326). To supply longitude-first WKT,
-use `ST_GeomFromText('POINT(1 2)', 4326, 'axis-order=long-lat')`.
-This input convention differs from the internal storage order.
-
-**Behavior change (#5):** earlier versions swapped coordinates for SRIDs
-classified as latitude-first. That swap and the unused SRID axis-order lookup
-resources are removed. Callers
-that previously reversed their coordinates to compensate should now pass
-X/longitude first and Y/latitude second. Changing the encoder does not repair
-previously stored coordinates.
-
-```php
-$encoder->setStrategy(new MySQLBinaryStrategy());
-echo bin2hex($encoder->encode($point));
-// e61000000101000000000000000000f03f0000000000000040
-```
-
-Only XY objects are accepted. Z, M, and ZM inputs throw
-`UnsupportedDimensionException`, including empty collections with those
-dimensions. Empty points, lines, polygons, and multi-geometries throw
-`UnsupportedSpatialTypeException`; only XY `GeometryCollection` (including
-`GeographyCollection`) may be empty. These checks also apply to nested members.
-
-Reference: [MySQL 8.4 spatial formats and internal storage](https://dev.mysql.com/doc/refman/8.4/en/gis-data-formats.html).
-
-## Current Limitations and Test Examples
-
-The MySQL encoder rejects additional dimensions and unsupported empty values.
-Use XY objects, with empty values limited to geometry collections. WKB, EWKB,
-WKT, and EWKT support additional dimensions and other empty geometry types.
-
-The MySQL strategy declares little-endian byte order (`01`) and explicitly
-uses it for SRIDs, type identifiers, counts, and coordinates. Its output is
-independent of the machine's native byte order.
-
-Curved geometries and TIN are not implemented by the WKB strategy.
-Unsupported types throw an `UnsupportedSpatialTypeException`.
-An unrecognized spatial interface may throw an
-`UnsupportedSpatialInterfaceException`.
-
-For complete inputs and outputs, see the
-[explicit EWKB examples](../tests/Unit/Strategy/Ewkb/Examples/),
-[explicit WKB examples](../tests/Unit/Strategy/Wkb/Examples/),
-[explicit WKT examples](../tests/Unit/Strategy/Wkt/Examples/)
-and the [testing guide](../tests/README.md). To add a format, implement
-`StrategyInterface` and pass the new strategy to `Encoder`.
-
-## GeoJSON — `GeoJsonStrategy`
-
-This strategy supports Geometry and Geography Points, LineStrings, MultiPoints,
-MultiLineStrings, Polygons, MultiPolygons, and collections in XY and XYZ, including
-EMPTY. Types outside the seven RFC 7946 geometry types are rejected. Feature and FeatureCollection composition belongs
-to the consuming application.
-
-```php
-$encoder->setStrategy(new \LongitudeOne\SpatialEncoder\Strategy\GeoJsonStrategy());
-echo $encoder->encode($point);
-// {"type":"Point","coordinates":[1,2]}
-```
-
-XYZ produces positions `[X,Y,Z]`; EMPTY XY and XYZ produce
-`{"type":"Point","coordinates":[]}`. No artificial dimension metadata is added.
-Measured XYM and XYZM inputs throw `UnsupportedDimensionException`, even when EMPTY:
-M is neither discarded nor written as altitude or a fourth ordinate.
-
-The caller supplies WGS 84 longitude/latitude in degrees and, when present,
-ellipsoidal height in metres. The encoder preserves the coordinates without
-reprojection, axis swapping, or unit conversion. It does not validate the
-reference using SRID or authority metadata: zero, unknown, and non-4326 identifiers
-are not reasons for rejection and are not serialized as a coordinate-system
-extension. An absent reference uses the model's default SRID of zero.
-
-`UnsupportedSpatialTypeException` is now explicitly public, with its existing
-`\Exception` inheritance and constructor unchanged. It implements
-`ExceptionInterface` and reports a type unsupported by the selected strategy,
-including `Triangle` instead of silently encoding it as `Polygon`.
-`UnsupportedSpatialInterfaceException` remains internal and unchanged.
-
-The shared public `UnsupportedGeometryStructureException` extends
-`\InvalidArgumentException` and implements `ExceptionInterface`; subsequent
-geometry contributions use it for the approved incompatible structures. A
-non-empty LineString with only one position throws this exception. The model
-accepts singleton lines; the encoder applies this check to both
-mutable and immutable lines.
-`JsonEncodingException` extends `\RuntimeException`, implements
-`ExceptionInterface`, and wraps an encoding failure with the original
-`\JsonException` as `previous`. No partial JSON is returned. The installed
-spatial-types model accepts non-finite floats through Geometry Point constructors;
-these encounter the ordinary JSON encoding failure path, without a separate
-encoder validation policy.
-
-Numeric encoding uses PHP's `serialize_precision` setting; retain its default
-`-1` for floating-point round trips. Whitespace and object-property ordering are
-not part of a canonical serialization contract.
-
-LineStrings retain every position in its supplied order, including Z:
-
-```php
-$line = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\LineStringImmutable([[1, 2, 3], [4, 5, 6]]);
-echo $encoder->encode($line);
-// {"type":"LineString","coordinates":[[1,2,3],[4,5,6]]}
-```
-
-EMPTY XY and XYZ LineStrings produce `{"type":"LineString","coordinates":[]}`.
-XYM and XYZM lines are rejected even when EMPTY. LineStrings crossing the
-antimeridian, such as `[[170,45],[-170,45]]`, are encoded unchanged, without
-cutting or rejection. This deliberately does not apply the SHOULD
-in RFC 7946 section 3.1.9: consumers may interpret or display an uncut line as
-crossing the long way around the globe. Callers must perform any cutting required
-by their consumers before encoding.
-
-MultiPoints preserve the number and order of their positions, including duplicates
-and Z. A singleton remains a MultiPoint rather than becoming a Point:
-
-```php
-$multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([[1, 2, 3], [4, 5, 6]]);
-echo $encoder->encode($multiPoint);
-// {"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}
-```
-
-An XY or XYZ MultiPoint with no members produces
-`{"type":"MultiPoint","coordinates":[]}`. Measured MultiPoints are rejected
-even with no members. References are omitted and coordinates are unchanged,
-under the same caller responsibilities described above.
-
-The approved MultiPoint contract rejects any EMPTY Point member with
-`UnsupportedGeometryStructureException`, including an aggregate made entirely
-of EMPTY members. No member is omitted or replaced. The required spatial-types
-`1.0.0-RC.1` model supports constructing these aggregates, so the encoder rejects
-them through its public structural exception. An empty aggregate with no members
-remains supported.
-
-MultiLineStrings preserve each supplied line, its position order and Z, and the
-order of the members. A single member remains wrapped as a MultiLineString:
-
-```php
-$multiLine = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiLineStringImmutable([
-    [[1, 2], [3, 4]],
-    [[5, 6], [7, 8]],
-]);
-echo $encoder->encode($multiLine);
-// {"type":"MultiLineString","coordinates":[[[1,2],[3,4]],[[5,6],[7,8]]]}
-```
-
-An XY or XYZ MultiLineString with no members produces
-`{"type":"MultiLineString","coordinates":[]}`. Any EMPTY LineString member,
-including an aggregate containing only EMPTY members, throws
-`UnsupportedGeometryStructureException`. A member with only one position also
-throws that exception, as a GeoJSON line requires at least two positions.
-The model permits these line members; the encoder rejects them without omitting,
-flattening, or repairing them, and never returns partial output or nested empty
-coordinate arrays. XYM and XYZM are rejected even with no members.
-
-Antimeridian-crossing members are preserved unchanged under the deliberate
-non-application of RFC 7946 section 3.1.9 described above. The same caller
-responsibilities, reference omission, and JSON failure contract apply.
-
-Polygons preserve exterior and interior ring order, all positions, and Z:
-
-```php
-$polygon = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PolygonImmutable([
-    [[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]],
-    [[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]],
-]);
-echo $encoder->encode($polygon);
-// {"type":"Polygon","coordinates":[[[0,0],[4,0],[4,4],[0,4],[0,0]],[[1,1],[1,2],[2,2],[2,1],[1,1]]]}
-```
-
-EMPTY XY and XYZ Polygons produce `{"type":"Polygon","coordinates":[]}`.
-XYM and XYZM are rejected even when EMPTY. The same reference omission and JSON
-failure contracts apply to Polygons.
-
-Every exterior ring must have strictly positive signed XY area (counterclockwise)
-and every interior ring strictly negative signed XY area (clockwise). Incompatible
-orientation, including zero signed area, throws
-`UnsupportedGeometryStructureException`. The encoder never reverses, closes, or
-repairs a ring and never returns partial output. Z is preserved but does not
-participate in the orientation calculation. The signed-area algorithm and
-zero-area rejection are the [approved LongitudeOne encoding policy](https://github.com/longitude-one/spatial-encoder/issues/13#issuecomment-5765188095);
-RFC 7946 section 3.1.6 requires winding but does not prescribe that algorithm or
-explicitly prescribe zero-area rejection.
-
-The model permits collinear and crossed rings. The encoder rejects a crossed ring if its signed area is zero, but does not
-separately check simplicity, self-intersections, hole containment, or other topology.
-A nonzero signed area is not proof of topological validity; the caller remains
-responsible for that validation.
-
-Antimeridian-crossing Polygon coordinates are preserved without unwrapping,
-rejection, or cutting; orientation uses the supplied XY coordinates.
-This deliberately does not apply the SHOULD in RFC 7946 section 3.1.9. Consumers
-may display an uncut polygon across the long way around the globe, so callers
-must perform any required cutting before encoding.
-
-MultiPolygons preserve Polygon order, ring order, position order, and Z. A singleton
-remains a MultiPolygon. Every member uses the same Polygon orientation checks
-above, with no second validation policy:
-
-```php
-$multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\MultiPolygonImmutable([
-    [[[0, 0], [2, 0], [0, 2], [0, 0]]],
-    [[[3, 0], [5, 0], [3, 2], [3, 0]]],
-]);
-echo $encoder->encode($multiPolygon);
-// {"type":"MultiPolygon","coordinates":[[[[0,0],[2,0],[0,2],[0,0]]],[[[3,0],[5,0],[3,2],[3,0]]]]}
-```
-
-An XY or XYZ MultiPolygon with no members produces
-`{"type":"MultiPolygon","coordinates":[]}`. Any EMPTY Polygon member throws
-`UnsupportedGeometryStructureException`, including when all members are EMPTY.
-An incompatible exterior or interior ring also rejects the whole conversion.
-No member is omitted, repaired, reoriented, or replaced, and no partial output is
-returned. Measured XYM and XYZM aggregates are rejected even with no members.
-
-The same reference omission, caller responsibilities, and JSON failure contract
-apply. Antimeridian-crossing members retain their supplied coordinates under the
-deliberate non-application of RFC 7946 section 3.1.9 described above, with the same
-possible long-way-around interpretation by consumers.
-
-The approved contracts for later geometry contributions preserve nested,
-singleton, and homogeneous GeometryCollections. These deliberately do not apply
-the SHOULD guidance of RFC 7946 section 3.1.8. Consumers may have limited support
-for these collection forms;
-preparation remains the caller's responsibility. Those types are not enabled by
-this increment.
-
-References: [RFC 7946 geometry objects and positions](https://www.rfc-editor.org/rfc/rfc7946.html#section-3.1),
-[MultiPoint positions](https://www.rfc-editor.org/rfc/rfc7946.html#section-3.1.3),
-[MultiLineString members](https://www.rfc-editor.org/rfc/rfc7946.html#section-3.1.5),
-[Polygon rings](https://www.rfc-editor.org/rfc/rfc7946.html#section-3.1.6),
-[MultiPolygon members](https://www.rfc-editor.org/rfc/rfc7946.html#section-3.1.7),
-[coordinate reference system](https://www.rfc-editor.org/rfc/rfc7946.html#section-4),
-[non-extensible types](https://www.rfc-editor.org/rfc/rfc7946.html#section-7).
-
-GeometryCollections recursively preserve each member's type, coordinates, order,
-and nesting. GeographyCollection uses the same GeoJSON `GeometryCollection` type:
-
-```php
-$collection = new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\GeometryCollectionImmutable(4326, [
-    new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable(1, 2, 4326),
-    new \LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\LineStringImmutable([[3, 4], [5, 6]], 4326),
-]);
-echo $encoder->encode($collection);
-// {"type":"GeometryCollection","geometries":[{"type":"Point","coordinates":[1,2]},{"type":"LineString","coordinates":[[3,4],[5,6]]}]}
-```
-
-A collection with no members produces
-`{"type":"GeometryCollection","geometries":[]}`. EMPTY geometry members retain
-their own empty `coordinates` arrays; nested collections retain their
-`geometries` arrays. No `coordinates` member is added to a collection. XY and
-XYZ are supported, preserving Z; XYM and XYZM are rejected even when EMPTY.
-Reference metadata is omitted throughout, under the caller responsibilities above.
-
-The approved policy deliberately preserves nested, singleton, and homogeneous
-collections instead of flattening them or encoding them as another type.
-This does not apply the SHOULD guidance in
-[RFC 7946 section 3.1.8](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.8).
-Consumers that expect simplified forms may not handle or display these collections
-consistently; callers must prepare any simplification needed by their consumers.
-Antimeridian crossings also remain unchanged under section 3.1.9 as described above.
-
-All six other supported types use their normal encoders when nested in a
-collection. A non-RFC member throws `UnsupportedSpatialTypeException`; an
-incompatible member structure throws `UnsupportedGeometryStructureException`.
-Failures propagate through every collection level: no member is omitted and no
-partial result is returned. JSON failures retain the shared `JsonEncodingException`
-contract and original exception.
+Replace the strategy to change the output format. Strategies can also be
+called directly with `$strategy->encode($point)`.
+Binary strategies return raw bytes; use `bin2hex()` only to display them.
+
+## Before encoding
+
+Validate your geometry first: encoding is not a general geometry validator.
+See [Validate Before Encoding](validation.md).
+
+Coordinates are preserved without reprojection, axis swapping, or unit conversion.
+An SRID does not transform coordinates.
+
+## Format limits
+
+- **WKT / EWKT:** EWKT adds one outer `SRID=...;` prefix when the SRID is nonzero.
+- **WKB / EWKB:** output is little-endian. WKB uses ISO dimension offsets;
+  EWKB uses dimension flags and writes a nonzero SRID only on the outer geometry.
+- **MySQL:** output includes a four-byte SRID prefix and is not plain WKB.
+  Supply X/longitude before Y/latitude. Only XY is accepted; empty values are
+  limited to geometry collections, including nested members.
+- **GeoJSON:** supply WGS 84 longitude/latitude coordinates, with height in metres
+  for XYZ. Reference metadata is omitted without checking the supplied SRID.
+  Measured coordinates, Triangle, and PolyhedralSurface are rejected.
+
+### GeoJSON structures
+
+Empty geometries and collections are supported, but multi-geometries cannot
+contain empty members. Non-empty lines require at least two positions.
+Polygon exterior rings must have positive signed XY area and holes negative
+signed XY area; zero-area rings are rejected. Rings are not repaired.
+These checks do not establish topological validity.
+
+Collections retain their order and nesting. Antimeridian crossings are preserved;
+prepare any cutting or simplification required by your consumer before encoding.
+The strategy returns geometry objects; compose Features in your application.
+
+Unsupported dimensions, types, and incompatible structures raise the corresponding
+`UnsupportedDimensionException`, `UnsupportedSpatialTypeException`, or
+`UnsupportedGeometryStructureException`. GeoJSON encoding failures raise
+`JsonEncodingException`, preserving the original exception. No partial JSON is returned.
+
+## Examples and extension
+
+See the executable [WKT](../tests/Unit/Strategy/Wkt/Examples/),
+[WKB](../tests/Unit/Strategy/Wkb/Examples/),
+[EWKB](../tests/Unit/Strategy/Ewkb/Examples/), and
+[GeoJSON](../tests/Unit/Strategy/GeoJson/) examples.
+
+To add a format, implement [StrategyInterface](../lib/Strategy/StrategyInterface.php)
+and pass it to `Encoder`. See [Encoding tests](testing.md) for fixture guidance
+and focused test commands.
