@@ -19,8 +19,8 @@
     </source>
     <coverage>
         <report>
-            <clover outputFile=".phpunit-cache/coverage.xml"/>
-            <text outputFile=".phpunit-cache/coverage-results.txt" showOnlySummary="true"/>
+            <clover outputFile="build/coverage/clover.xml"/>
+            <text outputFile="build/coverage/coverage.txt" showOnlySummary="true"/>
         </report>
     </coverage>
 </phpunit>

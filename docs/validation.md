@@ -30,9 +30,12 @@ PHP 8.4; binary outputs are shown as `bin2hex()` strings.
 | Strategy | Observed result |
 | --- | --- |
 | `WktTextStrategy`, `EwktTextStrategy` | An uncaught `TypeError`: `WKT requires numeric ordinates; null given.` No text is returned. |
-| `WkbBinaryStrategy`, `EwkbBinaryStrategy` | `0101000000000000000000f03f0000000000000000` — PHP's `pack()` converts the missing Y to zero. These bytes describe `(1, 0)`, not the supplied incomplete coordinates. |
+| `WkbBinaryStrategy`, `EwkbBinaryStrategy` | `0101000000000000000000f03f0000000000000000` — Missing Y becomes zero; see below. |
 | `MySQLBinaryStrategy` | `000000000101000000000000000000f03f0000000000000000` — the same conversion, preceded by the zero SRID. |
 | `GeoJsonStrategy` | `{"type":"Point","coordinates":[1,null]}` — valid JSON, but an invalid GeoJSON position. |
+
+PHP's `pack()` converts the missing Y to zero. The WKB/EWKB bytes describe `(1, 0)`,
+not the supplied incomplete coordinates.
 
 The binary and GeoJSON cases return without an exception or warning on the
 checked PHP runtime. The source point remains `[1, null]`: the binary conversion

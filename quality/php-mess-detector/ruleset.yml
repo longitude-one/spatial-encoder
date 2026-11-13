@@ -5,17 +5,8 @@ rules:
   - ref: rulesets/cleancode.xml
     exclude:
       - BooleanArgumentFlag
-      - StaticAccess
   - ref: rulesets/codesize.xml
-    exclude:
-      - CyclomaticComplexity
-      - ExcessiveClassComplexity
-      - NPathComplexity
   - ref: rulesets/controversial.xml
   - ref: rulesets/design.xml
-    exclude:
-      - CountInLoopExpression
-      - NumberOfChildren
+  - ref: rulesets/naming.xml
   - ref: rulesets/unusedcode.xml
-    exclude:
-      - UnusedPrivateMethod

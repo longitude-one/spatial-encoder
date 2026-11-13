@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -146,7 +143,7 @@ class WktStrategyTest extends TestCase
     #[DataProvider('geometryProvider')]
     public function testGeometry(SpatialInterface $spatial, string $expected): void
     {
-        static::assertSame($expected, (new WktTextStrategy())->encode($spatial));
+        self::assertSame($expected, new WktTextStrategy()->encode($spatial));
     }
 
     /**
@@ -177,9 +174,9 @@ class WktStrategyTest extends TestCase
         $point = new $pointClass(...$coordinates[1]);
         $collection = new $collectionClass(0, [new $pointClass(), new $collectionClass(0, [$point]), new $collectionClass()]);
 
-        static::assertSame(
+        self::assertSame(
             'GEOMETRYCOLLECTION'.$marker.' (POINT'.$marker.' EMPTY, GEOMETRYCOLLECTION'.$marker.' (POINT'.$marker.' ('.$positions[1].')), GEOMETRYCOLLECTION'.$marker.' EMPTY)',
-            (new WktTextStrategy())->encode($collection)
+            new WktTextStrategy()->encode($collection)
         );
     }
 
@@ -192,7 +189,7 @@ class WktStrategyTest extends TestCase
     public function testNonFiniteCoordinate(float $coordinate): void
     {
         $this->expectException(\JsonException::class);
-        (new WktTextStrategy())->encode(new Point($coordinate, 0));
+        new WktTextStrategy()->encode(new Point($coordinate, 0));
     }
 
     /** Test formatting does not follow the process decimal separator. */
@@ -200,11 +197,11 @@ class WktStrategyTest extends TestCase
     {
         $previous = setlocale(\LC_NUMERIC, '0');
         if (false === $previous || false === setlocale(\LC_NUMERIC, 'fr_FR.UTF-8', 'fr_FR.utf8', 'fr_FR')) {
-            static::markTestSkipped('A French numeric locale is not installed.');
+            self::markTestSkipped('A French numeric locale is not installed.');
         }
 
         try {
-            static::assertSame('POINT (42.42 -2.5)', (new WktTextStrategy())->encode(new Point(42.42, -2.5)));
+            self::assertSame('POINT (42.42 -2.5)', new WktTextStrategy()->encode(new Point(42.42, -2.5)));
         } finally {
             setlocale(\LC_NUMERIC, $previous);
         }
@@ -214,9 +211,9 @@ class WktStrategyTest extends TestCase
     public function testNumericPrecision(): void
     {
         $collection = new GeometryCollection(0, [new Point(-42.42, 2.123456789012345), new Point(1.0e-20, \PHP_INT_MAX)]);
-        static::assertSame(
+        self::assertSame(
             'GEOMETRYCOLLECTION (POINT (-42.42 2.123456789012345), POINT (1.0e-20 '.\PHP_INT_MAX.'))',
-            (new WktTextStrategy())->encode($collection)
+            new WktTextStrategy()->encode($collection)
         );
     }
 
@@ -227,30 +224,30 @@ class WktStrategyTest extends TestCase
             [[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]],
             [[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]],
         ]);
-        static::assertSame(
+        self::assertSame(
             'POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 2, 2 1, 1 1))',
-            (new WktTextStrategy())->encode($polygon)
+            new WktTextStrategy()->encode($polygon)
         );
     }
 
     /** Test an unsupported interface fails explicitly. */
     public function testUnsupportedInterface(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::POINT);
         $spatial->method('toArray')->willReturn([1, 2]);
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new WktTextStrategy())->encode($spatial);
+        new WktTextStrategy()->encode($spatial);
     }
 
     /** Test unimplemented enum cases are rejected, even when empty. */
     public function testUnsupportedType(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::CIRCULARSTRING);
         $spatial->method('toArray')->willReturn([]);
         $this->expectException(UnsupportedSpatialTypeException::class);
-        $this->expectExceptionMessage('WKT adapter does not support spatial type CircularString');
-        (new WktTextStrategy())->encode($spatial);
+        $this->expectExceptionMessageIsOrContains('WKT adapter does not support spatial type CircularString');
+        new WktTextStrategy()->encode($spatial);
     }
 }

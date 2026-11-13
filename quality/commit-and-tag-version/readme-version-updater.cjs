@@ -1,10 +1,10 @@
 /**
- * Custom updater for commit-and-tag-version to update the README installation example.
+ * Custom updater for commit-and-tag-version to update the README installation example and documentation version.
  */
 
 const SEMVER_PATTERN = '\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?';
 const PACKAGE_VERSION_PATTERN = new RegExp(
-  `(composer require longitude-one/spatial-encoder:)(${SEMVER_PATTERN})(?=\\s|$)`,
+  `(composer require longitude-one/spatial-encoder:)\\^?(${SEMVER_PATTERN})(?=\\s|$)`,
 );
 
 module.exports.readVersion = function (contents) {
@@ -20,8 +20,16 @@ module.exports.readVersion = function (contents) {
 module.exports.writeVersion = function (contents, version) {
   module.exports.readVersion(contents);
 
+  const major = version.split('.')[0];
+
   return contents.replace(
     new RegExp(PACKAGE_VERSION_PATTERN.source, 'g'),
-    (_, prefix) => `${prefix}${version}`,
+    (_, prefix) => `${prefix}^${version}`,
+  ).replace(
+    /(https:\/\/img\.shields\.io\/badge\/docs-v)\d+(-blue)/g,
+    (_, prefix, suffix) => `${prefix}${major}${suffix}`,
+  ).replace(
+    /(https:\/\/www\.longitude-one\.fr\/spatial-encoder\/v)\d+(\/index\.html)/g,
+    (_, prefix, suffix) => `${prefix}${major}${suffix}`,
   );
 };

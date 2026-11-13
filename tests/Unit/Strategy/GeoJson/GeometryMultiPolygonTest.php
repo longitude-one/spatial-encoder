@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -42,10 +39,10 @@ class GeometryMultiPolygonTest extends TestCase
     {
         $multiPolygon = new MultiPolygon([[[[170, 40], [170, 50], [-170, 50], [-170, 40], [170, 40]]]], 4326);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[170,40],[170,50],[-170,50],[-170,40],[170,40]]]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[170,40],[170,50],[-170,50],[-170,40],[170,40]]]]}', (new GeoJsonStrategy())->encode($multiPolygon));
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[170,40],[170,50],[-170,50],[-170,40],[170,40]]]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[170,40],[170,50],[-170,50],[-170,40],[170,40]]]]}', new GeoJsonStrategy()->encode($multiPolygon));
     }
 
     /** An aggregate without members is supported. */
@@ -53,10 +50,10 @@ class GeometryMultiPolygonTest extends TestCase
     {
         $multiPolygon = new MultiPolygon([]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', (new GeoJsonStrategy())->encode($multiPolygon));
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', new GeoJsonStrategy()->encode($multiPolygon));
     }
 
     /** An empty XYZ aggregate has no dimension marker. */
@@ -64,10 +61,10 @@ class GeometryMultiPolygonTest extends TestCase
     {
         $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPolygonImmutable([]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', (new GeoJsonStrategy())->encode($multiPolygon));
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[]}', new GeoJsonStrategy()->encode($multiPolygon));
     }
 
     /** Reject the whole aggregate through the approved structural contract. */
@@ -76,7 +73,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new MultiPolygon([[[[0, 0], [2, 0], [0, 2], [0, 0]]], [[[3, 0], [3, 2], [5, 0], [3, 0]]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject the whole aggregate through the approved structural contract. */
@@ -85,7 +82,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new MultiPolygon([[[[10, 0], [12, 0], [10, 2], [10, 0]]], [[[0, 0], [4, 0], [4, 4], [0, 4], [0, 0]], [[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject the whole aggregate through the approved structural contract. */
@@ -94,7 +91,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new MultiPolygon([new Polygon([[[0, 0], [2, 0], [0, 2], [0, 0]]]), new Polygon([])]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject measured dimensions without discarding M. */
@@ -103,7 +100,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject measured dimensions without discarding M. */
@@ -112,7 +109,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPolygonImmutable([]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject the whole aggregate through the approved structural contract. */
@@ -121,7 +118,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new MultiPolygon([new Polygon([]), new Polygon([])]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject measured dimensions without discarding M. */
@@ -130,7 +127,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPolygonImmutable([[[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject measured dimensions without discarding M. */
@@ -139,7 +136,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPolygonImmutable([[[[0, 0, 3, 4], [2, 0, 3, 4], [0, 2, 3, 4], [0, 0, 3, 4]]]]);
 
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Reject the whole aggregate through the approved structural contract. */
@@ -148,7 +145,7 @@ class GeometryMultiPolygonTest extends TestCase
         $multiPolygon = new MultiPolygon([[[[0, 0], [1, 0], [2, 0], [0, 0]]]]);
 
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
+        new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
     }
 
     /** Preserve multiple holes, member order and decimal coordinates. */
@@ -156,10 +153,10 @@ class GeometryMultiPolygonTest extends TestCase
     {
         $multiPolygon = new MultiPolygon([[[[0, 0], [8, 0], [8, 8], [0, 8], [0, 0]], [[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]], [[4, 4], [4, 5], [5, 5], [5, 4], [4, 4]]], [[[10.5, 0], [12, 0], [10.5, 2], [10.5, 0]]]]);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[8,0],[8,8],[0,8],[0,0]],[[1,1],[1,2],[2,2],[2,1],[1,1]],[[4,4],[4,5],[5,5],[5,4],[4,4]]],[[[10.5,0],[12,0],[10.5,2],[10.5,0]]]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[8,0],[8,8],[0,8],[0,0]],[[1,1],[1,2],[2,2],[2,1],[1,1]],[[4,4],[4,5],[5,5],[5,4],[4,4]]],[[[10.5,0],[12,0],[10.5,2],[10.5,0]]]]}', (new GeoJsonStrategy())->encode($multiPolygon));
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[8,0],[8,8],[0,8],[0,0]],[[1,1],[1,2],[2,2],[2,1],[1,1]],[[4,4],[4,5],[5,5],[5,4],[4,4]]],[[[10.5,0],[12,0],[10.5,2],[10.5,0]]]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[8,0],[8,8],[0,8],[0,0]],[[1,1],[1,2],[2,2],[2,1],[1,1]],[[4,4],[4,5],[5,5],[5,4],[4,4]]],[[[10.5,0],[12,0],[10.5,2],[10.5,0]]]]}', new GeoJsonStrategy()->encode($multiPolygon));
     }
 
     /** Preserve member and position order with SRID omitted. */
@@ -167,10 +164,10 @@ class GeometryMultiPolygonTest extends TestCase
     {
         $multiPolygon = new MultiPolygon([[[[0, 0], [2, 0], [0, 2], [0, 0]]], [[[3, 0], [5, 0], [3, 2], [3, 0]]]], 4326);
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[2,0],[0,2],[0,0]]],[[[3,0],[5,0],[3,2],[3,0]]]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[2,0],[0,2],[0,0]]],[[[3,0],[5,0],[3,2],[3,0]]]]}', (new GeoJsonStrategy())->encode($multiPolygon));
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[2,0],[0,2],[0,0]]],[[[3,0],[5,0],[3,2],[3,0]]]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0],[2,0],[0,2],[0,0]]],[[[3,0],[5,0],[3,2],[3,0]]]]}', new GeoJsonStrategy()->encode($multiPolygon));
     }
 
     /** Keep the singleton wrapper, Z and coordinates without reference metadata. */
@@ -178,9 +175,9 @@ class GeometryMultiPolygonTest extends TestCase
     {
         $multiPolygon = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPolygonImmutable([[[[0, 0, 3], [2, 0, 3], [0, 2, 3], [0, 0, 3]]]], new SpatialReference(999999, 'CUSTOM'));
 
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0,3],[2,0,3],[0,2,3],[0,0,3]]]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0,3],[2,0,3],[0,2,3],[0,0,3]]]]}', (new GeoJsonStrategy())->encode($multiPolygon));
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0,3],[2,0,3],[0,2,3],[0,0,3]]]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPolygon","coordinates":[[[[0,0,3],[2,0,3],[0,2,3],[0,0,3]]]]}', new GeoJsonStrategy()->encode($multiPolygon));
     }
 }

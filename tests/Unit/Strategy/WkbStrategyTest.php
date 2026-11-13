@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -352,7 +349,7 @@ class WkbStrategyTest extends TestCase
     #[DataProvider('collectionProvider')]
     public function testCollection(CollectionInterface $collection, string $expected): void
     {
-        static::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($collection))));
+        self::assertSame($expected, mb_strtoupper(bin2hex($this->strategy->encode($collection))));
     }
 
     /**
@@ -367,7 +364,7 @@ class WkbStrategyTest extends TestCase
     #[DataProvider('lineStringProvider')]
     public function testLineString(LineStringInterface $lineString, string $expected): void
     {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($lineString)));
+        self::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($lineString)));
     }
 
     /**
@@ -382,7 +379,7 @@ class WkbStrategyTest extends TestCase
     #[DataProvider('multiLineStringProvider')]
     public function testMultiLineString(MultiLineStringInterface $multiLineString, string $expected): void
     {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiLineString)));
+        self::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiLineString)));
     }
 
     /**
@@ -397,7 +394,7 @@ class WkbStrategyTest extends TestCase
     #[DataProvider('multiPointProvider')]
     public function testMultiPoint(MultiPointInterface $multiPoint, string $expected): void
     {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPoint)));
+        self::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPoint)));
     }
 
     /**
@@ -412,7 +409,7 @@ class WkbStrategyTest extends TestCase
     #[DataProvider('multiPolygonProvider')]
     public function testMultiPolygon(MultiPolygonInterface $multiPolygon, string $expected): void
     {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPolygon)));
+        self::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($multiPolygon)));
     }
 
     /**
@@ -427,7 +424,7 @@ class WkbStrategyTest extends TestCase
     #[DataProvider('pointProvider')]
     public function testPoint(PointInterface $point, string $expected): void
     {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($point)));
+        self::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($point)));
     }
 
     /**
@@ -442,6 +439,6 @@ class WkbStrategyTest extends TestCase
     #[DataProvider('polygonProvider')]
     public function testPolygon(PolygonInterface $polygon, string $expected): void
     {
-        static::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($polygon)));
+        self::assertSame(mb_strtolower($expected), bin2hex($this->strategy->encode($polygon)));
     }
 }

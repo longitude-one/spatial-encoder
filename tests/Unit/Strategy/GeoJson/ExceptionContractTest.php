@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -58,11 +55,11 @@ class ExceptionContractTest extends TestCase
         $collection = new GeometryCollection(0, [new Point(1, 2), new GeometryCollection(0, [new Point(\INF, 3)])]);
 
         try {
-            (new Encoder(new GeoJsonStrategy()))->encode($collection);
-            static::fail('JSON encoding must fail.');
+            new Encoder(new GeoJsonStrategy())->encode($collection);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -72,12 +69,12 @@ class ExceptionContractTest extends TestCase
         $point = new Point(\INF, 2);
 
         try {
-            (new GeoJsonStrategy())->encode($point);
-            static::fail('JSON encoding must fail.');
+            new GeoJsonStrategy()->encode($point);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertContains(ExceptionInterface::class, new \ReflectionClass($exception)->getInterfaceNames());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -87,13 +84,13 @@ class ExceptionContractTest extends TestCase
         $previous = new \RuntimeException('Original failure');
         $exception = new JsonEncodingException('Failure', 12, $previous);
 
-        $parent = (new \ReflectionClass($exception))->getParentClass();
-        static::assertNotFalse($parent);
-        static::assertSame(\RuntimeException::class, $parent->getName());
-        static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
-        static::assertSame('Failure', $exception->getMessage());
-        static::assertSame(12, $exception->getCode());
-        static::assertSame($previous, $exception->getPrevious());
+        $parent = new \ReflectionClass($exception)->getParentClass();
+        self::assertNotFalse($parent);
+        self::assertSame(\RuntimeException::class, $parent->getName());
+        self::assertContains(ExceptionInterface::class, new \ReflectionClass($exception)->getInterfaceNames());
+        self::assertSame('Failure', $exception->getMessage());
+        self::assertSame(12, $exception->getCode());
+        self::assertSame($previous, $exception->getPrevious());
     }
 
     /** The installed model accepts non-finite ordinates in real line strings. */
@@ -102,11 +99,11 @@ class ExceptionContractTest extends TestCase
         $line = new LineString([[1, 2], [\INF, 3]]);
 
         try {
-            (new Encoder(new GeoJsonStrategy()))->encode($line);
-            static::fail('JSON encoding must fail.');
+            new Encoder(new GeoJsonStrategy())->encode($line);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -116,11 +113,11 @@ class ExceptionContractTest extends TestCase
         $multiLine = new MultiLineString([[[1, 2], [3, 4]], [[5, 6], [\INF, 8]]]);
 
         try {
-            (new Encoder(new GeoJsonStrategy()))->encode($multiLine);
-            static::fail('JSON encoding must fail.');
+            new Encoder(new GeoJsonStrategy())->encode($multiLine);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -130,11 +127,11 @@ class ExceptionContractTest extends TestCase
         $multiPoint = new MultiPoint([[1, 2], [\INF, 3]]);
 
         try {
-            (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
-            static::fail('JSON encoding must fail.');
+            new Encoder(new GeoJsonStrategy())->encode($multiPoint);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -144,11 +141,11 @@ class ExceptionContractTest extends TestCase
         $multiPolygon = new MultiPolygon([[[[0, 0, 1], [2, 0, \INF], [0, 2, 3], [0, 0, 1]]]]);
 
         try {
-            (new Encoder(new GeoJsonStrategy()))->encode($multiPolygon);
-            static::fail('JSON encoding must fail.');
+            new Encoder(new GeoJsonStrategy())->encode($multiPolygon);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -158,12 +155,12 @@ class ExceptionContractTest extends TestCase
         $point = new Point(\NAN, 2);
 
         try {
-            (new GeoJsonStrategy())->encode($point);
-            static::fail('JSON encoding must fail.');
+            new GeoJsonStrategy()->encode($point);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertContains(ExceptionInterface::class, new \ReflectionClass($exception)->getInterfaceNames());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -173,12 +170,12 @@ class ExceptionContractTest extends TestCase
         $point = new Point(-\INF, 2);
 
         try {
-            (new GeoJsonStrategy())->encode($point);
-            static::fail('JSON encoding must fail.');
+            new GeoJsonStrategy()->encode($point);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertContains(ExceptionInterface::class, new \ReflectionClass($exception)->getInterfaceNames());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
@@ -188,23 +185,23 @@ class ExceptionContractTest extends TestCase
         $polygon = new Polygon([[[0, 0, 1], [2, 0, \INF], [0, 2, 3], [0, 0, 1]]]);
 
         try {
-            (new Encoder(new GeoJsonStrategy()))->encode($polygon);
-            static::fail('JSON encoding must fail.');
+            new Encoder(new GeoJsonStrategy())->encode($polygon);
+            self::fail('JSON encoding must fail.');
         } catch (JsonEncodingException $exception) {
-            static::assertInstanceOf(\JsonException::class, $exception->getPrevious());
-            static::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
+            self::assertInstanceOf(\JsonException::class, $exception->getPrevious());
+            self::assertSame(\JSON_ERROR_INF_OR_NAN, $exception->getPrevious()->getCode());
         }
     }
 
     /** Preserve the internal exception for a missing collection interface. */
     public function testUnsupportedCollectionInterfaceThroughEncoder(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::GEOMETRYCOLLECTION);
         $spatial->method('hasM')->willReturn(false);
 
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($spatial);
+        new Encoder(new GeoJsonStrategy())->encode($spatial);
     }
 
     /** Preserve the approved public exception inheritance and constructor contract. */
@@ -213,13 +210,13 @@ class ExceptionContractTest extends TestCase
         $previous = new \RuntimeException('Original failure');
         $exception = new UnsupportedDimensionException('Failure', 12, $previous);
 
-        $parent = (new \ReflectionClass($exception))->getParentClass();
-        static::assertNotFalse($parent);
-        static::assertSame(\InvalidArgumentException::class, $parent->getName());
-        static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
-        static::assertSame('Failure', $exception->getMessage());
-        static::assertSame(12, $exception->getCode());
-        static::assertSame($previous, $exception->getPrevious());
+        $parent = new \ReflectionClass($exception)->getParentClass();
+        self::assertNotFalse($parent);
+        self::assertSame(\InvalidArgumentException::class, $parent->getName());
+        self::assertContains(ExceptionInterface::class, new \ReflectionClass($exception)->getInterfaceNames());
+        self::assertSame('Failure', $exception->getMessage());
+        self::assertSame(12, $exception->getCode());
+        self::assertSame($previous, $exception->getPrevious());
     }
 
     /** Preserve the approved public exception inheritance and constructor contract. */
@@ -228,63 +225,63 @@ class ExceptionContractTest extends TestCase
         $previous = new \RuntimeException('Original failure');
         $exception = new UnsupportedGeometryStructureException('Failure', 12, $previous);
 
-        $parent = (new \ReflectionClass($exception))->getParentClass();
-        static::assertNotFalse($parent);
-        static::assertSame(\InvalidArgumentException::class, $parent->getName());
-        static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
-        static::assertSame('Failure', $exception->getMessage());
-        static::assertSame(12, $exception->getCode());
-        static::assertSame($previous, $exception->getPrevious());
+        $parent = new \ReflectionClass($exception)->getParentClass();
+        self::assertNotFalse($parent);
+        self::assertSame(\InvalidArgumentException::class, $parent->getName());
+        self::assertContains(ExceptionInterface::class, new \ReflectionClass($exception)->getInterfaceNames());
+        self::assertSame('Failure', $exception->getMessage());
+        self::assertSame(12, $exception->getCode());
+        self::assertSame($previous, $exception->getPrevious());
     }
 
     /** Reject a declared LineString without its corresponding interface. */
     public function testUnsupportedLineStringInterfaceThroughEncoder(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::LINESTRING);
         $spatial->method('hasM')->willReturn(false);
 
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($spatial);
+        new Encoder(new GeoJsonStrategy())->encode($spatial);
     }
 
     /** Reject a declared MultiLineString without its corresponding interface. */
     public function testUnsupportedMultiLineStringInterfaceThroughEncoder(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::MULTILINESTRING);
         $spatial->method('hasM')->willReturn(false);
 
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($spatial);
+        new Encoder(new GeoJsonStrategy())->encode($spatial);
     }
 
     /** Reject a declared MultiPoint without its corresponding interface. */
     public function testUnsupportedMultiPointInterfaceThroughEncoder(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::MULTIPOINT);
         $spatial->method('hasM')->willReturn(false);
 
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($spatial);
+        new Encoder(new GeoJsonStrategy())->encode($spatial);
     }
 
     /** Preserve the internal exception for a missing MultiPolygon interface. */
     public function testUnsupportedMultiPolygonInterfaceThroughEncoder(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::MULTIPOLYGON);
         $spatial->method('hasM')->willReturn(false);
 
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($spatial);
+        new Encoder(new GeoJsonStrategy())->encode($spatial);
     }
 
     /** Reject a declared Point without its interface through the public encoder. */
     public function testUnsupportedPointInterfaceThroughEncoder(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::POINT);
         $spatial->method('hasM')->willReturn(false);
         $encoder = new Encoder(new GeoJsonStrategy());
@@ -296,12 +293,12 @@ class ExceptionContractTest extends TestCase
     /** Reject a declared Polygon without its corresponding interface. */
     public function testUnsupportedPolygonInterfaceThroughEncoder(): void
     {
-        $spatial = static::createStub(SpatialInterface::class);
+        $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::POLYGON);
         $spatial->method('hasM')->willReturn(false);
 
         $this->expectException(UnsupportedSpatialInterfaceException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($spatial);
+        new Encoder(new GeoJsonStrategy())->encode($spatial);
     }
 
     /** Preserve the approved public exception inheritance and constructor contract. */
@@ -310,12 +307,12 @@ class ExceptionContractTest extends TestCase
         $previous = new \RuntimeException('Original failure');
         $exception = new UnsupportedSpatialTypeException('Failure', 12, $previous);
 
-        $parent = (new \ReflectionClass($exception))->getParentClass();
-        static::assertNotFalse($parent);
-        static::assertSame(\Exception::class, $parent->getName());
-        static::assertContains(ExceptionInterface::class, (new \ReflectionClass($exception))->getInterfaceNames());
-        static::assertSame('Failure', $exception->getMessage());
-        static::assertSame(12, $exception->getCode());
-        static::assertSame($previous, $exception->getPrevious());
+        $parent = new \ReflectionClass($exception)->getParentClass();
+        self::assertNotFalse($parent);
+        self::assertSame(\Exception::class, $parent->getName());
+        self::assertContains(ExceptionInterface::class, new \ReflectionClass($exception)->getInterfaceNames());
+        self::assertSame('Failure', $exception->getMessage());
+        self::assertSame(12, $exception->getCode());
+        self::assertSame($previous, $exception->getPrevious());
     }
 }

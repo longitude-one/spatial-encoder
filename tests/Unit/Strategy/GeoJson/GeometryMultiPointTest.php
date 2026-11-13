@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -44,9 +41,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3,4,9.5],[1,2,-2],[-7,8,0]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -56,9 +53,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[170,45],[-170,45]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[170,45],[-170,45]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[170,45],[-170,45]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[170,45],[-170,45]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -68,9 +65,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -80,9 +77,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -92,9 +89,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -104,9 +101,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -114,7 +111,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPointImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -122,7 +119,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPointImmutable([]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Reject an EMPTY member after a non-empty position without returning partial output. */
@@ -130,7 +127,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new MultiPoint([new Point(1, 2), new Point()]);
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Reject an EMPTY member after a non-empty position without returning partial output. */
@@ -138,7 +135,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(1, 2, 3), new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable()]);
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Distinguish an aggregate containing only EMPTY members from one with no members. */
@@ -146,7 +143,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new MultiPoint([new Point(), new Point()]);
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Distinguish an aggregate containing only EMPTY members from one with no members. */
@@ -154,7 +151,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable(), new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable()]);
         $this->expectException(UnsupportedGeometryStructureException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -162,7 +159,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\MultiPointImmutable([[1, 2, 3], [4, 5, 6]]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Reject an incompatible concrete input without modifying it. */
@@ -170,7 +167,7 @@ class GeometryMultiPointTest extends TestCase
     {
         $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\MultiPointImmutable([[1, 2, 3, 4], [5, 6, 7, 8]]);
         $this->expectException(UnsupportedDimensionException::class);
-        (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
+        new Encoder(new GeoJsonStrategy())->encode($multiPoint);
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -180,27 +177,27 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3.5,4.25],[1,2],[3.5,4.25]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3.5,4.25],[1,2],[3.5,4.25]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3.5,4.25],[1,2],[3.5,4.25]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[3.5,4.25],[1,2],[3.5,4.25]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve a singleton as a MultiPoint. */
     public function testSingletonXy(): void
     {
         $multiPoint = new MultiPoint([[1, 2]]);
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2]]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPoint);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2]]}', $encoded);
     }
 
     /** Preserve a singleton as a MultiPoint. */
     public function testSingletonXyz(): void
     {
         $multiPoint = new \LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\MultiPointImmutable([[1, 2, 3]]);
-        $encoded = (new Encoder(new GeoJsonStrategy()))->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3]]}', $encoded);
+        $encoded = new Encoder(new GeoJsonStrategy())->encode($multiPoint);
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3]]}', $encoded);
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -210,9 +207,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -222,9 +219,9 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2],[3,4]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 
     /** Preserve coordinates and their order without reference metadata. */
@@ -234,8 +231,8 @@ class GeometryMultiPointTest extends TestCase
         $encoder = new Encoder(new GeoJsonStrategy());
 
         $encoded = $encoder->encode($multiPoint);
-        static::assertIsString($encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
-        static::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', (new GeoJsonStrategy())->encode($multiPoint));
+        self::assertIsString($encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', $encoded);
+        self::assertJsonStringEqualsJsonString('{"type":"MultiPoint","coordinates":[[1,2,3],[4,5,6]]}', new GeoJsonStrategy()->encode($multiPoint));
     }
 }

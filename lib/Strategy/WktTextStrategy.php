@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -110,7 +107,7 @@ class WktTextStrategy implements StrategyInterface
      */
     private function writeGeometry(SpatialInterface $spatial): string
     {
-        return (new WktTypeEncoder())->writeType($spatial).' '.$this->writeBody($spatial);
+        return new WktTypeEncoder()->writeType($spatial).' '.$this->writeBody($spatial);
     }
 
     /**

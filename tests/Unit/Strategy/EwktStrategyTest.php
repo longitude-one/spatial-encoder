@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -48,9 +45,9 @@ class EwktStrategyTest extends TestCase
     {
         $collection = new GeometryCollection(0, [new Point(1, 2), new GeometryCollection()]);
 
-        static::assertSame(
+        self::assertSame(
             'GEOMETRYCOLLECTION (POINT (1 2), GEOMETRYCOLLECTION EMPTY)',
-            (new EwktTextStrategy())->encode($collection)
+            new EwktTextStrategy()->encode($collection)
         );
     }
 
@@ -59,9 +56,9 @@ class EwktStrategyTest extends TestCase
     {
         $collection = new GeometryCollectionZm(4326, [new PointZm(1, 2, 3, 4, 4326)]);
 
-        static::assertSame(
+        self::assertSame(
             'SRID=4326;GEOMETRYCOLLECTION ZM (POINT ZM (1 2 3 4))',
-            (new EwktTextStrategy())->encode($collection)
+            new EwktTextStrategy()->encode($collection)
         );
     }
 
@@ -70,7 +67,7 @@ class EwktStrategyTest extends TestCase
     {
         $collection = new GeometryCollection(4326);
 
-        static::assertSame('SRID=4326;GEOMETRYCOLLECTION EMPTY', (new EwktTextStrategy())->encode($collection));
+        self::assertSame('SRID=4326;GEOMETRYCOLLECTION EMPTY', new EwktTextStrategy()->encode($collection));
     }
 
     /** An empty geometry with SRID zero has no prefix. */
@@ -78,7 +75,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new Point();
 
-        static::assertSame('POINT EMPTY', (new EwktTextStrategy())->encode($point));
+        self::assertSame('POINT EMPTY', new EwktTextStrategy()->encode($point));
     }
 
     /** An empty geometry still carries its nonzero SRID. */
@@ -86,7 +83,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new Point(srid: 4326);
 
-        static::assertSame('SRID=4326;POINT EMPTY', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT EMPTY', new EwktTextStrategy()->encode($point));
     }
 
     /** Preserve the dimension of an empty point. */
@@ -94,7 +91,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new PointZm(srid: 4326);
 
-        static::assertSame('SRID=4326;POINT ZM EMPTY', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT ZM EMPTY', new EwktTextStrategy()->encode($point));
     }
 
     /** The encoder can switch between EWKT and plain WKT. */
@@ -103,9 +100,9 @@ class EwktStrategyTest extends TestCase
         $point = new Point(1, 2, 4326);
         $encoder = new Encoder(new EwktTextStrategy());
 
-        static::assertSame('SRID=4326;POINT (1 2)', $encoder->encode($point));
+        self::assertSame('SRID=4326;POINT (1 2)', $encoder->encode($point));
         $encoder->setStrategy(new WktTextStrategy());
-        static::assertSame('POINT (1 2)', $encoder->encode($point));
+        self::assertSame('POINT (1 2)', $encoder->encode($point));
     }
 
     /** Preserve geography coordinates and decimal formatting. */
@@ -113,7 +110,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new GeographicPoint(2.5, -3, 4326);
 
-        static::assertSame('SRID=4326;POINT (2.5 -3)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT (2.5 -3)', new EwktTextStrategy()->encode($point));
     }
 
     /** Write the SRID once for a homogeneous collection. */
@@ -121,7 +118,7 @@ class EwktStrategyTest extends TestCase
     {
         $points = new MultiPoint([[1, 2], [3, 4]], 4326);
 
-        static::assertSame('SRID=4326;MULTIPOINT ((1 2), (3 4))', (new EwktTextStrategy())->encode($points));
+        self::assertSame('SRID=4326;MULTIPOINT ((1 2), (3 4))', new EwktTextStrategy()->encode($points));
     }
 
     /** Nested collection members must never receive their own SRID prefixes. */
@@ -136,9 +133,9 @@ class EwktStrategyTest extends TestCase
             new GeometryCollection(4326),
         ]);
 
-        static::assertSame(
+        self::assertSame(
             'SRID=4326;GEOMETRYCOLLECTION (POINT (1 2), GEOMETRYCOLLECTION (LINESTRING (0 0, 2 3), POINT EMPTY), GEOMETRYCOLLECTION EMPTY)',
-            (new EwktTextStrategy())->encode($collection)
+            new EwktTextStrategy()->encode($collection)
         );
     }
 
@@ -147,7 +144,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new PointM(1, 2, 4, 4326);
 
-        static::assertSame('SRID=4326;POINT M (1 2 4)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT M (1 2 4)', new EwktTextStrategy()->encode($point));
     }
 
     /** The default zero SRID produces plain WKT. */
@@ -155,7 +152,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new Point(1, 2);
 
-        static::assertSame('POINT (1 2)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('POINT (1 2)', new EwktTextStrategy()->encode($point));
     }
 
     /** Prefix a point with its nonzero SRID. */
@@ -163,7 +160,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new Point(1, 2, 4326);
 
-        static::assertSame('SRID=4326;POINT (1 2)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT (1 2)', new EwktTextStrategy()->encode($point));
     }
 
     /** An explicit zero SRID also produces plain WKT. */
@@ -171,7 +168,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new Point(1, 2, 0);
 
-        static::assertSame('POINT (1 2)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('POINT (1 2)', new EwktTextStrategy()->encode($point));
     }
 
     /** Preserve the elevation marker and ordinate. */
@@ -179,7 +176,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new PointZ(1, 2, 3, 4326);
 
-        static::assertSame('SRID=4326;POINT Z (1 2 3)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT Z (1 2 3)', new EwktTextStrategy()->encode($point));
     }
 
     /** Preserve elevation and measure in their original order. */
@@ -187,7 +184,7 @@ class EwktStrategyTest extends TestCase
     {
         $point = new PointZm(1, 2, 3, 4, 4326);
 
-        static::assertSame('SRID=4326;POINT ZM (1 2 3 4)', (new EwktTextStrategy())->encode($point));
+        self::assertSame('SRID=4326;POINT ZM (1 2 3 4)', new EwktTextStrategy()->encode($point));
     }
 
     /** Reusing a strategy must read the SRID of each new geometry. */
@@ -195,8 +192,8 @@ class EwktStrategyTest extends TestCase
     {
         $strategy = new EwktTextStrategy();
 
-        static::assertSame('SRID=4326;POINT (1 2)', $strategy->encode(new Point(1, 2, 4326)));
-        static::assertSame('POINT (3 4)', $strategy->encode(new Point(3, 4)));
-        static::assertSame('SRID=7035;POINT (5 6)', $strategy->encode(new Point(5, 6, 7035)));
+        self::assertSame('SRID=4326;POINT (1 2)', $strategy->encode(new Point(1, 2, 4326)));
+        self::assertSame('POINT (3 4)', $strategy->encode(new Point(3, 4)));
+        self::assertSame('SRID=7035;POINT (5 6)', $strategy->encode(new Point(5, 6, 7035)));
     }
 }

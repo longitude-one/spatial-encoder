@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -39,7 +36,7 @@ class EncoderTest extends TestCase
         $strategy = new MySQLBinaryStrategy();
         $encoder = new Encoder($strategy);
         $point = new Point(1, 2, 4326);
-        static::assertSame(
+        self::assertSame(
             $strategy->encode($point),
             $encoder->encode($point)
         );
@@ -53,7 +50,7 @@ class EncoderTest extends TestCase
         $strategy = new WkbBinaryStrategy();
         $encoder = new Encoder($strategy);
         $point = new Point(1, 2, 4326);
-        static::assertSame(
+        self::assertSame(
             $strategy->encode($point),
             $encoder->encode($point)
         );
@@ -67,14 +64,14 @@ class EncoderTest extends TestCase
         $badStrategy = new MySQLBinaryStrategy();
         $strategy = new EwkbBinaryStrategy();
         $encoder = new Encoder($badStrategy);
-        static::assertSame($badStrategy, $encoder->getStrategy());
+        self::assertSame($badStrategy, $encoder->getStrategy());
         $encoder->setStrategy($strategy);
         $point = new Point(1, 2, 4326);
-        static::assertSame(
+        self::assertSame(
             $strategy->encode($point),
             $encoder->encode($point)
         );
-        static::assertNotSame(
+        self::assertNotSame(
             $badStrategy->encode($point),
             $encoder->encode($point)
         );
@@ -87,11 +84,11 @@ class EncoderTest extends TestCase
         $textStrategy = new WktTextStrategy();
         $binaryStrategy = new WkbBinaryStrategy();
         $encoder = new Encoder($textStrategy);
-        static::assertSame($textStrategy, $encoder->getStrategy());
-        static::assertSame('POINT (1 2)', $encoder->encode($point));
-        static::assertSame($encoder, $encoder->setStrategy($binaryStrategy));
-        static::assertSame($binaryStrategy->encode($point), $encoder->encode($point));
+        self::assertSame($textStrategy, $encoder->getStrategy());
+        self::assertSame('POINT (1 2)', $encoder->encode($point));
+        self::assertSame($encoder, $encoder->setStrategy($binaryStrategy));
+        self::assertSame($binaryStrategy->encode($point), $encoder->encode($point));
         $encoder->setStrategy($textStrategy);
-        static::assertSame('POINT (1 2)', $encoder->encode($point));
+        self::assertSame('POINT (1 2)', $encoder->encode($point));
     }
 }

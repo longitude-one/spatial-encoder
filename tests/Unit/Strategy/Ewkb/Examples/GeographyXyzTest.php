@@ -1,14 +1,11 @@
 <?php
-/**
- * This file is part of the spatial-encoder project.
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
  *
- * PHP 8.4 | 8.5
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
  *
- * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2026
- * Copyright Longitude One 2026
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * See LICENSE for copyright and license information.
  *
  */
 
@@ -48,9 +45,9 @@ class GeographyXyzTest extends TestCase
         ]);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION Z (POINT Z (1 2 5), LINESTRING Z (0 0 6, 2 3 7))
-        static::assertSame(
+        self::assertSame(
             '01070000a0e6100000020000000101000080000000000000f03f00000000000000400000000000001440010200008002000000000000000000000000000000000000000000000000001840000000000000004000000000000008400000000000001c40',
-            bin2hex((new EwkbBinaryStrategy())->encode($collection))
+            bin2hex(new EwkbBinaryStrategy()->encode($collection))
         );
     }
 
@@ -60,9 +57,9 @@ class GeographyXyzTest extends TestCase
         $collection = new GeographyCollection(4326, []);
 
         // Reference geometry in WKT: GEOMETRYCOLLECTION Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01070000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($collection))
+            bin2hex(new EwkbBinaryStrategy()->encode($collection))
         );
     }
 
@@ -72,9 +69,9 @@ class GeographyXyzTest extends TestCase
         $line = new LineString([[0, 0, 5], [2, 3, 6], [4, 1, 7]], 4326);
 
         // Reference geometry in WKT: LINESTRING Z (0 0 5, 2 3 6, 4 1 7)
-        static::assertSame(
+        self::assertSame(
             '01020000a0e6100000030000000000000000000000000000000000000000000000000014400000000000000040000000000000084000000000000018400000000000001040000000000000f03f0000000000001c40',
-            bin2hex((new EwkbBinaryStrategy())->encode($line))
+            bin2hex(new EwkbBinaryStrategy()->encode($line))
         );
     }
 
@@ -84,9 +81,9 @@ class GeographyXyzTest extends TestCase
         $line = new LineString([], 4326);
 
         // Reference geometry in WKT: LINESTRING Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01020000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($line))
+            bin2hex(new EwkbBinaryStrategy()->encode($line))
         );
     }
 
@@ -99,9 +96,9 @@ class GeographyXyzTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: MULTILINESTRING Z ((0 0 5, 2 3 6), (4 1 7, 5 2 8))
-        static::assertSame(
+        self::assertSame(
             '01050000a0e6100000020000000102000080020000000000000000000000000000000000000000000000000014400000000000000040000000000000084000000000000018400102000080020000000000000000001040000000000000f03f0000000000001c40000000000000144000000000000000400000000000002040',
-            bin2hex((new EwkbBinaryStrategy())->encode($lines))
+            bin2hex(new EwkbBinaryStrategy()->encode($lines))
         );
     }
 
@@ -111,9 +108,9 @@ class GeographyXyzTest extends TestCase
         $lines = new MultiLineString([], 4326);
 
         // Reference geometry in WKT: MULTILINESTRING Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01050000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($lines))
+            bin2hex(new EwkbBinaryStrategy()->encode($lines))
         );
     }
 
@@ -123,9 +120,9 @@ class GeographyXyzTest extends TestCase
         $points = new MultiPoint([[1, 2, 5], [3, 4, 6]], 4326);
 
         // Reference geometry in WKT: MULTIPOINT Z ((1 2 5), (3 4 6))
-        static::assertSame(
+        self::assertSame(
             '01040000a0e6100000020000000101000080000000000000f03f000000000000004000000000000014400101000080000000000000084000000000000010400000000000001840',
-            bin2hex((new EwkbBinaryStrategy())->encode($points))
+            bin2hex(new EwkbBinaryStrategy()->encode($points))
         );
     }
 
@@ -135,9 +132,9 @@ class GeographyXyzTest extends TestCase
         $points = new MultiPoint([], 4326);
 
         // Reference geometry in WKT: MULTIPOINT Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01040000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($points))
+            bin2hex(new EwkbBinaryStrategy()->encode($points))
         );
     }
 
@@ -150,9 +147,9 @@ class GeographyXyzTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: MULTIPOLYGON Z (((0 0 5, 2 0 5, 0 2 5, 0 0 5)), ((3 3 6, 5 3 6, 3 5 6, 3 3 6)))
-        static::assertSame(
+        self::assertSame(
             '01060000a0e6100000020000000103000080010000000400000000000000000000000000000000000000000000000000144000000000000000400000000000000000000000000000144000000000000000000000000000000040000000000000144000000000000000000000000000000000000000000000144001030000800100000004000000000000000000084000000000000008400000000000001840000000000000144000000000000008400000000000001840000000000000084000000000000014400000000000001840000000000000084000000000000008400000000000001840',
-            bin2hex((new EwkbBinaryStrategy())->encode($polygons))
+            bin2hex(new EwkbBinaryStrategy()->encode($polygons))
         );
     }
 
@@ -162,9 +159,9 @@ class GeographyXyzTest extends TestCase
         $polygons = new MultiPolygon([], 4326);
 
         // Reference geometry in WKT: MULTIPOLYGON Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01060000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($polygons))
+            bin2hex(new EwkbBinaryStrategy()->encode($polygons))
         );
     }
 
@@ -174,9 +171,9 @@ class GeographyXyzTest extends TestCase
         $point = new Point(2.5, -3, 5, 4326);
 
         // Reference geometry in WKT: POINT Z (2.5 -3 5)
-        static::assertSame(
+        self::assertSame(
             '01010000a0e6100000000000000000044000000000000008c00000000000001440',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -186,9 +183,9 @@ class GeographyXyzTest extends TestCase
         $point = new Point(srid: 4326);
 
         // Reference geometry in WKT: POINT Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01010000a0e6100000000000000000f87f000000000000f87f000000000000f87f',
-            bin2hex((new EwkbBinaryStrategy())->encode($point))
+            bin2hex(new EwkbBinaryStrategy()->encode($point))
         );
     }
 
@@ -201,9 +198,9 @@ class GeographyXyzTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: POLYGON Z ((0 0 5, 4 0 5, 4 4 5, 0 4 5, 0 0 5), (1 1 5, 1 2 5, 2 2 5, 2 1 5, 1 1 5))
-        static::assertSame(
+        self::assertSame(
             '01030000a0e6100000020000000500000000000000000000000000000000000000000000000000144000000000000010400000000000000000000000000000144000000000000010400000000000001040000000000000144000000000000000000000000000001040000000000000144000000000000000000000000000000000000000000000144005000000000000000000f03f000000000000f03f0000000000001440000000000000f03f000000000000004000000000000014400000000000000040000000000000004000000000000014400000000000000040000000000000f03f0000000000001440000000000000f03f000000000000f03f0000000000001440',
-            bin2hex((new EwkbBinaryStrategy())->encode($polygon))
+            bin2hex(new EwkbBinaryStrategy()->encode($polygon))
         );
     }
 
@@ -213,9 +210,9 @@ class GeographyXyzTest extends TestCase
         $polygon = new Polygon([], 4326);
 
         // Reference geometry in WKT: POLYGON Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01030000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($polygon))
+            bin2hex(new EwkbBinaryStrategy()->encode($polygon))
         );
     }
 
@@ -228,9 +225,9 @@ class GeographyXyzTest extends TestCase
         ], 4326);
 
         // Reference geometry in WKT: POLYHEDRALSURFACE Z (((0 0 5, 1 0 5, 1 1 5, 0 1 5, 0 0 5)), ((1 0 5, 2 0 5, 2 1 5, 1 1 5, 1 0 5)))
-        static::assertSame(
+        self::assertSame(
             '010f0000a0e61000000200000001030000800100000005000000000000000000000000000000000000000000000000001440000000000000f03f00000000000000000000000000001440000000000000f03f000000000000f03f00000000000014400000000000000000000000000000f03f000000000000144000000000000000000000000000000000000000000000144001030000800100000005000000000000000000f03f000000000000000000000000000014400000000000000040000000000000000000000000000014400000000000000040000000000000f03f0000000000001440000000000000f03f000000000000f03f0000000000001440000000000000f03f00000000000000000000000000001440',
-            bin2hex((new EwkbBinaryStrategy())->encode($surface))
+            bin2hex(new EwkbBinaryStrategy()->encode($surface))
         );
     }
 
@@ -240,9 +237,9 @@ class GeographyXyzTest extends TestCase
         $surface = new PolyhedralSurface([], 4326);
 
         // Reference geometry in WKT: POLYHEDRALSURFACE Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '010f0000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($surface))
+            bin2hex(new EwkbBinaryStrategy()->encode($surface))
         );
     }
 
@@ -252,9 +249,9 @@ class GeographyXyzTest extends TestCase
         $triangle = new Triangle([[[0, 0, 5], [2, 0, 5], [0, 2, 5], [0, 0, 5]]], 4326);
 
         // Reference geometry in WKT: TRIANGLE Z ((0 0 5, 2 0 5, 0 2 5, 0 0 5))
-        static::assertSame(
+        self::assertSame(
             '01110000a0e61000000100000004000000000000000000000000000000000000000000000000001440000000000000004000000000000000000000000000001440000000000000000000000000000000400000000000001440000000000000000000000000000000000000000000001440',
-            bin2hex((new EwkbBinaryStrategy())->encode($triangle))
+            bin2hex(new EwkbBinaryStrategy()->encode($triangle))
         );
     }
 
@@ -264,9 +261,9 @@ class GeographyXyzTest extends TestCase
         $triangle = new Triangle([], 4326);
 
         // Reference geometry in WKT: TRIANGLE Z EMPTY
-        static::assertSame(
+        self::assertSame(
             '01110000a0e610000000000000',
-            bin2hex((new EwkbBinaryStrategy())->encode($triangle))
+            bin2hex(new EwkbBinaryStrategy()->encode($triangle))
         );
     }
 }

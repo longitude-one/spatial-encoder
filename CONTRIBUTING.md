@@ -1,32 +1,60 @@
-# How to contribute to spatial-encoder
+# Contributing
 
-This library is open to contributions. 
-It comes with a set of quality tools to help you to maintain the quality of the code and pass the CI's tests. 
+## Before starting
 
-## How to run the quality tools
+For a bug report, include a minimal reproducer, the expected behavior,
+and your PHP and dependency versions.
+
+Discuss significant changes in a GitHub issue before implementing them.
+Public API, compatibility, architecture, and unresolved standards decisions
+require maintainer approval.
+
+## Development
+
+Work on a dedicated branch and keep each contribution focused.
+
+- Follow the configured coding standards.
+- Cover behavior changes with tests and add regression tests for bug fixes.
+- Update documentation when usage or behavior changes.
+- Preserve supported PHP and dependency versions.
+- Do not weaken tests or quality rules to make checks pass.
+
+See [Tests](tests/README.md) and [Quality tools](quality/README.md)
+for setup and commands.
+
+## Before committing
 
 ```bash
-# install library-dependencies if not already done
-composer install
-
-# install quality tools
-composer install-quality-tools
-
-# launch quality checks
+composer test
 composer quality
+git diff --check
 ```
- 
-In this repository we use PHP_CodeSniffer (phpcs), PHP CS Fixer, PHP Mess Detector (phpmd), and PHPStan to enforce and improve code quality: 
 
-* **PHP_CodeSniffer** enforces the project's coding standards and flags style violations and suspicious constructs; 
-* **PHP CS Fixer** automatically reformats source code to the configured style rules while preserving behavior; 
-* **PHP Mess Detector** detects potential bugs, dead or unused code, and maintainability issues such as high cyclomatic complexity; 
-* **PHPStan** performs advanced static analysis with type inference to surface type-related errors, incorrect API usage, and contract violations before runtime.
+Review your changes and stage only files related to the contribution.
+Do not commit dependencies, local lockfiles, caches, or generated reports.
 
+Use Conventional Commits, with an optional scope:
 
-## How to run the quality tools
+```text
+fix(parser): handle empty input
+docs: clarify installation
+```
+
+Use the commit types configured in [.versionrc.json](.versionrc.json).
+
+## Submitting a pull request
+
+Run the complete checks from the repository root:
 
 ```bash
-# Run all test
-composer test-local
+composer check
 ```
+
+Resolve failures before submitting. In the pull request:
+
+- Link the related issue and explain what changed and why.
+- Report the checks performed and their results.
+- Highlight compatibility changes and any remaining limitations.
+
+Keep checks passing when updating the pull request.
+Contributions require successful CI checks and independent review before merge.

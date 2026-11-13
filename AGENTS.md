@@ -6,7 +6,8 @@ This file defines the repository-specific development rules and the operating bo
 
 This PHP library encodes spatial objects to WKB, EWKB, MySQL binary formats, and WKT text.
 
-Source lives in `lib/`, using Composer PSR-4 autoloading with the `LongitudeOne\SpatialEncoder\` namespace prefix. `Encoder` delegates conversion to `Strategy/StrategyInterface`; MySQL encoding helpers live in `Strategy/MySQL/`.
+Source lives in `lib/`, using Composer PSR-4 autoloading with the `LongitudeOne\SpatialEncoder\` namespace prefix. `Encoder` delegates conversion to `Strategy/StrategyInterface`;
+MySQL encoding helpers live in `Strategy/MySQL/`.
 
 Strategies preserve X/Y coordinate order. SRIDs do not trigger axis swapping.
 
@@ -52,7 +53,8 @@ When determining expected spatial behavior, agents SHOULD consider sources in th
 4. documented LongitudeOne architectural decisions;
 5. database or third-party implementation behavior.
 
-Behavior observed in PostgreSQL/PostGIS, MySQL, MariaDB, Microsoft SQL Server, GEOS, or another spatial implementation MUST NOT be considered normative solely because that implementation behaves that way.
+Behavior observed in PostgreSQL/PostGIS, MySQL, MariaDB, Microsoft SQL Server, GEOS, or another spatial implementation MUST NOT be considered normative solely because that
+implementation behaves that way.
 
 Implementation behavior MAY be used for interoperability analysis.
 
@@ -79,11 +81,12 @@ Use PHP 8.4 or newer and Composer 2. CI exercises PHP 8.4 and 8.5.
 There is no application server or build step.
 
 - `composer install`: install library and test dependencies.
-- `composer install-quality-tools`: install the four quality tool environments.
+- `composer update-tools`: install the four quality tool environments.
 - `composer test`: run PHPUnit.
 - `vendor/bin/phpunit --no-coverage --filter WkbStrategyTest`: run focused tests without coverage.
-- `composer test-local`: run tests and print the coverage summary; enable PCOV or Xdebug coverage first. Reports go to `.phpunit-cache/`.
-- `composer quality`: apply PHP CS Fixer, then run PHPStan at level 9, PHP Mess Detector, and PHP_CodeSniffer. Review formatter changes before committing.
+- `composer coverage`: run tests and print the coverage summary; enable PCOV or Xdebug coverage first. Reports go to `build/coverage/`.
+- `composer quality`: check PHP CS Fixer, PHPStan at level 9, PHP Mess Detector, PHP_CodeSniffer and Markdown without changing source files. Use `composer cs-fix` to apply
+  formatting.
 
 ## Coding Style & Naming Conventions
 
@@ -178,7 +181,8 @@ When dimensionality is relevant, agents MUST explicitly consider:
 
 A Bug fix MUST include a regression test that fails without the fix whenever technically practical.
 
-Existing tests MUST NOT be removed, weakened, skipped, or modified merely to make a new implementation pass unless the Issue explicitly requires a behavior change that invalidates those tests.
+Existing tests MUST NOT be removed, weakened, skipped, or modified merely to make a new implementation pass unless the Issue explicitly requires a behavior change that invalidates
+those tests.
 
 Before submitting PHP changes, agents MUST run the applicable test suite and `composer quality`.
 
@@ -370,7 +374,8 @@ Commits SHOULD be focused and independently understandable.
 
 Agents SHOULD separate unrelated concerns into separate commits when practical.
 
-Agents MUST NOT combine unrelated refactoring, formatting, dependency updates, or documentation changes with functional work unless those changes are directly required by the same Issue.
+Agents MUST NOT combine unrelated refactoring, formatting, dependency updates, or documentation changes with functional work unless those changes are directly required by the same
+Issue.
 
 Do not commit:
 
@@ -444,3 +449,7 @@ When uncertain whether a decision is:
 - or a normative interpretation;
 
 the agent MUST escalate the question rather than silently making the decision.
+
+CI coverage uses `composer coverage-ci` and `phpunit.ci.xml` (Clover XML only).
+Local `composer coverage` reports are unchanged. See `CONTRIBUTING.md` for triggers,
+cache policy and the aggregate `CI` check.

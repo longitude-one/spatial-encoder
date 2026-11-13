@@ -1,0 +1,57 @@
+<?php
+
+/*
+ * This file is part of the LongitudeOne Spatial project.
+ *
+ * Copyright (c) 2026 Alexandre Tranchant <alexandre.tranchant@gmail.com>
+ *
+ * See LICENSE for copyright and license information.
+ *
+ */
+
+declare(strict_types=1);
+
+// A zero minimum validates the report without introducing a coverage threshold.
+$minimumLineCoverage = isset($argv[2]) ? (float) $argv[2] : 0.0;
+
+$coverageFile = $argv[1] ?? 'build/coverage/clover.xml';
+
+if (!is_file($coverageFile)) {
+    fwrite(\STDERR, sprintf("Coverage report not found: %s\n", $coverageFile));
+
+    exit(2);
+}
+
+$document = new DOMDocument();
+if (!$document->load($coverageFile)) {
+    fwrite(\STDERR, sprintf("Unable to read coverage report: %s\n", $coverageFile));
+
+    exit(2);
+}
+
+$metrics = new DOMXPath($document)->query('/coverage/project/metrics')->item(0);
+
+if (!$metrics instanceof DOMElement) {
+    fwrite(\STDERR, "Coverage report does not contain project metrics.\n");
+
+    exit(2);
+}
+
+$statements = (int) $metrics->getAttribute('statements');
+$coveredStatements = (int) $metrics->getAttribute('coveredstatements');
+
+if (0 === $statements) {
+    fwrite(\STDERR, "Coverage report does not contain executable statements.\n");
+
+    exit(2);
+}
+
+$lineCoverage = 100 * $coveredStatements / $statements;
+
+printf("Line coverage: %.2f%% (minimum: %.2f%%)\n", $lineCoverage, $minimumLineCoverage);
+
+if ($lineCoverage < $minimumLineCoverage) {
+    fwrite(\STDERR, "Line coverage is below the required minimum.\n");
+
+    exit(1);
+}
