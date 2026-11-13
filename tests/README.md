@@ -65,7 +65,6 @@ This command generates a coverage report at build/coverage/clover.xml that can b
 
 ![Sunburst](https://codecov.io/gh/longitude-one/spatial-encoder/graphs/sunburst.svg?token=NIFES3ETWH)
 
-
 ## WKT strategy
 
 Run `vendor/bin/phpunit --no-coverage --filter WktStrategyTest` for text output.
@@ -97,14 +96,12 @@ Run this additional suite independently:
 vendor/bin/phpunit --no-coverage tests/Unit/Strategy/Wkt/Examples
 ```
 
-
 ## EWKT strategy
 
 Run `vendor/bin/phpunit --no-coverage --filter EwktStrategyTest` for explicit
 EWKT examples. These tests cover nonzero, zero, and default SRIDs; empty
 values; Z/M/ZM dimensions; nested collections with a single outer SRID
 prefix; repeated conversions; and integration with `Encoder`.
-
 
 ## Explicit ISO WKB examples
 
@@ -125,7 +122,6 @@ Every example with SRID 4326 verifies that WKB omits the SRID.
 ```bash
 vendor/bin/phpunit --no-coverage tests/Unit/Strategy/Wkb
 ```
-
 
 ## Explicit EWKB examples
 
@@ -148,7 +144,6 @@ vendor/bin/phpunit --no-coverage --filter Ewkb
 
 For an independent PostGIS reference, use
 `SELECT encode(ST_AsEWKB(ST_GeomFromEWKT('SRID=4326;POINT Z (1 2 3)'), 'NDR'), 'hex');`.
-
 
 ## MySQL rejected inputs
 

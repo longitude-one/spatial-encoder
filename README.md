@@ -15,6 +15,7 @@ Feel free to provide additional strategies for encoding spatial interfaces into 
 See the [strategy guide](docs/strategies.md) for a comparison of the five formats, usage examples, implementation limitations, and links to reference documentation.
 
 ## Current status
+
 ![longitude-one/spatial--encoder](https://img.shields.io/badge/longitude--one-spatial--encoder-blue)
 ![Stable release](https://img.shields.io/github/v/release/longitude-one/spatial-encoder)
 ![Minimum PHP Version](https://img.shields.io/packagist/php-v/longitude-one/spatial-encoder.svg?maxAge=3600)
@@ -23,7 +24,6 @@ See the [strategy guide](docs/strategies.md) for a comparison of the five format
 [![Last integration test](https://github.com/longitude-one/spatial-encoder/actions/workflows/ci.yml/badge.svg)](https://github.com/longitude-one/spatial-encoder/actions/workflows/ci.yml)
 [![Downloads](https://img.shields.io/packagist/dm/longitude-one/spatial-encoder.svg)](https://packagist.org/packages/longitude-one/spatial-encoder)
 [![codecov](https://codecov.io/gh/longitude-one/spatial-encoder/branch/main/graph/badge.svg?token=NIFES3ETWH)](https://codecov.io/gh/longitude-one/spatial-encoder)
-
 
 ## Installation
 

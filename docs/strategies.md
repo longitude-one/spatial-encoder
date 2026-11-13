@@ -14,14 +14,17 @@ for incomplete-coordinate failures, native conversions, and a Spatial Validator 
 
 This table describes the capabilities of the repository's current implementation.
 
-| Class.                | Output                          | SRID in output    | Dimensions written | Usage                                                            |
+| Class. | Output | SRID in output | Dimensions written | Usage |
 | --------------------- | ------------------------------- | ----------------- | ------------------ | ---------------------------------------------------------------- |
-| `GeoJsonStrategy`     | GeoJSON geometry text           | No                | XY, XYZ            | Point, LineString, MultiPoint, MultiLineString, Polygon, MultiPolygon, and GeometryCollection encoding according to RFC 7946  |
-| `WktTextStrategy`     | WKT Well Known Text             | No                | XY, XYZ, XYM, XYZM | Display, text exchanges, functions accepting WKT                 |
-| `EwktTextStrategy`    | EWKT Extended Well Known Text.  | Yes, when nonzero | XY, XYZ, XYM, XYZM | Text exchanges that include the spatial reference                |
-| `WkbBinaryStrategy`   | ISO WKB Well Known Binary.      | No                | XY, XYZ, XYM, XYZM | Exchanges with a standard WKB consumer                           |
-| `EwkbBinaryStrategy`  | EWKB Extended Well Known Binary | Yes, when nonzero | XY, XYZ, XYM, XYZM | Exchanges with a consumer of the extended PostGIS format         |
-| `MySQLBinaryStrategy` | Internal MySQL binary format    | Yes, as a prefix  | XY                 | Integrations expecting spatial values in MySQL's internal format |
+| `GeoJsonStrategy` | GeoJSON geometry text | No | XY, XYZ | RFC 7946 geometry encoding |
+| `WktTextStrategy` | WKT Well Known Text | No | XY, XYZ, XYM, XYZM | Display, text exchanges, functions accepting WKT |
+| `EwktTextStrategy` | EWKT Extended Well Known Text. | Yes, when nonzero | XY, XYZ, XYM, XYZM | Text exchanges that include the spatial reference |
+| `WkbBinaryStrategy` | ISO WKB Well Known Binary. | No | XY, XYZ, XYM, XYZM | Exchanges with a standard WKB consumer |
+| `EwkbBinaryStrategy` | EWKB Extended Well Known Binary | Yes, when nonzero | XY, XYZ, XYM, XYZM | Exchanges with a consumer of the extended PostGIS format |
+| `MySQLBinaryStrategy` | Internal MySQL binary format | Yes, as a prefix | XY | Integrations expecting spatial values in MySQL's internal format |
+
+The GeoJSON strategy supports Point, LineString, MultiPoint, MultiLineString, Polygon,
+MultiPolygon, and GeometryCollection encoding according to RFC 7946.
 
 The binary and WKT/EWKT strategies support `Point`, `LineString`, `Polygon`,
 `MultiPoint`, `MultiLineString`, `MultiPolygon`, and geometry collections.
