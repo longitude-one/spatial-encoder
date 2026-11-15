@@ -39,6 +39,8 @@ final class GeometryEncoder
      * @param SpatialInterface $spatial the geometry to encode
      *
      * @return array{type: string, coordinates?: array<mixed>, geometries?: list<array<string, mixed>>}
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     public function encode(SpatialInterface $spatial): array
     {
@@ -60,6 +62,8 @@ final class GeometryEncoder
      * @param SpatialInterface $spatial the collection to encode
      *
      * @return array{type: string, geometries: list<array<string, mixed>>}
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function encodeCollection(SpatialInterface $spatial): array
     {

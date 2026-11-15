@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace LongitudeOne\SpatialEncoder\Strategy;
 
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
+use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
 use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
@@ -30,7 +31,7 @@ use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
  *
  * This class is responsible for encoding a spatial interface to its well-known binary representation.
  */
-class EwkbBinaryStrategy implements StrategyInterface
+class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements StrategyInterface
 {
     /**
      * Encode a spatial interface to its well-known binary representation.
@@ -45,6 +46,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the spatial interface in EWKB format
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for the spatial type
      */
     public function encode(SpatialInterface $spatial): string
     {
@@ -70,6 +72,9 @@ class EwkbBinaryStrategy implements StrategyInterface
      * @param CollectionInterface $collection the collection to encode
      *
      * @return string a binary string representing the collection members
+     *
+     * @throws UnsupportedSpatialInterfaceException when a collection member interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for a collection member type
      */
     private function writeCollection(CollectionInterface $collection): string
     {
@@ -90,6 +95,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the coordinates
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for the spatial type
      */
     private function writeCoordinates(SpatialInterface $spatial): string
     {
@@ -112,6 +118,9 @@ class EwkbBinaryStrategy implements StrategyInterface
      *
      * @param SpatialInterface $spatial     the geometry to encode
      * @param bool             $includeSrid whether to include its spatial reference
+     *
+     * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for the spatial type
      */
     private function writeGeometry(SpatialInterface $spatial, bool $includeSrid = false): string
     {
@@ -151,6 +160,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the multi-line string
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for the spatial type
      */
     private function writeMultiLineString(MultiLineStringInterface $multiLineString): string
     {
@@ -170,6 +180,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the multipoint
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for the spatial type
      */
     private function writeMultiPoint(MultiPointInterface $multiPoint): string
     {
@@ -190,6 +201,7 @@ class EwkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the multipolygon
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for the spatial type
      */
     private function writeMultiPolygon(MultiPolygonInterface $multiPolygon): string
     {
@@ -242,6 +254,9 @@ class EwkbBinaryStrategy implements StrategyInterface
      * Write a polyhedral surface as a count followed by complete polygon WKBs.
      *
      * @param PolyhedralSurfaceInterface $surface the surface to write
+     *
+     * @throws UnsupportedSpatialInterfaceException when a patch interface is not supported
+     * @throws UnsupportedSpatialTypeException      when no implementation exists for a patch type
      */
     private function writePolyhedralSurface(PolyhedralSurfaceInterface $surface): string
     {

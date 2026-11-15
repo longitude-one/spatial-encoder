@@ -27,7 +27,7 @@ use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
  *
  * This class is responsible for encoding a spatial interface to the internal MySQL storage format.
  */
-class MySQLBinaryStrategy implements StrategyInterface
+class MySQLBinaryStrategy extends AbstractConfigurableStrategy implements StrategyInterface
 {
     /**
      * @var MySQLGeometryEncoder encoder for MySQL geometry coordinate payloads
@@ -47,11 +47,11 @@ class MySQLBinaryStrategy implements StrategyInterface
     /**
      * Create a MySQL binary strategy.
      *
-     * The optional encoders keep the strategy backward compatible with its former no-argument constructor,
-     * while allowing individual encoders to be supplied by an application.
+     * @param array<string, mixed> $options strategy-specific configuration
      */
-    public function __construct()
+    public function __construct(array $options = [])
     {
+        parent::__construct($options);
         $this->headerEncoder = new MySQLHeaderEncoder();
         $this->typeEncoder = new MySQLTypeEncoder();
         $this->geometryEncoder = new MySQLGeometryEncoder(

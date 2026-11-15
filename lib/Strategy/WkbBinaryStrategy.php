@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace LongitudeOne\SpatialEncoder\Strategy;
 
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
+use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\Wkb\WkbTypeEncoder;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
 use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
@@ -30,7 +31,7 @@ use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
  *
  * This class is responsible for encoding a spatial interface to its well-known binary representation.
  */
-class WkbBinaryStrategy implements StrategyInterface
+class WkbBinaryStrategy extends AbstractConfigurableStrategy implements StrategyInterface
 {
     /**
      * Encode a spatial interface to its well-known binary representation.
@@ -45,6 +46,7 @@ class WkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the spatial interface in ISO WKB format
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when the spatial type is not supported
      */
     public function encode(SpatialInterface $spatial): string
     {
@@ -74,6 +76,8 @@ class WkbBinaryStrategy implements StrategyInterface
      * @param CollectionInterface $collection the collection to encode
      *
      * @return string a binary string representing the collection members
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function writeCollection(CollectionInterface $collection): string
     {
@@ -94,6 +98,7 @@ class WkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the coordinates
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when the spatial type is not supported
      */
     private function writeCoordinates(SpatialInterface $spatial): string
     {
@@ -136,6 +141,7 @@ class WkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the multi-line string
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when the spatial type is not supported
      */
     private function writeMultiLineString(MultiLineStringInterface $multiLineString): string
     {
@@ -155,6 +161,7 @@ class WkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the multipoint
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when the spatial type is not supported
      */
     private function writeMultiPoint(MultiPointInterface $multiPoint): string
     {
@@ -175,6 +182,7 @@ class WkbBinaryStrategy implements StrategyInterface
      * @return string a binary string representing the multipolygon
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when the spatial type is not supported
      */
     private function writeMultiPolygon(MultiPolygonInterface $multiPolygon): string
     {
@@ -227,6 +235,8 @@ class WkbBinaryStrategy implements StrategyInterface
      * Write a polyhedral surface as a count followed by complete polygon WKBs.
      *
      * @param PolyhedralSurfaceInterface $surface the surface to write
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function writePolyhedralSurface(PolyhedralSurfaceInterface $surface): string
     {

@@ -47,14 +47,20 @@ jobs:
 
             core.setOutput('markdown', String(markdown));
 
-            const stable = [{"php": "8.4", "coverage": true}, {"php": "8.5", "coverage": false}];
+            const stable = [
+              {php: '8.4', symfony: '^5.4', coverage: false},
+              {php: '8.4', symfony: '^6.4', coverage: false},
+              {php: '8.4', symfony: '^7.4', coverage: false},
+              {php: '8.4', symfony: '^8.0', coverage: true},
+              {php: '8.5', symfony: '^8.0', coverage: false}
+            ];
 
             const experimental = [];
 
             core.setOutput('matrix', JSON.stringify({include: scheduled ? [...stable, ...experimental] :
             stable}));
   tests:
-    name: ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} / Symfony ${{ matrix.symfony }}
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
@@ -88,7 +94,7 @@ jobs:
       - name: Validate Composer metadata
         run: composer validate
       - name: Resolve and install current dependencies
-        run: composer update --prefer-dist --no-interaction ${{ !matrix.coverage && '--ignore-platform-req=ext-pcov' || '' }}
+        run: composer update --with "symfony/options-resolver:${{ matrix.symfony }}" --prefer-dist --no-interaction ${{ !matrix.coverage && '--ignore-platform-req=ext-pcov' || '' }}
       - name: Run tests without coverage
         if: ${{ !matrix.coverage }}
         run: composer test

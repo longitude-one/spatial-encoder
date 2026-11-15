@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace LongitudeOne\SpatialEncoder\Strategy\MySQL;
 
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
+use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
 use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiLineStringInterface;
@@ -53,6 +54,7 @@ class MySQLGeometryEncoder
      * @return string a binary string representing the coordinates in the internal MySQL storage format
      *
      * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
+     * @throws UnsupportedSpatialTypeException      when the spatial type is not supported
      */
     public function writeCoordinates(SpatialInterface $spatial): string
     {
@@ -74,6 +76,8 @@ class MySQLGeometryEncoder
      * @param CollectionInterface $collection the collection to encode
      *
      * @return string a binary string representing the collection in the internal MySQL storage format
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function writeCollection(CollectionInterface $collection): string
     {
@@ -110,6 +114,8 @@ class MySQLGeometryEncoder
      * @param MultiLineStringInterface $multiLineString the multi-line string to write
      *
      * @return string a binary string representing the multi-line string in the internal MySQL storage format
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function writeMultiLineString(MultiLineStringInterface $multiLineString): string
     {
@@ -129,6 +135,8 @@ class MySQLGeometryEncoder
      * @param MultiPointInterface $multiPoint the multi-point to write
      *
      * @return string a binary string representing the multi-point in the internal MySQL storage format
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function writeMultiPoint(MultiPointInterface $multiPoint): string
     {
@@ -147,6 +155,8 @@ class MySQLGeometryEncoder
      * @param MultiPolygonInterface $multiPolygon the multi-polygon to write
      *
      * @return string a binary string representing the multi-polygon in the internal MySQL storage format
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function writeMultiPolygon(MultiPolygonInterface $multiPolygon): string
     {
@@ -165,6 +175,8 @@ class MySQLGeometryEncoder
      * @param SpatialInterface $spatial the nested spatial value to write
      *
      * @return string a binary string representing the nested geometry in the internal MySQL storage format
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     private function writeNestedGeometry(SpatialInterface $spatial): string
     {

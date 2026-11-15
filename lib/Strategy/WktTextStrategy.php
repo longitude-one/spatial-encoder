@@ -29,7 +29,7 @@ use TypeError as CoordinateTypeError;
 /**
  * Writes WKT in coordinate order X Y [Z] [M], without SRID metadata.
  */
-class WktTextStrategy implements StrategyInterface
+class WktTextStrategy extends AbstractConfigurableStrategy implements StrategyInterface
 {
     /**
      * Encode a spatial object to Well-Known Text, preserving its dimensions.
