@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace LongitudeOne\SpatialEncoder;
 
+use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\StrategyInterface;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
 
@@ -37,6 +38,8 @@ class Encoder implements EncoderInterface
      * @param SpatialInterface $spatial The spatial interface to encode
      *
      * @return mixed the encoded spatial interface in the format specified by the strategy
+     *
+     * @throws UnsupportedSpatialTypeException when the spatial type is not supported
      */
     public function encode(SpatialInterface $spatial): mixed
     {

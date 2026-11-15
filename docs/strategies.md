@@ -86,3 +86,5 @@ See the executable [WKT](../tests/Unit/Strategy/Wkt/Examples/),
 To add a format, implement [StrategyInterface](../lib/Strategy/StrategyInterface.php)
 and pass it to `Encoder`. See [Encoding tests](testing.md) for fixture guidance
 and focused test commands.
+
+See [Strategy configuration](strategy-configuration.md) for validated options and custom strategies.

@@ -20,12 +20,24 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\GeoJson\GeometryEncoder;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Encodes supported geometries using RFC 7946 without transforming coordinates.
  */
-class GeoJsonStrategy implements StrategyInterface
+class GeoJsonStrategy extends AbstractConfigurableStrategy implements StrategyInterface
 {
+    /**
+     * Declare only the options supported by this format.
+     *
+     * @param OptionsResolver $resolver the local configuration resolver
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefault('pretty_print', false);
+        $resolver->setAllowedTypes('pretty_print', 'bool');
+    }
+
     /**
      * Encode a geometry, preserving its coordinates and omitting reference metadata.
      *
@@ -46,9 +58,9 @@ class GeoJsonStrategy implements StrategyInterface
         $geometry = new GeometryEncoder()->encode($spatial);
 
         try {
-            return json_encode($geometry, \JSON_THROW_ON_ERROR);
+            return json_encode($geometry, \JSON_THROW_ON_ERROR | ($this->options['pretty_print'] ? \JSON_PRETTY_PRINT : 0));
         } catch (\JsonException $exception) {
-            throw new JsonEncodingException('Unable to encode the geometry as GeoJSON.', previous: $exception);
+            throw new JsonEncodingException('Unable to encode the spatial instance as GeoJSON.', previous: $exception);
         }
     }
 }
