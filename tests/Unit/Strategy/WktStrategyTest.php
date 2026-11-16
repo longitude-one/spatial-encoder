@@ -244,10 +244,10 @@ class WktStrategyTest extends TestCase
     public function testUnsupportedType(): void
     {
         $spatial = self::createStub(SpatialInterface::class);
-        $spatial->method('getType')->willReturn(GeometryTypeEnum::CIRCULARSTRING);
+        $spatial->method('getType')->willReturn(GeometryTypeEnum::COMPOUNDCURVE);
         $spatial->method('toArray')->willReturn([]);
         $this->expectException(UnsupportedSpatialTypeException::class);
-        $this->expectExceptionMessageIsOrContains('WKT adapter does not support spatial type CircularString');
+        $this->expectExceptionMessageIsOrContains('WKT adapter does not support spatial type CompoundCurve');
         new WktTextStrategy()->encode($spatial);
     }
 }

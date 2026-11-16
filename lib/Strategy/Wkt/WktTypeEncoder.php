@@ -34,6 +34,7 @@ class WktTypeEncoder
         $type = match ($spatial->getType()) {
             GeometryTypeEnum::POINT,
             GeometryTypeEnum::LINESTRING,
+            GeometryTypeEnum::CIRCULARSTRING,
             GeometryTypeEnum::POLYGON,
             GeometryTypeEnum::MULTIPOINT,
             GeometryTypeEnum::MULTILINESTRING,

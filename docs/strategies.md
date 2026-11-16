@@ -17,7 +17,8 @@ The encoder accepts mutable and immutable spatial objects without modifying them
 All strategies support Point, LineString, Polygon, their multi-geometries,
 and geometry collections. WKT, EWKT, WKB, and EWKB also support Triangle
 and PolyhedralSurface; polyhedral surfaces are available in XYZ and XYZM.
-Curved geometries and TIN are unsupported.
+WKT and EWKT also support CircularString in all four dimensions.
+CompoundCurve, other curved geometry types, and TIN remain unsupported.
 
 ## Encode an object
 
@@ -58,6 +59,28 @@ An SRID does not transform coordinates.
 - **GeoJSON:** supply WGS 84 longitude/latitude coordinates, with height in metres
   for XYZ. Reference metadata is omitted without checking the supplied SRID.
   Measured coordinates, Triangle, and PolyhedralSurface are rejected.
+
+### Circular strings in WKT and EWKT
+
+Circular strings retain every ordered control point, including shared arc
+endpoints, repeated closing coordinates, and collinear points. No curve is
+linearized or approximated. Empty curves retain their dimension marker.
+
+```php
+use LongitudeOne\SpatialEncoder\Strategy\EwktTextStrategy;
+use LongitudeOne\SpatialTypes\Types\Dimension3m\Geometry\CircularStringImmutable;
+
+$curve = new CircularStringImmutable([[0, 0, 6], [1, 1, 7], [2, 0, 8]], 4326);
+
+echo new EwktTextStrategy()->encode($curve);
+// SRID=4326;CIRCULARSTRING M (0 0 6, 1 1 7, 2 0 8)
+```
+
+`WktTextStrategy` produces the same text without the `SRID=4326;` prefix.
+For an empty XYM curve, it produces `CIRCULARSTRING M EMPTY`.
+These strategies follow the circular-string text productions in
+ISO/IEC CD 13249-3:201x(E), clause 5.1.57 (Committee Draft, 2009-01-16).
+EWKT adds the existing nonzero-SRID prefix as a format extension.
 
 ### GeoJSON structures
 
