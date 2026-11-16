@@ -14,17 +14,17 @@ declare(strict_types=1);
 namespace LongitudeOne\SpatialEncoder\Strategy;
 
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
+use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktPointEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktTypeEncoder;
+use LongitudeOne\SpatialTypes\Interfaces\CircularStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
 use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiLineStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiPointInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiPolygonInterface;
-use LongitudeOne\SpatialTypes\Interfaces\PointInterface;
 use LongitudeOne\SpatialTypes\Interfaces\PolygonInterface;
 use LongitudeOne\SpatialTypes\Interfaces\PolyhedralSurfaceInterface;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
-use TypeError as CoordinateTypeError;
 
 /**
  * Writes WKT in coordinate order X Y [Z] [M], without SRID metadata.
@@ -61,26 +61,6 @@ class WktTextStrategy extends AbstractConfigurableStrategy implements StrategyIn
     }
 
     /**
-     * Write a coordinate without locale-dependent decimal separators.
-     *
-     * JSON uses PHP's serialize_precision setting, whose default (-1) preserves
-     * floating-point values using their shortest round-trip representation.
-     *
-     * @param float|int|null $coordinate the ordinate to format
-     *
-     * @throws CoordinateTypeError when the ordinate is null
-     * @throws \JsonException      when the coordinate is not finite
-     */
-    private function writeCoordinate(float|int|null $coordinate): string
-    {
-        if (null === $coordinate) {
-            throw new CoordinateTypeError('WKT requires numeric ordinates; null given.');
-        }
-
-        return json_encode($coordinate, \JSON_THROW_ON_ERROR);
-    }
-
-    /**
      * Write the contents of a nonempty geometry body.
      *
      * @param SpatialInterface $spatial the spatial object to encode
@@ -88,15 +68,15 @@ class WktTextStrategy extends AbstractConfigurableStrategy implements StrategyIn
     private function writeCoordinates(SpatialInterface $spatial): string
     {
         return match (true) {
-            $spatial instanceof PointInterface => $this->writePoint($spatial),
-            $spatial instanceof LineStringInterface => implode(', ', array_map($this->writePoint(...), $spatial->getPoints())),
+            $spatial instanceof LineStringInterface,
+            $spatial instanceof CircularStringInterface => implode(', ', array_map(new WktPointEncoder()->writePoint(...), $spatial->getPoints())),
             $spatial instanceof PolygonInterface => $this->writeMembers($spatial->getRings()),
             $spatial instanceof MultiPointInterface => $this->writeMembers($spatial->getPoints()),
             $spatial instanceof MultiLineStringInterface => $this->writeMembers($spatial->getLineStrings()),
             $spatial instanceof MultiPolygonInterface => $this->writeMembers($spatial->getPolygons()),
             $spatial instanceof PolyhedralSurfaceInterface => $this->writeMembers($spatial->getPatches()),
             $spatial instanceof CollectionInterface => implode(', ', array_map($this->writeGeometry(...), $spatial->getElements())),
-            default => throw new UnsupportedSpatialInterfaceException($spatial::class),
+            default => new WktPointEncoder()->writePoint($spatial),
         };
     }
 
@@ -118,15 +98,5 @@ class WktTextStrategy extends AbstractConfigurableStrategy implements StrategyIn
     private function writeMembers(array $members): string
     {
         return implode(', ', array_map($this->writeBody(...), $members));
-    }
-
-    /**
-     * Write the ordinates of a nonempty point in its declared dimension.
-     *
-     * @param PointInterface $point the point to encode
-     */
-    private function writePoint(PointInterface $point): string
-    {
-        return implode(' ', array_map($this->writeCoordinate(...), $point->toArray()));
     }
 }
