@@ -190,7 +190,7 @@ Before submitting PHP changes, agents MUST run the applicable test suite and `co
 
 GitHub Issues and the LongitudeOne Spatial Development Project are the source of truth for planned work.
 
-Agents MUST NOT begin implementation of a Story or Bug unless its Project status is `Ready`.
+Agents MUST NOT begin or resume implementation of a Story or Bug unless its Project status is `Ready` or `In progress`.
 
 Before modifying code, a development agent MUST:
 
