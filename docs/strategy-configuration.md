@@ -11,7 +11,7 @@ The following built-in options are available:
 | Strategies | Option | Default | Accepted type | Effect |
 | --- | --- | --- | --- | --- |
 | GeoJSON | `pretty_print` | `false` | `bool` | Add JSON indentation without changing coordinates or reference handling |
-| WKB, EWKB | `byte_order` | `ByteOrderEnum::LITTLE_ENDIAN` | `LongitudeOne\Core\Enum\ByteOrderEnum` | Select byte order; big-endian is temporarily unavailable |
+| WKB, EWKB | `byte_order` | `ByteOrderEnum::LITTLE_ENDIAN` | `LongitudeOne\Core\Enum\ByteOrderEnum` | Select little-endian or big-endian output |
 
 ```php
 use LongitudeOne\SpatialEncoder\Encoder;
@@ -35,22 +35,46 @@ includes a nonzero SRID only on the outer geometry.
 use LongitudeOne\Core\Enum\ByteOrderEnum;
 use LongitudeOne\SpatialEncoder\Strategy\EwkbBinaryStrategy;
 use LongitudeOne\SpatialEncoder\Strategy\WkbBinaryStrategy;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\PointImmutable;
 
+$point = new PointImmutable(1, 2, 4326);
 $wkb = new WkbBinaryStrategy([
     'byte_order' => ByteOrderEnum::LITTLE_ENDIAN,
 ]);
 $ewkb = new EwkbBinaryStrategy([
     'byte_order' => ByteOrderEnum::LITTLE_ENDIAN,
 ]);
+$bigWkb = new WkbBinaryStrategy([
+    'byte_order' => ByteOrderEnum::BIG_ENDIAN,
+]);
+$bigEwkb = new EwkbBinaryStrategy([
+    'byte_order' => ByteOrderEnum::BIG_ENDIAN,
+]);
+
+echo bin2hex($wkb->encode($point));
+// 0101000000000000000000f03f0000000000000040
+echo bin2hex($ewkb->encode($point));
+// 0101000020e6100000000000000000f03f0000000000000040
+echo bin2hex($bigWkb->encode($point));
+// 00000000013ff00000000000004000000000000000
+echo bin2hex($bigEwkb->encode($point));
+// 0020000001000010e63ff00000000000004000000000000000
 ```
 
-`ByteOrderEnum::BIG_ENDIAN` is recognized but temporarily rejected during
-construction by both strategies with `\LogicException` and the exact message
-`Big-endian encoding is not implemented yet.` No geometry is encoded.
+`ByteOrderEnum::BIG_ENDIAN` writes marker `00` and big-endian 32-bit integers
+and 64-bit doubles; `LITTLE_ENDIAN` writes marker `01` and little-endian numbers.
+The selected order applies to every nested geometry, count, coordinate and
+serialized EWKB SRID. EMPTY points retain their endian-correct quiet NaN ordinates.
+Coordinates are preserved in X/Y/Z/M order without transformation or mutation.
 Raw integers (including `0` and `1`), strings, booleans, null and other values
-that are not `ByteOrderEnum` instances instead raise
+that are not `ByteOrderEnum` instances raise
 `Symfony\Component\OptionsResolver\Exception\InvalidOptionsException`.
 MySQL and other strategies do not accept `byte_order`.
+
+The numeric ordering follows ISO/IEC CD 13249-3:201x(E), Committee Draft dated
+2009-01-16, §5.1.58 cj–cp (printed page 179). EWKB keeps its extension-specific
+[dimension flags and SRID layout](https://github.com/postgis/postgis/blob/master/doc/ZMSgeoms.txt);
+PostGIS documents both NDR and XDR output in [ST_AsEWKB](https://postgis.net/docs/ST_AsEWKB.html).
 
 ## Optional base class
 

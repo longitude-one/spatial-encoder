@@ -54,23 +54,10 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
     public function encode(SpatialInterface $spatial): string
     {
         $wkb = $this->writeByteOrder();
-        $wkb .= new WkbTypeEncoder()->writeType($spatial);
+        $wkb .= new WkbTypeEncoder()->writeType($spatial, $this->byteOrder());
         $wkb .= $this->writeCoordinates($spatial);
 
         return $wkb;
-    }
-
-    /**
-     * Write the byte order.
-     *
-     * The byte order is always little endian.
-     *
-     * @return string a binary string representing the byte order in little endian
-     */
-    private function writeByteOrder(): string
-    {
-        // We always write into little endian
-        return pack('C', 1);
     }
 
     /**
@@ -84,7 +71,7 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
      */
     private function writeCollection(CollectionInterface $collection): string
     {
-        $wkb = pack('V', \count($collection->getElements()));
+        $wkb = $this->writeUnsignedInteger(\count($collection->getElements()));
 
         foreach ($collection->getElements() as $element) {
             $wkb .= $this->encode($element);
@@ -128,7 +115,7 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
      */
     private function writeLineString(LineStringInterface $lineString): string
     {
-        $wkb = pack('V', \count($lineString->getPoints()));
+        $wkb = $this->writeUnsignedInteger(\count($lineString->getPoints()));
         foreach ($lineString->getPoints() as $point) {
             $wkb .= $this->writePoint($point);
         }
@@ -148,7 +135,7 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
      */
     private function writeMultiLineString(MultiLineStringInterface $multiLineString): string
     {
-        $wkb = pack('V', \count($multiLineString->getLineStrings()));
+        $wkb = $this->writeUnsignedInteger(\count($multiLineString->getLineStrings()));
         foreach ($multiLineString->getLineStrings() as $lineString) {
             $wkb .= $this->encode($lineString);
         }
@@ -168,7 +155,7 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
      */
     private function writeMultiPoint(MultiPointInterface $multiPoint): string
     {
-        $wkb = pack('V', \count($multiPoint->getPoints()));
+        $wkb = $this->writeUnsignedInteger(\count($multiPoint->getPoints()));
 
         foreach ($multiPoint->getPoints() as $point) {
             $wkb .= $this->encode($point);
@@ -189,7 +176,7 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
      */
     private function writeMultiPolygon(MultiPolygonInterface $multiPolygon): string
     {
-        $wkb = pack('V', \count($multiPolygon->getPolygons()));
+        $wkb = $this->writeUnsignedInteger(\count($multiPolygon->getPolygons()));
         foreach ($multiPolygon->getPolygons() as $polygon) {
             $wkb .= $this->encode($polygon);
         }
@@ -209,11 +196,11 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
         if ([] === $point->toArray()) {
             $dimension = 2 + ($point->hasZ() ? 1 : 0) + ($point->hasM() ? 1 : 0);
 
-            // Canonical little-endian IEEE-754 quiet NaN for every ordinate.
-            return str_repeat(pack('H*', '000000000000f87f'), $dimension);
+            // Canonical IEEE-754 quiet NaN in the selected byte order.
+            return $this->writeEmptyPoint($dimension);
         }
 
-        return pack('e*', ...$point->toArray());
+        return pack($this->doubleFormat(), ...$point->toArray());
     }
 
     /**
@@ -225,7 +212,7 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
      */
     private function writePolygon(PolygonInterface $polygon): string
     {
-        $wkb = pack('V', \count($polygon->getRings()));
+        $wkb = $this->writeUnsignedInteger(\count($polygon->getRings()));
 
         foreach ($polygon->getRings() as $ring) {
             $wkb .= $this->writeLineString($ring);
@@ -243,7 +230,7 @@ class WkbBinaryStrategy extends AbstractConfigurableStrategy implements Strategy
      */
     private function writePolyhedralSurface(PolyhedralSurfaceInterface $surface): string
     {
-        $wkb = pack('V', \count($surface->getPatches()));
+        $wkb = $this->writeUnsignedInteger(\count($surface->getPatches()));
         foreach ($surface->getPatches() as $patch) {
             $wkb .= $this->encode($patch);
         }
