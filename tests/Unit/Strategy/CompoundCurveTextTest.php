@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace LongitudeOne\SpatialEncoder\Tests\Unit\Strategy;
 
 use LongitudeOne\SpatialEncoder\Strategy\EwktTextStrategy;
+use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktCurveEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\WktTextStrategy;
 use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\CircularStringImmutable as CircularString;
@@ -40,6 +41,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(WktTextStrategy::class)]
 #[CoversClass(EwktTextStrategy::class)]
 #[CoversClass(WktTypeEncoder::class)]
+#[CoversClass(WktCurveEncoder::class)]
 class CompoundCurveTextTest extends TestCase
 {
     /** Preserve the circularonly component sequence in both formats. */
