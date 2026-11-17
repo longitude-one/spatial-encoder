@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace LongitudeOne\SpatialEncoder\Strategy\Wkb;
 
+use LongitudeOne\Core\Enum\ByteOrderEnum;
 use LongitudeOne\Core\Enum\GeometryTypeEnum;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
@@ -36,18 +37,19 @@ class WkbTypeEncoder
     ];
 
     /**
-     * Write a little-endian type identifier, with ISO Z/M/ZM offsets.
+     * Write a type identifier in the selected byte order, with ISO Z/M/ZM offsets.
      *
-     * @param SpatialInterface $spatial the spatial object to encode
+     * @param SpatialInterface $spatial   the spatial object to encode
+     * @param ByteOrderEnum    $byteOrder the selected binary byte order
      *
      * @throws UnsupportedSpatialTypeException when no implementation exists for the type
      */
-    public function writeType(SpatialInterface $spatial): string
+    public function writeType(SpatialInterface $spatial, ByteOrderEnum $byteOrder = ByteOrderEnum::LITTLE_ENDIAN): string
     {
         $type = self::TYPE_CODES[$spatial->getType()->value]
             ?? throw new UnsupportedSpatialTypeException(\sprintf('WKB adapter does not support spatial type %s', $spatial->getType()->value));
         $dimension = ($spatial->hasZ() ? 1000 : 0) + ($spatial->hasM() ? 2000 : 0);
 
-        return pack('V', $type + $dimension);
+        return pack(ByteOrderEnum::BIG_ENDIAN === $byteOrder ? 'N' : 'V', $type + $dimension);
     }
 }

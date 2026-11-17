@@ -22,6 +22,7 @@ use LongitudeOne\SpatialTypes\Types\Dimension3z\Geometry\PointImmutable as Point
 use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\GeometryCollectionImmutable as GeometryCollection;
 use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\LineStringImmutable as LineString;
 use LongitudeOne\SpatialTypes\Types\Dimension4zm\Geometry\PointImmutable as PointZm;
+use LongitudeOne\SpatialTypes\Types\Dimension4zm\Point as MutablePointZm;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversTrait;
 use PHPUnit\Framework\TestCase;
@@ -32,12 +33,15 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 #[CoversTrait(ByteOrderConfigurationTrait::class)]
 final class WkbByteOrderTest extends TestCase
 {
-    /** Big-endian is recognized but fails before any geometry is supplied. */
-    public function testBigEndianIsNotImplemented(): void
+    /** Big-endian construction succeeds and writes the complete numeric payload. */
+    public function testBigEndian(): void
     {
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessageIs('Big-endian encoding is not implemented yet.');
-        new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN]);
+        $geometry = new Point(1, 2, 4326);
+
+        self::assertSame(
+            '00000000013ff00000000000004000000000000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
     }
 
     /** Defaults and explicit little-endian preserve literal reference bytes. */
@@ -46,8 +50,30 @@ final class WkbByteOrderTest extends TestCase
         $geometry = new LineString([], 4326);
         $expected = '01ba0b000000000000';
 
+        self::assertSame(
+            '0000000bba00000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
+
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy()->encode($geometry)));
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry)));
+    }
+
+    /** Preserve fractional values, signs, ordinate order and mutable input state. */
+    public function testFractionalMutableCoordinates(): void
+    {
+        $geometry = new MutablePointZm(1.5, -2.25, 3.5, -4.75, 4326);
+
+        self::assertSame(
+            '0000000bb93ff8000000000000c002000000000000400c000000000000c013000000000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
+        self::assertSame(
+            '01b90b0000000000000000f83f00000000000002c00000000000000c4000000000000013c0',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry))
+        );
+        self::assertSame([1.5, -2.25, 3.5, -4.75], $geometry->toArray());
+        self::assertSame(4326, $geometry->getSrid());
     }
 
     /** Defaults and explicit little-endian preserve literal reference bytes. */
@@ -58,6 +84,11 @@ final class WkbByteOrderTest extends TestCase
             new LineString([], 4326),
         ]);
         $expected = '01bf0b00000200000001bf0b00000100000001b90b0000000000000000f03f00000000000000400000000000000840000000000000104001ba0b000000000000';
+
+        self::assertSame(
+            '0000000bbf000000020000000bbf000000010000000bb93ff00000000000004000000000000000400800000000000040100000000000000000000bba00000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
 
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy()->encode($geometry)));
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry)));
@@ -118,6 +149,11 @@ final class WkbByteOrderTest extends TestCase
         $geometry = new Point(1, 2, 4326);
         $expected = '0101000000000000000000f03f0000000000000040';
 
+        self::assertSame(
+            '00000000013ff00000000000004000000000000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
+
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy()->encode($geometry)));
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry)));
     }
@@ -127,6 +163,11 @@ final class WkbByteOrderTest extends TestCase
     {
         $geometry = new PointM(1, 2, 4, 4326);
         $expected = '01d1070000000000000000f03f00000000000000400000000000001040';
+
+        self::assertSame(
+            '00000007d13ff000000000000040000000000000004010000000000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
 
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy()->encode($geometry)));
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry)));
@@ -138,6 +179,11 @@ final class WkbByteOrderTest extends TestCase
         $geometry = new PointZ(1, 2, 3, 4326);
         $expected = '01e9030000000000000000f03f00000000000000400000000000000840';
 
+        self::assertSame(
+            '00000003e93ff000000000000040000000000000004008000000000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
+
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy()->encode($geometry)));
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry)));
     }
@@ -148,6 +194,11 @@ final class WkbByteOrderTest extends TestCase
         $geometry = new PointZm(1, 2, 3, 4, 4326);
         $expected = '01b90b0000000000000000f03f000000000000004000000000000008400000000000001040';
 
+        self::assertSame(
+            '0000000bb93ff0000000000000400000000000000040080000000000004010000000000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
+
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy()->encode($geometry)));
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry)));
     }
@@ -157,6 +208,11 @@ final class WkbByteOrderTest extends TestCase
     {
         $geometry = new Point(1, 2, 0);
         $expected = '0101000000000000000000f03f0000000000000040';
+
+        self::assertSame(
+            '00000000013ff00000000000004000000000000000',
+            bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::BIG_ENDIAN])->encode($geometry))
+        );
 
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy()->encode($geometry)));
         self::assertSame($expected, bin2hex(new WkbBinaryStrategy(['byte_order' => ByteOrderEnum::LITTLE_ENDIAN])->encode($geometry)));

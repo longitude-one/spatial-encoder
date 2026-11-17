@@ -51,9 +51,8 @@ An SRID does not transform coordinates.
 ## Format limits
 
 - **WKT / EWKT:** EWKT adds one outer `SRID=...;` prefix when the SRID is nonzero.
-- **WKB / EWKB:** output is little-endian. The enum-only `byte_order` option defaults
-  to `ByteOrderEnum::LITTLE_ENDIAN`; `BIG_ENDIAN` temporarily throws `\LogicException`
-  during construction. See [Strategy configuration](strategy-configuration.md#wkb-and-ewkb-byte-order).
+- **WKB / EWKB:** the enum-only `byte_order` option defaults to
+  `ByteOrderEnum::LITTLE_ENDIAN`; use `ByteOrderEnum::BIG_ENDIAN` for big-endian output. See [Strategy configuration](strategy-configuration.md#wkb-and-ewkb-byte-order).
   WKB uses ISO dimension offsets;
   EWKB uses dimension flags and writes a nonzero SRID only on the outer geometry.
 - **MySQL:** output includes a four-byte SRID prefix and is not plain WKB.
