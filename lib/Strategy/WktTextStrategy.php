@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace LongitudeOne\SpatialEncoder\Strategy;
 
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
+use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktCurveEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktPointEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\Wkt\WktTypeEncoder;
-use LongitudeOne\SpatialTypes\Interfaces\CircularStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
-use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
+use LongitudeOne\SpatialTypes\Interfaces\CurveInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiLineStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiPointInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiPolygonInterface;
@@ -68,8 +68,7 @@ class WktTextStrategy extends AbstractConfigurableStrategy implements StrategyIn
     private function writeCoordinates(SpatialInterface $spatial): string
     {
         return match (true) {
-            $spatial instanceof LineStringInterface,
-            $spatial instanceof CircularStringInterface => implode(', ', array_map(new WktPointEncoder()->writePoint(...), $spatial->getPoints())),
+            $spatial instanceof CurveInterface => new WktCurveEncoder()->writeCoordinates($spatial, $this->writeBody(...), $this->writeGeometry(...)),
             $spatial instanceof PolygonInterface => $this->writeMembers($spatial->getRings()),
             $spatial instanceof MultiPointInterface => $this->writeMembers($spatial->getPoints()),
             $spatial instanceof MultiLineStringInterface => $this->writeMembers($spatial->getLineStrings()),

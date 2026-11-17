@@ -35,6 +35,7 @@ class WktTypeEncoder
             GeometryTypeEnum::POINT,
             GeometryTypeEnum::LINESTRING,
             GeometryTypeEnum::CIRCULARSTRING,
+            GeometryTypeEnum::COMPOUNDCURVE,
             GeometryTypeEnum::POLYGON,
             GeometryTypeEnum::MULTIPOINT,
             GeometryTypeEnum::MULTILINESTRING,
