@@ -17,7 +17,7 @@ The encoder accepts mutable and immutable spatial objects without modifying them
 All strategies support Point, LineString, Polygon, their multi-geometries,
 and geometry collections. WKT, EWKT, WKB, and EWKB also support Triangle
 and PolyhedralSurface; polyhedral surfaces are available in XYZ and XYZM.
-WKT and EWKT also support CircularString in all four dimensions.
+WKT, EWKT, WKB, and EWKB also support CircularString in all four dimensions.
 CompoundCurve, other curved geometry types, and TIN remain unsupported.
 
 ## Encode an object
@@ -83,6 +83,42 @@ For an empty XYM curve, it produces `CIRCULARSTRING M EMPTY`.
 These strategies follow the circular-string text productions in
 ISO/IEC CD 13249-3:201x(E), clause 5.1.57 (Committee Draft, 2009-01-16).
 EWKT adds the existing nonzero-SRID prefix as a format extension.
+
+### Circular strings in WKB and EWKB
+
+Both binary strategies write the number of control points followed by every
+ordered coordinate, without interpolating the curve. Closed, multi-arc, and
+collinear circular strings retain their complete control-point sequences.
+
+| Dimensions | WKB type | EWKB type before the optional SRID flag |
+| --- | ---: | --- |
+| XY | 8 | `0x00000008` |
+| XYZ | 1008 | `0x80000008` |
+| XYM | 2008 | `0x40000008` |
+| XYZM | 3008 | `0xC0000008` |
+
+WKB type identifiers and coordinate layouts follow ISO/IEC CD
+13249-3:201x(E), clause 5.1.58 and Table 15 (Committee Draft, 2009-01-16).
+EWKB follows the [PostGIS extension](https://github.com/postgis/postgis/blob/master/liblwgeom/lwout_wkb.c):
+it adds the existing dimension flags and, for a nonzero outer SRID, the
+`0x20000000` flag followed by the SRID. Collection members omit that SRID field.
+The configured byte order applies to the header, point count, and ordinates.
+
+An EMPTY circular string retains its dimension and writes an explicit unsigned
+32-bit zero point count. This is the approved LongitudeOne compatibility
+decision for both formats, consistent with existing binary point sequences.
+It differs from the header-only EMPTY production in the available ISO draft,
+clause 5.1.58, description r)–u). For example, an EMPTY XY curve with SRID zero
+produces these complete hexadecimal representations:
+
+| Byte order | WKB and EWKB |
+| --- | --- |
+| Little-endian (default) | `010800000000000000` |
+| Big-endian | `000000000800000000` |
+
+The executable [WKB](../tests/Unit/Strategy/Wkb/CircularStringTest.php) and
+[EWKB](../tests/Unit/Strategy/Ewkb/CircularStringTest.php) fixtures cover these
+zero counts, all four dimensions, both byte orders, and SRID handling.
 
 ### GeoJSON structures
 

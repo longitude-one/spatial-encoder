@@ -67,9 +67,9 @@ class EwkbRegressionTest extends TestCase
     public function testUnsupportedType(): void
     {
         $spatial = self::createStub(SpatialInterface::class);
-        $spatial->method('getType')->willReturn(GeometryTypeEnum::CIRCULARSTRING);
+        $spatial->method('getType')->willReturn(GeometryTypeEnum::COMPOUNDCURVE);
         $this->expectException(UnsupportedSpatialTypeException::class);
-        $this->expectExceptionMessageIsOrContains('EWKB adapter does not support spatial type CircularString');
+        $this->expectExceptionMessageIsOrContains('EWKB adapter does not support spatial type CompoundCurve');
         new EwkbBinaryStrategy()->encode($spatial);
     }
 

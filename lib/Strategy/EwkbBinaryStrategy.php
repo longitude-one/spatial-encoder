@@ -17,6 +17,7 @@ use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\Wkb\ByteOrderConfigurationTrait;
+use LongitudeOne\SpatialTypes\Interfaces\CircularStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
 use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiLineStringInterface;
@@ -91,7 +92,8 @@ class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements Strateg
     {
         return match (true) {
             $spatial instanceof PointInterface => $this->writePoint($spatial),
-            $spatial instanceof LineStringInterface => $this->writeLineString($spatial),
+            $spatial instanceof LineStringInterface,
+            $spatial instanceof CircularStringInterface => $this->writePointSequence($spatial),
             $spatial instanceof PolygonInterface => $this->writePolygon($spatial),
             $spatial instanceof MultiPointInterface => $this->writeMultiPoint($spatial),
             $spatial instanceof MultiLineStringInterface => $this->writeMultiLineString($spatial),
@@ -121,23 +123,6 @@ class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements Strateg
             $wkb .= $this->writeUnsignedInteger($spatial->getSrid());
         }
         $wkb .= $this->writeCoordinates($spatial);
-
-        return $wkb;
-    }
-
-    /**
-     * Write a line string.
-     *
-     * @param LineStringInterface $lineString the line string to write
-     *
-     * @return string a binary string representing the line string
-     */
-    private function writeLineString(LineStringInterface $lineString): string
-    {
-        $wkb = $this->writeUnsignedInteger(\count($lineString->getPoints()));
-        foreach ($lineString->getPoints() as $point) {
-            $wkb .= $this->writePoint($point);
-        }
 
         return $wkb;
     }
@@ -223,6 +208,23 @@ class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements Strateg
     }
 
     /**
+     * Write the ordered points of a linear or circular string without interpolation.
+     *
+     * @param CircularStringInterface|LineStringInterface $lineString the point sequence to write
+     *
+     * @return string a binary string containing the point count and coordinates
+     */
+    private function writePointSequence(CircularStringInterface|LineStringInterface $lineString): string
+    {
+        $wkb = $this->writeUnsignedInteger(\count($lineString->getPoints()));
+        foreach ($lineString->getPoints() as $point) {
+            $wkb .= $this->writePoint($point);
+        }
+
+        return $wkb;
+    }
+
+    /**
      * Write a polygon.
      *
      * @param PolygonInterface $polygon the polygon to write
@@ -234,7 +236,7 @@ class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements Strateg
         $wkb = $this->writeUnsignedInteger(\count($polygon->getRings()));
 
         foreach ($polygon->getRings() as $ring) {
-            $wkb .= $this->writeLineString($ring);
+            $wkb .= $this->writePointSequence($ring);
         }
 
         return $wkb;
