@@ -16,6 +16,7 @@ namespace LongitudeOne\SpatialEncoder\Strategy;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
 use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
+use LongitudeOne\SpatialEncoder\Strategy\Wkb\ByteOrderConfigurationTrait;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
 use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiLineStringInterface;
@@ -33,6 +34,8 @@ use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
  */
 class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements StrategyInterface
 {
+    use ByteOrderConfigurationTrait;
+
     /**
      * Encode a spatial interface to its well-known binary representation.
      *
