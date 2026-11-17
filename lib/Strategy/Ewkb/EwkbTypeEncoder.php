@@ -32,6 +32,7 @@ class EwkbTypeEncoder
         GeometryTypeEnum::MULTILINESTRING->value => 5,
         GeometryTypeEnum::MULTIPOLYGON->value => 6,
         GeometryTypeEnum::GEOMETRYCOLLECTION->value => 7,
+        GeometryTypeEnum::CIRCULARSTRING->value => 8,
         GeometryTypeEnum::POLYHEDRALSURFACE->value => 15,
         GeometryTypeEnum::TRIANGLE->value => 17,
     ];
