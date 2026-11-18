@@ -38,9 +38,8 @@ class MySQLTypeEncoder
      */
     public function writeType(SpatialInterface $spatial): string
     {
-        $this->validateInput($spatial);
-
-        return match ($spatial->getType()) {
+        // This match is the explicit allow-list: reject unknown types before inspecting their payload.
+        $type = match ($spatial->getType()) {
             GeometryTypeEnum::POINT => pack('V', 1),
             GeometryTypeEnum::LINESTRING => pack('V', 2),
             GeometryTypeEnum::POLYGON => pack('V', 3),
@@ -50,6 +49,10 @@ class MySQLTypeEncoder
             GeometryTypeEnum::GEOMETRYCOLLECTION => pack('V', 7),
             default => throw new UnsupportedSpatialTypeException(\sprintf('MySQL adapter does not support spatial type %s', $spatial->getType()->value)),
         };
+
+        $this->validateInput($spatial);
+
+        return $type;
     }
 
     /**
@@ -66,7 +69,7 @@ class MySQLTypeEncoder
             throw new UnsupportedDimensionException('MySQL adapter only supports XY coordinates; Z and M are not supported.');
         }
 
-        if ([] === $spatial->toArray() && GeometryTypeEnum::GEOMETRYCOLLECTION !== $spatial->getType()) {
+        if (GeometryTypeEnum::GEOMETRYCOLLECTION !== $spatial->getType() && [] === $spatial->toArray()) {
             throw new UnsupportedSpatialTypeException(\sprintf('MySQL adapter does not support empty %s; only GeometryCollection may be empty.', $spatial->getType()->value));
         }
     }

@@ -63,6 +63,24 @@ An SRID does not transform coordinates.
   for XYZ. Reference metadata is omitted without checking the supplied SRID.
   Measured coordinates, Triangle, and PolyhedralSurface are rejected.
 
+### MySQL geometry types
+
+The explicit MySQL allow-list contains only Point, LineString, Polygon,
+GeometryCollection, MultiPoint, MultiLineString, and MultiPolygon, matching the
+[native MySQL geometry model](https://dev.mysql.com/doc/refman/8.4/en/spatial-type-overview.html).
+This is a vendor capability boundary, not a restriction on ISO spatial types.
+
+All other concrete types are rejected: BRepSolid, Circle, CircularString,
+Clothoid, CompoundCurve, CompoundSurface, CurvePolygon, EllipticalCurve,
+GeodesicString, MultiCurve, MultiSurface, NURBSCurve, PolyhedralSurface,
+SpiralCurve, TIN, and Triangle. New types remain unsupported by default.
+
+Unsupported types raise `UnsupportedSpatialTypeException` before their dimensions
+or coordinate payloads are read, including inside nested geometry collections.
+No curve is approximated, no structure is flattened, and no spatial information
+is discarded to make a value encodable. Supported types retain the independent
+XY, SRID, and EMPTY checks described above.
+
 ### Circular strings in WKT and EWKT
 
 Circular strings retain every ordered control point, including shared arc
