@@ -19,9 +19,9 @@ use LongitudeOne\SpatialEncoder\Strategy\Ewkb\EwkbTypeEncoder;
 use LongitudeOne\SpatialEncoder\Strategy\Wkb\ByteOrderConfigurationTrait;
 use LongitudeOne\SpatialTypes\Interfaces\CircularStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\CollectionInterface;
+use LongitudeOne\SpatialTypes\Interfaces\CompoundCurveInterface;
 use LongitudeOne\SpatialTypes\Interfaces\LineStringInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiLineStringInterface;
-use LongitudeOne\SpatialTypes\Interfaces\MultiPointInterface;
 use LongitudeOne\SpatialTypes\Interfaces\MultiPolygonInterface;
 use LongitudeOne\SpatialTypes\Interfaces\PointInterface;
 use LongitudeOne\SpatialTypes\Interfaces\PolygonInterface;
@@ -79,6 +79,24 @@ class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements Strateg
     }
 
     /**
+     * Write ordered curve components with their complete binary headers.
+     *
+     * @param CompoundCurveInterface $compoundCurve the compound curve to write
+     *
+     * @throws UnsupportedSpatialInterfaceException when a component interface is not supported
+     * @throws UnsupportedSpatialTypeException      when a component type is not supported
+     */
+    private function writeCompoundCurve(CompoundCurveInterface $compoundCurve): string
+    {
+        $wkb = $this->writeUnsignedInteger(\count($compoundCurve->getCurves()));
+        foreach ($compoundCurve->getCurves() as $curve) {
+            $wkb .= $this->writeGeometry($curve);
+        }
+
+        return $wkb;
+    }
+
+    /**
      * Write the coordinates.
      *
      * @param SpatialInterface $spatial the spatial interface to write
@@ -94,8 +112,8 @@ class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements Strateg
             $spatial instanceof PointInterface => $this->writePoint($spatial),
             $spatial instanceof LineStringInterface,
             $spatial instanceof CircularStringInterface => $this->writePointSequence($spatial),
+            $spatial instanceof CompoundCurveInterface => $this->writeCompoundCurve($spatial),
             $spatial instanceof PolygonInterface => $this->writePolygon($spatial),
-            $spatial instanceof MultiPointInterface => $this->writeMultiPoint($spatial),
             $spatial instanceof MultiLineStringInterface => $this->writeMultiLineString($spatial),
             $spatial instanceof MultiPolygonInterface => $this->writeMultiPolygon($spatial),
             $spatial instanceof CollectionInterface => $this->writeCollection($spatial),
@@ -142,27 +160,6 @@ class EwkbBinaryStrategy extends AbstractConfigurableStrategy implements Strateg
         $wkb = $this->writeUnsignedInteger(\count($multiLineString->getLineStrings()));
         foreach ($multiLineString->getLineStrings() as $lineString) {
             $wkb .= $this->writeGeometry($lineString);
-        }
-
-        return $wkb;
-    }
-
-    /**
-     * Write a multipoint.
-     *
-     * @param MultiPointInterface $multiPoint the multipoint to write
-     *
-     * @return string a binary string representing the multipoint
-     *
-     * @throws UnsupportedSpatialInterfaceException when the spatial interface is not supported
-     * @throws UnsupportedSpatialTypeException      when no implementation exists for the spatial type
-     */
-    private function writeMultiPoint(MultiPointInterface $multiPoint): string
-    {
-        $wkb = $this->writeUnsignedInteger(\count($multiPoint->getPoints()));
-
-        foreach ($multiPoint->getPoints() as $point) {
-            $wkb .= $this->writeGeometry($point);
         }
 
         return $wkb;

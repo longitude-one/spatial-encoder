@@ -18,7 +18,7 @@ All strategies support Point, LineString, Polygon, their multi-geometries,
 and geometry collections. WKT, EWKT, WKB, and EWKB also support Triangle
 and PolyhedralSurface; polyhedral surfaces are available in XYZ and XYZM.
 WKT, EWKT, WKB, and EWKB also support CircularString in all four dimensions.
-WKT and EWKT also support CompoundCurve in all four dimensions.
+WKT, EWKT, WKB, and EWKB also support CompoundCurve in all four dimensions.
 Other curved geometry types and TIN remain unsupported.
 
 ## Encode an object
@@ -111,7 +111,7 @@ WKT omits the SRID prefix. EMPTY retains its dimension marker, for example
 `COMPOUNDCURVE ZM EMPTY`. The syntax follows the compound-curve and single-curve
 text productions in ISO/IEC CD 13249-3:201x(E), clause 5.1.57
 (Committee Draft, 2009-01-16). EWKT adds the existing nonzero-SRID prefix.
-CompoundCurve remains unsupported by the binary and GeoJSON strategies.
+CompoundCurve remains unsupported by the MySQL binary and GeoJSON strategies.
 
 ### Circular strings in WKB and EWKB
 
@@ -148,6 +148,44 @@ produces these complete hexadecimal representations:
 The executable [WKB](../tests/Unit/Strategy/Wkb/CircularStringTest.php) and
 [EWKB](../tests/Unit/Strategy/Ewkb/CircularStringTest.php) fixtures cover these
 zero counts, all four dimensions, both byte orders, and SRID handling.
+
+### Compound curves in WKB and EWKB
+
+Both strategies write a component count followed by each complete LineString
+or CircularString binary geometry, including its own byte-order and type header.
+Component order, boundaries, shared endpoints, open endpoints, and closing
+coordinates are preserved without flattening or linearization.
+
+| Dimensions | WKB type | EWKB type before the optional SRID flag |
+| --- | ---: | --- |
+| XY | 9 | `0x00000009` |
+| XYZ | 1009 | `0x80000009` |
+| XYM | 2009 | `0x40000009` |
+| XYZM | 3009 | `0xC0000009` |
+
+WKB follows the compound-curve productions and Table 15 in ISO/IEC CD
+13249-3:201x(E), clause 5.1.58 (Committee Draft, 2009-01-16).
+EWKB uses the [PostGIS extension](https://github.com/postgis/postgis/blob/master/liblwgeom/lwout_wkb.c).
+The configured byte order applies to the parent and every component.
+WKB omits all SRIDs; EWKB writes a nonzero SRID only on the outermost geometry,
+including when a compound curve is nested in a geometry collection.
+
+An EMPTY compound curve retains its dimensions and writes a uint32 zero
+component count. This [approved LongitudeOne compatibility decision](https://github.com/longitude-one/spatial-encoder/issues/35#issuecomment-6976091064)
+follows PostGIS behavior for both formats. It differs from the header-only
+EMPTY production in the available ISO draft, clause 5.1.58, description v)–y).
+Complete EMPTY XY encodings are:
+
+| Format / SRID | Little-endian (default) | Big-endian |
+| --- | --- | --- |
+| WKB, SRID omitted | `010900000000000000` | `000000000900000000` |
+| EWKB, SRID 0 | `010900000000000000` | `000000000900000000` |
+| EWKB, SRID 4326 | `0109000020e610000000000000` | `0020000009000010e600000000` |
+
+The executable [WKB](../tests/Unit/Strategy/Wkb/CompoundCurveTest.php) and
+[EWKB](../tests/Unit/Strategy/Ewkb/CompoundCurveTest.php) fixtures cover these
+outputs, all four dimensions, both byte orders, linear-only, circular-only,
+and mixed components, open/closed curves, and nested collections.
 
 ### GeoJSON structures
 

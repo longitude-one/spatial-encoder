@@ -33,6 +33,7 @@ class WkbTypeEncoder
         GeometryTypeEnum::MULTIPOLYGON->value => 6,
         GeometryTypeEnum::GEOMETRYCOLLECTION->value => 7,
         GeometryTypeEnum::CIRCULARSTRING->value => 8,
+        GeometryTypeEnum::COMPOUNDCURVE->value => 9,
         GeometryTypeEnum::POLYHEDRALSURFACE->value => 15,
         GeometryTypeEnum::TRIANGLE->value => 17,
     ];
