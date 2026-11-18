@@ -207,6 +207,18 @@ and mixed components, open/closed curves, and nested collections.
 
 ### GeoJSON structures
 
+The supported types are Point, LineString, Polygon, MultiPoint, MultiLineString,
+MultiPolygon, and GeometryCollection, as defined by
+[RFC 7946, section 3.1](https://www.rfc-editor.org/rfc/rfc7946#section-3.1).
+Every other spatial type is rejected before its payload is read, including
+CircularString, CompoundCurve, Triangle, TIN, and PolyhedralSurface.
+This also applies to members of nested GeometryCollections. Curves are never
+linearized, structures are never flattened, and unsupported types are never
+converted to supported types. Future types are rejected by default.
+
+Type support does not relax the independent dimension policy: XY and XYZ are
+supported; XYM and XYZM raise `UnsupportedDimensionException`.
+
 Empty geometries and collections are supported, but multi-geometries cannot
 contain empty members. Non-empty lines require at least two positions.
 Polygon exterior rings must have positive signed XY area and holes negative
