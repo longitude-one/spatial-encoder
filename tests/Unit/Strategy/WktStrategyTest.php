@@ -244,10 +244,10 @@ class WktStrategyTest extends TestCase
     public function testUnsupportedType(): void
     {
         $spatial = self::createStub(SpatialInterface::class);
-        $spatial->method('getType')->willReturn(GeometryTypeEnum::COMPOUNDCURVE);
+        $spatial->method('getType')->willReturn(GeometryTypeEnum::TIN);
         $spatial->method('toArray')->willReturn([]);
         $this->expectException(UnsupportedSpatialTypeException::class);
-        $this->expectExceptionMessageIsOrContains('WKT adapter does not support spatial type CompoundCurve');
+        $this->expectExceptionMessageIsOrContains('WKT adapter does not support spatial type TIN');
         new WktTextStrategy()->encode($spatial);
     }
 }

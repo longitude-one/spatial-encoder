@@ -18,7 +18,8 @@ All strategies support Point, LineString, Polygon, their multi-geometries,
 and geometry collections. WKT, EWKT, WKB, and EWKB also support Triangle
 and PolyhedralSurface; polyhedral surfaces are available in XYZ and XYZM.
 WKT, EWKT, WKB, and EWKB also support CircularString in all four dimensions.
-CompoundCurve, other curved geometry types, and TIN remain unsupported.
+WKT and EWKT also support CompoundCurve in all four dimensions.
+Other curved geometry types and TIN remain unsupported.
 
 ## Encode an object
 
@@ -83,6 +84,34 @@ For an empty XYM curve, it produces `CIRCULARSTRING M EMPTY`.
 These strategies follow the circular-string text productions in
 ISO/IEC CD 13249-3:201x(E), clause 5.1.57 (Committee Draft, 2009-01-16).
 EWKT adds the existing nonzero-SRID prefix as a format extension.
+
+### Compound curves in WKT and EWKT
+
+Compound curves retain component order and boundaries. Linear components use
+parenthesized coordinates without a `LINESTRING` keyword; circular components
+retain their `CIRCULARSTRING` keyword and dimension marker. Components are
+never flattened or linearized, and open endpoints and closing coordinates are preserved.
+
+```php
+use LongitudeOne\SpatialEncoder\Strategy\EwktTextStrategy;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\CircularStringImmutable;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\CompoundCurveImmutable;
+use LongitudeOne\SpatialTypes\Types\Dimension2\Geometry\LineStringImmutable;
+
+$curve = new CompoundCurveImmutable([
+    new LineStringImmutable([[0, 0], [2, 0]], 4326),
+    new CircularStringImmutable([[2, 0], [3, 1], [4, 0]], 4326),
+], 4326);
+
+echo new EwktTextStrategy()->encode($curve);
+// SRID=4326;COMPOUNDCURVE ((0 0, 2 0), CIRCULARSTRING (2 0, 3 1, 4 0))
+```
+
+WKT omits the SRID prefix. EMPTY retains its dimension marker, for example
+`COMPOUNDCURVE ZM EMPTY`. The syntax follows the compound-curve and single-curve
+text productions in ISO/IEC CD 13249-3:201x(E), clause 5.1.57
+(Committee Draft, 2009-01-16). EWKT adds the existing nonzero-SRID prefix.
+CompoundCurve remains unsupported by the binary and GeoJSON strategies.
 
 ### Circular strings in WKB and EWKB
 
