@@ -54,6 +54,16 @@ class EwkbRegressionTest extends TestCase
         );
     }
 
+    /** A missing core correspondence must never become a zero type identifier. */
+    public function testTypeWithoutWkbCode(): void
+    {
+        $spatial = self::createStub(SpatialInterface::class);
+        $spatial->method('getType')->willReturn(GeometryTypeEnum::BREPSOLID);
+        $this->expectException(UnsupportedSpatialTypeException::class);
+        $this->expectExceptionMessageIsOrContains('EWKB adapter does not support spatial type BRepSolid');
+        new EwkbBinaryStrategy()->encode($spatial);
+    }
+
     /** Reject an unsupported interface rather than emit a partial geometry. */
     public function testUnsupportedInterface(): void
     {

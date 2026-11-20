@@ -17,6 +17,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "longitude-one/spatial-core": "^1.4.0",
         "longitude-one/spatial-types": "^1.0.0-RC.1",
         "symfony/options-resolver": "^5.4 || ^6.0 || ^7.0 || ^8.0"
     },

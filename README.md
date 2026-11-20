@@ -13,6 +13,9 @@ Choose a strategy for the target format; both mutable and immutable objects are 
 
 ## Installation
 
+Requires PHP 8.4 or newer and `longitude-one/spatial-core` 1.4.0 or newer
+within the 1.x series. Composer installs the required dependencies.
+
 ```bash
 composer require longitude-one/spatial-encoder:^1.0.0-RC.0
 ```

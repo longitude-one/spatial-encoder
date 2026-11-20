@@ -40,19 +40,19 @@ class MySQLTypeEncoder
     {
         // This match is the explicit allow-list: reject unknown types before inspecting their payload.
         $type = match ($spatial->getType()) {
-            GeometryTypeEnum::POINT => pack('V', 1),
-            GeometryTypeEnum::LINESTRING => pack('V', 2),
-            GeometryTypeEnum::POLYGON => pack('V', 3),
-            GeometryTypeEnum::MULTIPOINT => pack('V', 4),
-            GeometryTypeEnum::MULTILINESTRING => pack('V', 5),
-            GeometryTypeEnum::MULTIPOLYGON => pack('V', 6),
-            GeometryTypeEnum::GEOMETRYCOLLECTION => pack('V', 7),
-            default => throw new UnsupportedSpatialTypeException(\sprintf('MySQL adapter does not support spatial type %s', $spatial->getType()->value)),
-        };
+            GeometryTypeEnum::POINT,
+            GeometryTypeEnum::LINESTRING,
+            GeometryTypeEnum::POLYGON,
+            GeometryTypeEnum::MULTIPOINT,
+            GeometryTypeEnum::MULTILINESTRING,
+            GeometryTypeEnum::MULTIPOLYGON,
+            GeometryTypeEnum::GEOMETRYCOLLECTION => $spatial->getType()->wkbCode(),
+            default => null,
+        } ?? throw new UnsupportedSpatialTypeException(\sprintf('MySQL adapter does not support spatial type %s', $spatial->getType()->value));
 
         $this->validateInput($spatial);
 
-        return $type;
+        return pack('V', $type);
     }
 
     /**
