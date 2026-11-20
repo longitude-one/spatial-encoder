@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace LongitudeOne\SpatialEncoder\Tests\Unit\Strategy\Wkb;
 
+use LongitudeOne\Core\Enum\CoordinateDimensionEnum;
 use LongitudeOne\Core\Enum\GeometryTypeEnum;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialInterfaceException;
 use LongitudeOne\SpatialEncoder\Exception\UnsupportedSpatialTypeException;
@@ -54,11 +55,22 @@ class WkbRegressionTest extends TestCase
         );
     }
 
+    /** A missing core correspondence must never become a zero type identifier. */
+    public function testTypeWithoutWkbCode(): void
+    {
+        $spatial = self::createStub(SpatialInterface::class);
+        $spatial->method('getType')->willReturn(GeometryTypeEnum::BREPSOLID);
+        $this->expectException(UnsupportedSpatialTypeException::class);
+        $this->expectExceptionMessageIsOrContains('WKB adapter does not support spatial type BRepSolid');
+        new WkbBinaryStrategy()->encode($spatial);
+    }
+
     /** Reject an unsupported interface rather than emit a partial geometry. */
     public function testUnsupportedInterface(): void
     {
         $spatial = self::createStub(SpatialInterface::class);
         $spatial->method('getType')->willReturn(GeometryTypeEnum::POINT);
+        $spatial->method('getDimension')->willReturn(CoordinateDimensionEnum::XY);
         $this->expectException(UnsupportedSpatialInterfaceException::class);
         new WkbBinaryStrategy()->encode($spatial);
     }

@@ -23,21 +23,6 @@ use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
  */
 class WkbTypeEncoder
 {
-    /** ISO SQL/MM base identifiers, before dimensional offsets. */
-    private const array TYPE_CODES = [
-        GeometryTypeEnum::POINT->value => 1,
-        GeometryTypeEnum::LINESTRING->value => 2,
-        GeometryTypeEnum::POLYGON->value => 3,
-        GeometryTypeEnum::MULTIPOINT->value => 4,
-        GeometryTypeEnum::MULTILINESTRING->value => 5,
-        GeometryTypeEnum::MULTIPOLYGON->value => 6,
-        GeometryTypeEnum::GEOMETRYCOLLECTION->value => 7,
-        GeometryTypeEnum::CIRCULARSTRING->value => 8,
-        GeometryTypeEnum::COMPOUNDCURVE->value => 9,
-        GeometryTypeEnum::POLYHEDRALSURFACE->value => 15,
-        GeometryTypeEnum::TRIANGLE->value => 17,
-    ];
-
     /**
      * Write a type identifier in the selected byte order, with ISO Z/M/ZM offsets.
      *
@@ -48,9 +33,21 @@ class WkbTypeEncoder
      */
     public function writeType(SpatialInterface $spatial, ByteOrderEnum $byteOrder = ByteOrderEnum::LITTLE_ENDIAN): string
     {
-        $type = self::TYPE_CODES[$spatial->getType()->value]
-            ?? throw new UnsupportedSpatialTypeException(\sprintf('WKB adapter does not support spatial type %s', $spatial->getType()->value));
-        $dimension = ($spatial->hasZ() ? 1000 : 0) + ($spatial->hasM() ? 2000 : 0);
+        $type = match ($spatial->getType()) {
+            GeometryTypeEnum::POINT,
+            GeometryTypeEnum::LINESTRING,
+            GeometryTypeEnum::POLYGON,
+            GeometryTypeEnum::MULTIPOINT,
+            GeometryTypeEnum::MULTILINESTRING,
+            GeometryTypeEnum::MULTIPOLYGON,
+            GeometryTypeEnum::GEOMETRYCOLLECTION,
+            GeometryTypeEnum::CIRCULARSTRING,
+            GeometryTypeEnum::COMPOUNDCURVE,
+            GeometryTypeEnum::POLYHEDRALSURFACE,
+            GeometryTypeEnum::TRIANGLE => $spatial->getType()->wkbCode(),
+            default => null,
+        } ?? throw new UnsupportedSpatialTypeException(\sprintf('WKB adapter does not support spatial type %s', $spatial->getType()->value));
+        $dimension = $spatial->getDimension()->wkbCode();
 
         return pack(ByteOrderEnum::BIG_ENDIAN === $byteOrder ? 'N' : 'V', $type + $dimension);
     }

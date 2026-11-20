@@ -3,6 +3,11 @@
 Choose a strategy for the format expected by your consumer.
 The encoder accepts mutable and immutable spatial objects without modifying them.
 
+`longitude-one/spatial-core` 1.4.0 or newer within the 1.x series supplies shared
+geometry base codes and SQL/MM WKB dimension offsets. Each strategy keeps its
+own supported-type list: a shared code does not add encoding support. EWKB
+retains its dimension flags, and MySQL binary remains restricted to XY.
+
 ## Choose a format
 
 | Strategy | Output | Dimensions | SRID included |

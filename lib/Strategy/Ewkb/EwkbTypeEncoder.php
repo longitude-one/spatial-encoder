@@ -23,21 +23,6 @@ use LongitudeOne\SpatialTypes\Interfaces\SpatialInterface;
  */
 class EwkbTypeEncoder
 {
-    /** Base geometry identifiers, before EWKB flags. */
-    private const array TYPE_CODES = [
-        GeometryTypeEnum::POINT->value => 1,
-        GeometryTypeEnum::LINESTRING->value => 2,
-        GeometryTypeEnum::POLYGON->value => 3,
-        GeometryTypeEnum::MULTIPOINT->value => 4,
-        GeometryTypeEnum::MULTILINESTRING->value => 5,
-        GeometryTypeEnum::MULTIPOLYGON->value => 6,
-        GeometryTypeEnum::GEOMETRYCOLLECTION->value => 7,
-        GeometryTypeEnum::CIRCULARSTRING->value => 8,
-        GeometryTypeEnum::COMPOUNDCURVE->value => 9,
-        GeometryTypeEnum::POLYHEDRALSURFACE->value => 15,
-        GeometryTypeEnum::TRIANGLE->value => 17,
-    ];
-
     /**
      * Write a type identifier in the selected byte order, with EWKB Z/M/SRID flags.
      *
@@ -49,8 +34,20 @@ class EwkbTypeEncoder
      */
     public function writeType(SpatialInterface $spatial, bool $includeSrid, ByteOrderEnum $byteOrder = ByteOrderEnum::LITTLE_ENDIAN): string
     {
-        $type = self::TYPE_CODES[$spatial->getType()->value]
-            ?? throw new UnsupportedSpatialTypeException(\sprintf('EWKB adapter does not support spatial type %s', $spatial->getType()->value));
+        $type = match ($spatial->getType()) {
+            GeometryTypeEnum::POINT,
+            GeometryTypeEnum::LINESTRING,
+            GeometryTypeEnum::POLYGON,
+            GeometryTypeEnum::MULTIPOINT,
+            GeometryTypeEnum::MULTILINESTRING,
+            GeometryTypeEnum::MULTIPOLYGON,
+            GeometryTypeEnum::GEOMETRYCOLLECTION,
+            GeometryTypeEnum::CIRCULARSTRING,
+            GeometryTypeEnum::COMPOUNDCURVE,
+            GeometryTypeEnum::POLYHEDRALSURFACE,
+            GeometryTypeEnum::TRIANGLE => $spatial->getType()->wkbCode(),
+            default => null,
+        } ?? throw new UnsupportedSpatialTypeException(\sprintf('EWKB adapter does not support spatial type %s', $spatial->getType()->value));
         $dimension = ($spatial->hasZ() ? 0x80000000 : 0) | ($spatial->hasM() ? 0x40000000 : 0) | ($includeSrid ? 0x20000000 : 0);
 
         return pack(ByteOrderEnum::BIG_ENDIAN === $byteOrder ? 'N' : 'V', $type | $dimension);
